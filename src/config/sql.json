@@ -1,0 +1,23 @@
+{
+    "development": {
+      "username": "root",
+      "password": null,
+      "database": "tutorencasa_dev",
+      "host": "127.0.0.1",
+      "dialect": "mysql"
+    },
+    "test": {
+      "username": "root",
+      "password": null,
+      "database": "tutorencasa_test",
+      "host": "127.0.0.1",
+      "dialect": "mysql"
+    },
+    "production": {
+      "username": "root",
+      "password": "TutorEnCasa@23",
+      "database": "tutorencasa_prod",
+      "host": "127.0.0.1",
+      "dialect": "mysql"
+    }
+}

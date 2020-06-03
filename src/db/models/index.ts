@@ -1,14 +1,14 @@
-import { Administrator } from './administrator';
-import { Class } from './class';
-import { ClassRating } from './classrating';
-import { HistoryAccess } from './historyaccess';
-import { HistoryPriceHour } from './historypricehour';
-import { HistoryStatusClass } from './historystatusclass';
-import { Schedule } from './schedule';
-import { StudentTutor } from './studenttutor';
-import { TimeAvailability } from './timeavailability';
-import { Tutor } from './tutor';
-import { User } from './user';
+import Administrator from './administrator';
+import Class from './class';
+import ClassRating from './classrating';
+import HistoryAccess from './historyaccess';
+import HistoryPriceHour from './historypricehour';
+import HistoryStatusClass from './historystatusclass';
+import Schedule from './schedule';
+import StudentTutor from './studenttutor';
+import TimeAvailability from './timeavailability';
+import Tutor from './tutor';
+import User from './user';
 
 const models: any = { 
 	Administrator,

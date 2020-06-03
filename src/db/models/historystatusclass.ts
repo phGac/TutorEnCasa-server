@@ -45,4 +45,4 @@ HistoryStatusClass.init({
 // @ts-ignore
 HistoryStatusClass.associate = function(models: any) {};
 
-export { HistoryStatusClass };
+export default HistoryStatusClass;

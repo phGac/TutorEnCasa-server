@@ -37,4 +37,4 @@ StudentTutor.associate = function() {
     //
 };
 
-export { StudentTutor };
+export default StudentTutor;

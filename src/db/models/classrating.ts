@@ -50,4 +50,4 @@ ClassRating.init({
 // @ts-ignore
 ClassRating.associate = function(models: any) {};
 
-export { ClassRating };
+export default ClassRating;

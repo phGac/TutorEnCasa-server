@@ -1,3 +1,1 @@
-export default function UserFactory(config: any) {
-    //
-};
+export default class UserFactory {};

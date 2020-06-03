@@ -1,6 +1,8 @@
+import './db';
 import express, { Application, Router } from 'express';
 import path from 'path';
 import cookieParser from 'cookie-parser';
+import session from 'express-session';
 import morgan from 'morgan';
 
 class App {
@@ -15,6 +17,13 @@ class App {
 
     private configure() {
         this.app.use(morgan('dev'));
+        this.app.set('trust proxy', 1);
+        this.app.use(session({
+            secret: 'A1qrQdXifJqTs',
+            resave: false,
+            saveUninitialized: true,
+            cookie: { secure: false }
+        }));
         this.app.use(express.json());
         this.app.use(express.urlencoded({ extended: false }));
         this.app.use(cookieParser());

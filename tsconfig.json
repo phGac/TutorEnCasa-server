@@ -6,7 +6,7 @@
         "strictNullChecks": true,
         "sourceMap": false,
         "allowJs": true,
-        "target": "ES2018",
+        "target": "ES6",
         "module": "CommonJS",
         "outDir": "dist",
         "moduleResolution": "node",

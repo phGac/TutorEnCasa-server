@@ -39,4 +39,4 @@ HistoryAccess.init({
 // @ts-ignore
 HistoryAccess.associate = function(models: any) {};
 
-export { HistoryAccess };
+export default HistoryAccess;

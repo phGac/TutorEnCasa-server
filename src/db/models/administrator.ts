@@ -33,4 +33,4 @@ Administrator.init({
 // @ts-ignore
 Administrator.associate = function(models: any) {};
 
-export { Administrator };
+export default Administrator;

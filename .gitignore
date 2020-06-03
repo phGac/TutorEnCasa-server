@@ -65,7 +65,6 @@ typings/
 
 # custom
 jest.config.*
-tsconfig.json
 nodemon.*
 .sequelizerc
 tests/**

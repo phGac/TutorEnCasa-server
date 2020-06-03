@@ -40,4 +40,4 @@ Schedule.associate = function(models) {
 	//
 };
 
-export { Schedule };
+export default Schedule;

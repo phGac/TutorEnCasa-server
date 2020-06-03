@@ -8,17 +8,47 @@ interface Logger {
     init(config: any): void;
     log(level: string, message: string): void;
     info(message: string): void;
-    error(message: string): void;
+    error(message: string|Error): void;
     warning(message: string): void;
+}
+
+class LoggerError extends Error {
+    public tracert: string[];
+
+    constructor(err: Error|undefined = undefined) {
+        super();
+        if(err) this.message = err.message;
+
+        this.tracert = [];
+        let stack: string[] = [];
+        if(this.stack) {
+            if(err && err.stack) {
+                const atArray = err.stack.split('at ');
+                atArray.shift();
+                stack = atArray.map(item => item.trim());
+            }
+            else {
+                const func = (this.stack.split('at '))[3];
+                stack.push(func);
+            }
+        }
+        this.tracert = stack;
+    }
 }
 
 class ConsoleLogger implements Logger {
     lastMessage: Date|null;
     formatDate: Intl.DateTimeFormat;
+    private color_info: string;
+    private color_error: string;
+    private color_warning: string;
 
     constructor() {
         this.lastMessage = null;
         this.formatDate = new Intl.DateTimeFormat('es', { year: 'numeric', month: 'short', day: '2-digit' });
+        this.color_info = '\x1b[40m';
+        this.color_error = '\x1b[41m';
+        this.color_warning = '\x1b[43m';
     }
 
     private getTime() {
@@ -29,25 +59,46 @@ class ConsoleLogger implements Logger {
     /**
      * 
      * @param {
-     *  formatDate: Intl.DateTimeFormat
+     *  formatDate: Intl.DateTimeFormat,
+     *  color: {
+     *    info: string,
+     *    error: string,
+     *    warning: string
+     *  }
      * } config
      */
-    init(config: { formatDate: Intl.DateTimeFormat }): void {
-        this.formatDate = config.formatDate;
+    init(config: { formatDate?: Intl.DateTimeFormat, color?: { info: string, error: string, warning: string } }): void {
+        if(config.formatDate) this.formatDate = config.formatDate;
+        if(config.color) {
+            this.color_info = config.color.info;
+            this.color_error = config.color.error;
+            this.color_warning = config.color.warning;
+        }
     }
 
-    log(level: string, message: string): void {
-        console.log(`${this.getTime()} [${level}]: ${message}`);
+    log(level: string, message: string|Error, color: string = '\x1b[40m'): void {
+        const e = (message instanceof Error) ? new LoggerError(message) : new LoggerError();
+        const log = {
+            level,
+            message: (typeof message == 'string') ? message : e.message,
+            timestamp: this.getTime(),
+            tracert: e.tracert
+        };
+        const json = JSON.stringify(log, null, 4);
+        if(level != 'error')
+            console.log(`${color}%s\x1b[0m`, json);
+        else
+            console.log(`\n${color}>>>>>>>>>>>>>>>>>>>> ERROR >>>>>>>>>>>>>>>>>>>>\x1b[0m\n%s\n${color}<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\x1b[0m\n`, json);
     }
 
     info(message: string): void {
-        this.log('info', message);
+        this.log('info', message, this.color_info);
     }
-    error(message: string): void {
-        this.log('error', message);
+    error(message: string|Error): void {
+        this.log('error', message, this.color_error);
     }
     warning(message: string): void {
-        this.log('warning', message);
+        this.log('warning', message, this.color_warning);
     }
 }
 

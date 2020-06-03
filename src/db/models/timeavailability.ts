@@ -52,4 +52,4 @@ TimeAvailability.associate = function(models) {
     //
 };
 
-export { TimeAvailability };
+export default TimeAvailability;

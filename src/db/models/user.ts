@@ -84,7 +84,7 @@ User.init({
 	}
 }, { sequelize });
 
-User.beforeCreate(function(user, options) {
+User.beforeCreate('PASSWORD', function(user, options) {
 	return new Promise((resolve, reject) => {
 		if(user.password) {
 			encryptPassword(user.password)
@@ -105,4 +105,10 @@ User.associate = function(models) {
 	//
 };
 
-export { User };
+export enum UserStatus {
+	ACTIVE,
+	INACTIVE,
+	UNVALIDATED
+};
+
+export default User;

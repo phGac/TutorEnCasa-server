@@ -41,4 +41,4 @@ HistoryPriceHour.init({
 // @ts-ignore
 HistoryPriceHour.associate = function(models: any) {};
 
-export { HistoryPriceHour };
+export default HistoryPriceHour;

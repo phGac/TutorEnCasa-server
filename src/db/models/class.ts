@@ -37,4 +37,4 @@ Class.init({
 // @ts-ignore
 Class.associate = function(models: any) {};
 
-export { Class };
+export default Class;

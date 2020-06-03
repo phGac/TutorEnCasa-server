@@ -1,4 +1,4 @@
-import { Sequelize, DataTypes, Model } from 'sequelize';
+import { DataTypes, Model } from 'sequelize';
 
 import sequelize from '../index';
 
@@ -36,4 +36,4 @@ Tutor.associate = function(models) {
 	//
 };
 
-export { Tutor };
+export default Tutor;

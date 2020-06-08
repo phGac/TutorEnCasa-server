@@ -11,7 +11,7 @@ export = {
             },
 
             id_tutor: {
-                type: Sequelize.NUMBER
+                type: Sequelize.INTEGER
             },
 
             start: {

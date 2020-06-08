@@ -35,6 +35,24 @@ Class.init({
 }, { sequelize });
 
 // @ts-ignore
-Class.associate = function(models: any) {};
+Class.associate = function(models: any) {
+  const { Tutor, Schedule, ClassRating, HistoryStatusClass } = models;
+  Class.belongsTo(Tutor, {
+    as: 'tutor',
+    foreignKey: 'id_tutor'
+  });
+  Class.hasMany(Schedule, {
+    as: 'schedules',
+    foreignKey: 'id_class'
+  });
+  Class.hasMany(ClassRating, {
+    as: 'ratings',
+    foreignKey: 'id_class'
+  });
+  Class.hasMany(HistoryStatusClass, {
+    as: 'statuses',
+    foreignKey: 'id_class'
+  });
+};
 
 export default Class;

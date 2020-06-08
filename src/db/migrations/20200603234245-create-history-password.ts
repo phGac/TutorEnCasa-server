@@ -1,32 +1,36 @@
-"use strict";
-const sequelize_1 = require("sequelize");
-module.exports = {
-    up: (queryInterface, Sequelize) => {
-        return queryInterface.createTable('Administrators', {
+import { QueryInterface } from 'sequelize';
+
+export = {
+    up: (queryInterface: QueryInterface, Sequelize: any) => {
+        return queryInterface.createTable('HistoryPasswords', {
             id: {
                 allowNull: false,
                 autoIncrement: true,
                 primaryKey: true,
                 type: Sequelize.INTEGER
             },
+
             id_user: {
                 type: Sequelize.INTEGER
             },
-            status: {
-                type: Sequelize.INTEGER
+
+            password: {
+                type: Sequelize.STRING
             },
+
             createdAt: {
                 allowNull: false,
-                type: Sequelize.DATE,
-                defaultValue: sequelize_1.DataTypes.NOW
+                type: Sequelize.DATE
             },
+
             updatedAt: {
                 allowNull: false,
                 type: Sequelize.DATE
             }
         });
     },
-    down: (queryInterface, Sequelize) => {
-        return queryInterface.dropTable('Administrators');
+
+    down: (queryInterface: QueryInterface, Sequelize: any) => {
+        return queryInterface.dropTable('HistoryPasswords');
     }
 };

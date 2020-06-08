@@ -11,27 +11,33 @@ export = {
             },
 
             firstname: {
-                type: Sequelize.STRING
+                type: Sequelize.STRING,
+                allowNull: true
             },
 
             lastname: {
-                type: Sequelize.STRING
+                type: Sequelize.STRING,
+                allowNull: true
             },
 
             email: {
-                type: Sequelize.STRING
-            },
-
-            password: {
-                type: Sequelize.STRING
+                type: Sequelize.STRING,
+                allowNull: false
             },
 
             dni: {
-                type: Sequelize.INTEGER
+                type: Sequelize.INTEGER,
+                allowNull: false
+            },
+
+            birthdate: {
+                type: Sequelize.DATE,
+                allowNull: true
             },
 
             status: {
-                type: Sequelize.INTEGER
+                type: Sequelize.INTEGER,
+                allowNull: false
             },
 
             createdAt: {

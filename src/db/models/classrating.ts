@@ -48,6 +48,16 @@ ClassRating.init({
 }, { sequelize });
 
 // @ts-ignore
-ClassRating.associate = function(models: any) {};
+ClassRating.associate = function(models: any) {
+    const { User, Class } = models;
+    ClassRating.belongsTo(User, {
+        as: 'user',
+        foreignKey: 'id_user'
+    });
+    ClassRating.belongsTo(Class, {
+        as: 'class',
+        foreignKey: 'id_class'
+    });
+};
 
 export default ClassRating;

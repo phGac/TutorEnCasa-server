@@ -2,9 +2,9 @@ import { DataTypes, Model } from 'sequelize';
 
 import sequelize from '../index';
 
-class TimeAvailability extends Model {
+class AvailabilityTime extends Model {
     public id!: number;
-    public id_user!: number;
+    public id_tutor!: number;
 
     public start!: Date;
     public finish!: Date;
@@ -14,7 +14,7 @@ class TimeAvailability extends Model {
     public readonly updatedAt!: Date|null;
 }
 
-TimeAvailability.init({
+AvailabilityTime.init({
     id: {
         type: DataTypes.INTEGER,
 		autoIncrement: true,
@@ -48,8 +48,12 @@ TimeAvailability.init({
 }, { sequelize });
 
 // @ts-ignore
-TimeAvailability.associate = function(models) {
-    //
+AvailabilityTime.associate = function(models) {
+    const { Tutor } = models;
+    AvailabilityTime.belongsTo(Tutor, {
+        as: 'tutor',
+        foreignKey: 'id_tutor'
+    });
 };
 
-export default TimeAvailability;
+export default AvailabilityTime;

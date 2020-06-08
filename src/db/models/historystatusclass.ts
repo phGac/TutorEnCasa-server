@@ -43,6 +43,12 @@ HistoryStatusClass.init({
 }, { sequelize });
 
 // @ts-ignore
-HistoryStatusClass.associate = function(models: any) {};
+HistoryStatusClass.associate = function(models: any) {
+    const { Class } = models;
+    HistoryStatusClass.belongsTo(Class, {
+        as: 'class',
+        foreignKey: 'id_class'
+    });
+};
 
 export default HistoryStatusClass;

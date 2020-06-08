@@ -6,9 +6,11 @@ import HistoryPriceHour from './historypricehour';
 import HistoryStatusClass from './historystatusclass';
 import Schedule from './schedule';
 import StudentTutor from './studenttutor';
-import TimeAvailability from './timeavailability';
+import AvailabilityTime from './availabilitytime';
 import Tutor from './tutor';
 import User from './user';
+import HistoryPassword from './historypassword';
+import HistoryStatusUser from './historystatususer';
 
 const models: any = { 
 	Administrator,
@@ -19,9 +21,11 @@ const models: any = {
 	HistoryStatusClass,
 	Schedule,
 	StudentTutor,
-	TimeAvailability,
+	AvailabilityTime,
 	Tutor,
 	User,
+	HistoryPassword,
+	HistoryStatusUser,
 };
 
 Object.values(models).forEach((model: any) => {

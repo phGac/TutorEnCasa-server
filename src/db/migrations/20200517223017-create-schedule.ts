@@ -11,7 +11,7 @@ export = {
             },
 
             id_class: {
-                type: Sequelize.NUMBER
+                type: Sequelize.INTEGER
             },
 
             id_student: {
@@ -25,8 +25,8 @@ export = {
             },
 
             updatedAt: {
+                type: Sequelize.DATE,
                 allowNull: false,
-                type: Sequelize.DATE
             }
         });
     },

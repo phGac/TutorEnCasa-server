@@ -1,49 +1,35 @@
-import { Model, DataTypes } from 'sequelize';
+import { Model, DataTypes, fn, col } from 'sequelize';
 import bcrypt from 'bcrypt';
 
 import sequelize from '../index';
-import { encryptPassword } from '../../services/hash';
-import logger from '../../util/logger';
+import HistoryPassword from './historypassword';
+import { loginMessage } from '../../config/messages';
 
 class User extends Model {
     public id!: number;
     public firstname!: string|null;
 	public lastname!: string|null;
 	public email!: string;
-	public password!: string;
 	public dni!: number;
+	public passwords!: HistoryPassword[];
+	public birthdate!: Date|null;
 	public status!: number;
 
     public readonly createdAt!: Date;
-	public readonly updatedAt!: Date|null;
+	public readonly updatedAt!: Date;
 	
 	isValidPassword(password: string) {
 		return new Promise((resolve, reject) => {
-			bcrypt.compare(password, this.password, (err, result) => {
+			if(! this.passwords || this.passwords.length == 0) {
+				reject({ error: loginMessage["user.hasNotPassword"], custom: true });
+				return;
+			}
+			const historyPassword = (this.passwords[(this.passwords.length-1)]);
+			bcrypt.compare(password, historyPassword.password, (err, result) => {
 				if(err) return reject(err);
 				resolve(result);
 			});
 		});
-	}
-
-	setPassword(password: string, passwordRepeat: string) {
-        return new Promise((resolve, reject) => {
-            if(password != passwordRepeat) return reject('Las contraseñas no coinciden');
-            encryptPassword(password)
-                .then((hash) => {
-                    if(typeof hash == 'string') {
-                        this.password = hash;
-                        resolve();
-                    }
-                    else {
-                        reject('El tipo de la variable es incorrecto');
-                    }
-                })
-                .catch(err => {
-					logger().error(err);
-					reject('Desconocido');
-				});
-        });
 	}
 }
 
@@ -65,12 +51,12 @@ User.init({
 		type: DataTypes.STRING(100),
 		allowNull: false
 	},
-	password: {
-		type: DataTypes.STRING(100),
-		allowNull: false
-	},
 	dni: {
 		type: DataTypes.INTEGER,
+		allowNull: true
+	},
+	birthdate: {
+		type: DataTypes.DATE,
 		allowNull: true
 	},
 	status: {
@@ -84,25 +70,31 @@ User.init({
 	}
 }, { sequelize });
 
-User.beforeCreate('PASSWORD', function(user, options) {
-	return new Promise((resolve, reject) => {
-		if(user.password) {
-			encryptPassword(user.password)
-				.then((hash) => {
-					if(typeof hash == 'string')
-						user.password = hash;
-					resolve();
-				})
-				.catch(err => {
-					reject(err);
-				});
-		}
-	});
-});
-
 // @ts-ignore
 User.associate = function(models) {
-	//
+	const { Tutor, StudentTutor, Schedule, HistoryAccess, HistoryPassword, ClassRating } = models;
+	User.hasMany(HistoryPassword, {
+		as: 'passwords',
+		foreignKey: 'id_user'
+	});
+	User.belongsToMany(Tutor, {
+		as: 'tutors',
+		through: StudentTutor,
+		foreignKey: 'id_student',
+		otherKey: 'id_tutor'
+	});
+	User.hasMany(Schedule, {
+		as: 'schedules',
+		foreignKey: 'id_student'
+	});
+	User.hasMany(HistoryAccess, {
+		as: 'accesses',
+		foreignKey: 'id_user'
+	});
+	User.hasMany(ClassRating, {
+		as: 'ratings',
+		foreignKey: 'id_user'
+	});
 };
 
 export enum UserStatus {
@@ -110,5 +102,11 @@ export enum UserStatus {
 	INACTIVE,
 	UNVALIDATED
 };
+
+export enum UserRole {
+	STUDENT,
+	TUTOR,
+	ADMINISTRATOR,
+}
 
 export default User;

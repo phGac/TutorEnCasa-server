@@ -1,32 +1,37 @@
-"use strict";
-const sequelize_1 = require("sequelize");
-module.exports = {
-    up: (queryInterface, Sequelize) => {
-        return queryInterface.createTable('HistoryPriceHours', {
+import { QueryInterface } from 'sequelize';
+
+export = {
+    up: (queryInterface: QueryInterface, Sequelize: any) => {
+        return queryInterface.createTable('HistoryReports', {
             id: {
                 allowNull: false,
                 autoIncrement: true,
                 primaryKey: true,
                 type: Sequelize.INTEGER
             },
-            id_tutor: {
+
+            id_administrator: {
                 type: Sequelize.INTEGER
             },
-            price: {
+
+            type: {
                 type: Sequelize.INTEGER
             },
+
             createdAt: {
                 allowNull: false,
                 type: Sequelize.DATE,
-                defaultValue: sequelize_1.DataTypes.NOW
+                defaultValue: Sequelize.NOW
             },
+
             updatedAt: {
                 allowNull: false,
                 type: Sequelize.DATE
             }
         });
     },
-    down: (queryInterface, Sequelize) => {
-        return queryInterface.dropTable('HistoryPriceHours');
+
+    down: (queryInterface: QueryInterface, Sequelize: any) => {
+        return queryInterface.dropTable('HistoryReports');
     }
 };

@@ -39,6 +39,12 @@ HistoryPriceHour.init({
 }, { sequelize });
 
 // @ts-ignore
-HistoryPriceHour.associate = function(models: any) {};
+HistoryPriceHour.associate = function(models: any) {
+  const { Tutor } = models;
+  HistoryPriceHour.belongsTo(Tutor, {
+    as: 'tutor',
+    foreignKey: 'id_tutor'
+  });
+};
 
 export default HistoryPriceHour;

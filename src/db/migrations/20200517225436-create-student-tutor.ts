@@ -7,11 +7,13 @@ export = {
         return queryInterface.createTable('StudentTutors', {
 
             id_student: {
-                type: Sequelize.INTEGER
+                type: Sequelize.INTEGER,
+                primaryKey: true
             },
 
             id_tutor: {
-                type: Sequelize.INTEGER
+                type: Sequelize.INTEGER,
+                primaryKey: true
             },
 
             status: {

@@ -3,37 +3,60 @@ import { DataTypes, Model } from 'sequelize';
 import sequelize from '../index';
 
 class Tutor extends Model {
-    public id!: number;
+	public id!: number;
 	public id_user!: number;
+	public status!: number;
 
-    public readonly createdAt!: Date;
-    public readonly updatedAt!: Date|null;
+	public readonly createdAt!: Date;
+	public readonly updatedAt!: Date|null;
 }
 
 Tutor.init({
-    id: {
+	id: {
 		type: DataTypes.INTEGER.UNSIGNED,
 		autoIncrement: true,
 		primaryKey: true
-    },
-    id_user: {
-        type: DataTypes.INTEGER,
-        allowNull: false
-    },
-    createdAt: {
+	},
+	id_user: {
+		type: DataTypes.INTEGER,
+		allowNull: false
+	},
+	status: {
+		type: DataTypes.INTEGER,
+		allowNull: false
+	},
+	createdAt: {
 		type: DataTypes.DATE,
 		allowNull: false,
 		defaultValue: DataTypes.NOW
-    },
-    updatedAt: {
-        type: DataTypes.DATE,
+	},
+	updatedAt: {
+		type: DataTypes.DATE,
 		allowNull: true
-    }
+	}
 }, { sequelize });
 
 // @ts-ignore
 Tutor.associate = function(models) {
-	//
+	const { Class, AvailabilityTime, HistoryPriceHour, User, StudentTutor } = models;
+	Tutor.hasMany(Class, {
+		as: 'classes',
+		foreignKey: 'id_tutor'
+	});
+	Tutor.hasMany(AvailabilityTime, {
+		as: 'times',
+		foreignKey: 'id_tutor'
+	});
+	Tutor.hasMany(HistoryPriceHour, {
+		as: 'priceses',
+		foreignKey: 'id_tutor'
+	});
+	Tutor.belongsToMany(User, {
+		as: 'students',
+		through: StudentTutor,
+		foreignKey: 'id_tutor',
+		otherKey: 'id_student'
+	});
 };
 
 export default Tutor;

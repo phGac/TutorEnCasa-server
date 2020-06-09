@@ -1,23 +1,23 @@
 {
     "development": {
-      "username": "root",
-      "password": null,
-      "database": "tutorencasa_dev",
-      "host": "127.0.0.1",
-      "dialect": "mysql"
+      "username": "process.env.DB_USER",
+      "password": "process.env.DB_HOST",
+      "database": "process.env.DB_NAME",
+      "host": "process.env.DB_HOST",
+      "dialect": "process.env.DB_TYPE"
     },
     "test": {
-      "username": "root",
-      "password": null,
-      "database": "tutorencasa_test",
-      "host": "127.0.0.1",
-      "dialect": "mysql"
+      "username": "process.env.DB_USER",
+      "password": "process.env.DB_HOST",
+      "database": "process.env.DB_NAME",
+      "host": "process.env.DB_HOST",
+      "dialect": "process.env.DB_TYPE"
     },
     "production": {
-      "username": "root",
-      "password": "TutorEnCasa@23",
-      "database": "tutorencasa_prod",
-      "host": "127.0.0.1",
-      "dialect": "mysql"
+      "username": "process.env.DB_USER",
+      "password": "process.env.DB_HOST",
+      "database": "process.env.DB_NAME",
+      "host": "process.env.DB_HOST",
+      "dialect": "process.env.DB_TYPE"
     }
 }

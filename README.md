@@ -2,4 +2,4 @@
 
 by Philippe Gac & Gabriel Carcamo
 
-NodeJS + Express + MySQL
+NodeJS + Express + MySQL + Chime(AWS)

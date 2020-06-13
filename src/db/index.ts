@@ -1,12 +1,11 @@
-import { Sequelize } from 'sequelize';
+import { Sequelize, Options } from 'sequelize';
+import dbConfig from '../config/sql';
 
-const sequelize = new Sequelize({
-    host: process.env.DB_HOST,
-    username: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    database: process.env.DB_NAME,
-    dialect: 'mysql'
-});
+const env: string = process.env.NODE_ENV || 'development';
+// @ts-ignore
+const db: Options = dbConfig[env];
+
+const sequelize = new Sequelize(db);
 export default sequelize;
 
 import './models'; // configura la asociacion los modelos

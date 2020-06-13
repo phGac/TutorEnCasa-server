@@ -1,3 +1,4 @@
+import './config/env';
 import './db';
 import express, { Application, Router } from 'express';
 import path from 'path';

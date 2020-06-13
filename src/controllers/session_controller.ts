@@ -7,9 +7,10 @@ import logger from '../util/logger';
 class SessionController {
     static create(req: Request, res: Response) {
         if(! req.body.email || ! req.body.password) {
-            res.json({
-                error: requestMessage["params.missing"]
-            });
+            res.status(400)
+                .json({
+                    error: requestMessage["params.missing"]
+                });
             return;
         }
         const { email, password } = req.body;

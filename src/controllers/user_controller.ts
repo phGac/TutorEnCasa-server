@@ -31,7 +31,7 @@ class UserController {
                     })
                     .catch((err) => {
                         if(err.custom) {
-                            res.json({ error: err.error.error });
+                            res.json({ error: err.error });
                         }
                         else {
                             logger().error(err.error);

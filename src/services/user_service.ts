@@ -25,10 +25,10 @@ class UserService {
             const { email, dni } = data;
             User.findOne({ where: { dni } })
                 .then(async (userbyDni) => {
-                    if(userbyDni) return reject({ error: { error: registerMessage["user.exists"] }, custom: true});
+                    if(userbyDni) return reject({ error: registerMessage["user.exists"], custom: true});
                     
                     const userByEmail = await User.findOne({ where: { email } });
-                    if(userByEmail) return reject({ error: { error: registerMessage["user.email.used"] }, custom: true});
+                    if(userByEmail) return reject({ error: registerMessage["user.email.used"], custom: true});
                     
                     const password = data.password;
                     delete data.password;

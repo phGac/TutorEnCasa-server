@@ -37,7 +37,7 @@ Schedule.init({
 
 // @ts-ignore
 Schedule.associate = function(models) {
-	//
+	//amigo ponga algo aqui  
 };
 
 export default Schedule;

@@ -8,6 +8,7 @@
     "doc": "docs"
   },
   "dependencies": {
+    "aws-sdk": "^2.696.0",
     "bcrypt": "^4.0.1",
     "body-parser": "^1.19.0",
     "cookie-parser": "^1.4.5",
@@ -19,6 +20,7 @@
     "morgan": "^1.10.0",
     "mysql2": "^2.1.0",
     "sequelize": "^5.21.9",
+    "uuid": "^8.1.0",
     "validator": "^13.0.0",
     "zxcvbn": "^4.4.2"
   },
@@ -31,6 +33,7 @@
     "@types/express-session": "^1.17.0",
     "@types/jest": "^25.2.3",
     "@types/morgan": "^1.9.0",
+    "@types/uuid": "^8.0.0",
     "@types/validator": "^13.0.0",
     "@types/zxcvbn": "^4.4.0",
     "jest": "^26.0.1",

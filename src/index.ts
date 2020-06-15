@@ -4,6 +4,7 @@ import app from './app';
 import indexRoutes from './routes/index_routes';
 import userRoutes from './routes/user_routes';
 import sessionRoutes from './routes/session_routes';
+import meetingRoutes from './routes/meeting_routes';
 
 // configure Logger
 logger(TypeLogger.CONSOLE).init({
@@ -22,6 +23,7 @@ logger(TypeLogger.CONSOLE).init({
 app.addRoutes('/', indexRoutes);
 app.addRoutes('/api', sessionRoutes);
 app.addRoutes('/api/user', userRoutes);
+app.addRoutes('/api/meeting', meetingRoutes);
 
 app.init(3000, (port: number, err: Error) => {
     if(err) {

@@ -7,6 +7,7 @@ class MeetingController {
     static create(req: Request, res: Response) {
         if(! req.body.id) {
             res.json({
+                satus: 'failed',
                 error: requestMessage["params.missing"]
             });
             return;
@@ -21,20 +22,20 @@ class MeetingController {
                     .catch(e => {
                         if(! e.custom) {
                             logger().error(e.error);
-                            res.json({ error: requestMessage["error.unknow"] });
+                            res.json({ satus: 'failed', error: requestMessage["error.unknow"] });
                         }
                         else {
-                            res.json({ error: e.error });
+                            res.json({ satus: 'failed', error: e.error });
                         }
                     });
             })
             .catch((e) => {
                 if(! e.custom) {
                     logger().error(e.error);
-                    res.json({ error: requestMessage["error.unknow"] });
+                    res.json({ satus: 'failed', error: requestMessage["error.unknow"] });
                 }
                 else {
-                    res.json({ error: e.error });
+                    res.json({ satus: 'failed', error: e.error });
                 }
             });
     }
@@ -63,6 +64,7 @@ class MeetingController {
     static destroy(req: Request, res: Response) {
         if(! req.body.id) {
             res.json({
+                satus: 'failed',
                 error: requestMessage["params.missing"]
             });
             return;

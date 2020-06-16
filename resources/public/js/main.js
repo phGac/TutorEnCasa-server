@@ -15,11 +15,11 @@ async function getMeetingInfo() {
     try {
         const meetingName = 'TutorEnCasa';
         const response = await fetch('/api/meeting/join', {
-                            body: {
-                                title: meetingName,
-                                name: `User${Math.floor(Math.random()*100)}`
+                            body: `title=${meetingName}&name=User${Math.floor(Math.random()*100)}`,
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
                             },
-                            method: 'POST'
                         })
                         .then((res) => res.json());
         return response;
@@ -28,7 +28,7 @@ async function getMeetingInfo() {
     }
 }
 
-function startMeeting() {
+async function startMeeting() {
     const joinInfo = getMeetingInfo().JoinInfo;
     const config = new ChimeSDK.MeetingSessionConfiguration(joinInfo.Meeting, joinInfo.Attendee);
     console.log(`Meeting: ${joinInfo.Meeting.Meeting.MeetingId}`);
@@ -41,7 +41,7 @@ function startMeeting() {
 
     const deviceController =  new ChimeSDK.DefaultDeviceController(logger);
     meetingSession = new ChimeSDK.DefaultMeetingSession(
-      configuration,
+      config,
       logger,
       deviceController
     );
@@ -86,7 +86,7 @@ const initAudioInput = async function(){
       console.error('You need sound devices to run this demo')
     }
     await meetingSession.audioVideo.chooseAudioInputDevice(audioDevices[0]);
-  }
+}
   
 async function initAudioOutput(){
     // Audio Output
@@ -166,6 +166,19 @@ const initObserver = function(){
     meetingSession.audioVideo.addObserver(observer);
 }
 
-document.addEventListener('DOMContentLoaded', (event) => {
-    startMeeting()
+const login = async (email, password) => {
+    const response = await fetch('/api/login', {
+        body: `email=${email}&password=${password}`,
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+        }
+    }).then((res) => res.json());
+    return response;
+};
+
+document.addEventListener('DOMContentLoaded', async (event) => {
+    const loginResponse = await login('admin@email.com', 'PASS@23pass');
+    console.log(loginResponse);
+    startMeeting();
 });

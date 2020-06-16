@@ -1,12 +1,20 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import logger from '../util/logger';
 import UserService from '../services/user_service';
 import { registerMessage, requestMessage } from '../config/messages';
 import User, { UserStatus } from '../db/models/user';
+import EmailService, { Email } from '../services/email_service';
 
 class UserController {
     static show(req: Request, res: Response) {
-        const id = req.params.id;
+        if(! req.params.id) {
+            res.status(400).json({
+                satus: 'failed',
+                error: requestMessage["params.missing"]
+            });
+            return;
+        }
+        const { id } = req.params;
         User.findOne({ where: { id } })
             .then((user) => {
                 if(user) return res.json({ user });
@@ -18,7 +26,7 @@ class UserController {
             });
     }
 
-    static create(req: Request, res: Response) {
+    static create(req: Request, res: Response, next: NextFunction) {
         switch (req.params.step) {
             case '1':
                 if(! req.body.email || ! req.body.password || ! req.body.dni) {
@@ -55,6 +63,8 @@ class UserController {
                             res.locals.user = info.users[0];
                             res.locals.auth = true;
                             res.json({ user: info.users[0] });
+                            EmailService.sendEmail(new Email('Valida tu cuenta!', `Dirigete al siguiente link para validar tu cuenta (${email}): http://link.com/ajjajka`));
+                            next();
                         }
                         else {
                             res.json({ error: registerMessage["step.two.user.notFound"] });

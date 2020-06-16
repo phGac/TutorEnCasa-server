@@ -5,6 +5,7 @@ import indexRoutes from './routes/index_routes';
 import userRoutes from './routes/user_routes';
 import sessionRoutes from './routes/session_routes';
 import meetingRoutes from './routes/meeting_routes';
+import themeRoutes from './routes/theme_routes';
 
 // configure Logger
 logger(TypeLogger.CONSOLE).init({
@@ -24,8 +25,9 @@ app.addRoutes('/', indexRoutes);
 app.addRoutes('/api', sessionRoutes);
 app.addRoutes('/api/user', userRoutes);
 app.addRoutes('/api/meeting', meetingRoutes);
+app.addRoutes('/api/theme', themeRoutes);
 
-app.init(3000, (port: number, err: Error) => {
+app.init(parseInt(process.env.PORT || ''), (port: number, err: Error) => {
     if(err) {
         logger().error(`Error on Start App: ${err.message}`);
     }

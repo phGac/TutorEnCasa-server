@@ -72,7 +72,7 @@ User.init({
 
 // @ts-ignore
 User.associate = function(models) {
-	const { Tutor, StudentTutor, Schedule, HistoryAccess, HistoryPassword, ClassRating } = models;
+	const { Tutor, StudentTutor, Schedule, HistoryAccess, HistoryPassword, ClassRating, Administrator } = models;
 	User.hasMany(HistoryPassword, {
 		as: 'passwords',
 		foreignKey: 'id_user'
@@ -93,6 +93,14 @@ User.associate = function(models) {
 	});
 	User.hasMany(ClassRating, {
 		as: 'ratings',
+		foreignKey: 'id_user'
+	});
+	User.hasOne(Tutor, {
+		as: 'role_tutor',
+		foreignKey: 'id_user'
+	});
+	User.hasOne(Administrator, {
+		as: 'role_administrator',
 		foreignKey: 'id_user'
 	});
 };

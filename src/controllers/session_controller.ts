@@ -1,11 +1,11 @@
-import e, { Request, Response } from 'express';
+import e, { Request, Response, NextFunction } from 'express';
 import { requestMessage, loginMessage } from '../config/messages';
 import User from '../db/models/user';
 import { FindOptions } from 'sequelize/types';
 import logger from '../util/logger';
 
 class SessionController {
-    static create(req: Request, res: Response) {
+    static create(req: Request, res: Response, next: NextFunction) {
         if(! req.body.email || ! req.body.password) {
             res.status(400)
                 .json({
@@ -21,19 +21,23 @@ class SessionController {
                     association: 'passwords',
                     order: [ [ 'createdAt', 'DESC' ]],
                     limit: 1
-                }
+                },
+                { association: 'role_tutor' },
+                { association: 'role_administrator' },
             ]
         };
         User.findOne(options)
             .then((user) => {
                 if(! user) {
                     res.json({
+                        status: 'failed',
                         error: loginMessage["user.email.wrong"]
                     });
                     return;
                 }
                 else if(user.passwords.length == 0) {
                     res.json({
+                        status: 'failed',
                         error: loginMessage["user.hasNotPassword"]
                     });
                     return;
@@ -44,14 +48,17 @@ class SessionController {
                             if(valid) {
                                 res.locals.user = user;
                                 res.locals.auth = true;
-                                delete user.passwords;
+                                const userToShow: any = user.get({ plain: true });
+                                delete userToShow.passwords;
                                 res.json({
-                                    status: 'ok',
-                                    user: user
+                                    status: 'success',
+                                    user: userToShow
                                 });
+                                next();
                             }
                             else {
                                 res.json({
+                                    status: 'failed',
                                     error: loginMessage["user.password.wrong"]
                                 });
                             }
@@ -64,12 +71,14 @@ class SessionController {
             .catch((e: Error) => {
                 logger().error(e);
                 res.json({
+                    status: 'failed',
                     error: requestMessage["error.unknow"]
                 });
             });
     }
     static destroy(req: Request, res: Response) {
-        //
+        req.session?.destroy(() => {});
+        res.json({ status: 'success' });
     }
 }
 

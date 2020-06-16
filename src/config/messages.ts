@@ -22,3 +22,7 @@ export const registerMessage = {
     'step.out': 'Paso del registro desconocido',
     'step.two.user.notFound': 'Usuario no encontrado'
 };
+
+export const themeMessage = {
+    'theme.exists': 'El tema ya existe'
+};

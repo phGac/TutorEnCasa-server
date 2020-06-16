@@ -5,6 +5,7 @@ import path from 'path';
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import morgan from 'morgan';
+import bodyParser from 'body-parser';
 
 class App {
     private app: Application;
@@ -18,17 +19,20 @@ class App {
 
     private configure() {
         this.app.use(morgan('dev'));
-        this.app.set('trust proxy', 1);
+        //this.app.set('trust proxy', 1);
         this.app.use(session({
-            secret: 'A1qrQdXifJqTs',
+            secret: 'A1qrQdXfdfifJqTs',
             resave: false,
             saveUninitialized: true,
-            cookie: { secure: false }
+            cookie: { 
+                secure: false,
+                httpOnly: false
+            },
         }));
         this.app.use(express.json());
-        this.app.use(express.urlencoded({ extended: false }));
+        this.app.use(bodyParser.urlencoded({ extended: false }));
         this.app.use(cookieParser());
-        this.app.use(express.static(path.join(__dirname, '..', 'public')));
+        this.app.use(express.static(path.join(__dirname, '..', 'resources', 'public')));
     }
 
     init(port: number|null = null, callback: Function) {

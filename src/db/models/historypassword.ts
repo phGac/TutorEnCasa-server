@@ -1,7 +1,7 @@
 import { DataTypes, Model } from 'sequelize';
 
 import sequelize from '../index';
-import { encryptPassword } from '../../services/hash';
+import { encryptPassword } from '../../services/hash_service';
 
 class HistoryPassword extends Model {
     public id!: number;

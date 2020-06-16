@@ -11,6 +11,8 @@ import Tutor from './tutor';
 import User from './user';
 import HistoryPassword from './historypassword';
 import HistoryStatusUser from './historystatususer';
+import Theme from './theme';
+import TutorTheme from './tutortheme';
 
 const models: any = { 
 	Administrator,
@@ -26,6 +28,8 @@ const models: any = {
 	User,
 	HistoryPassword,
 	HistoryStatusUser,
+	Theme,
+	TutorTheme
 };
 
 Object.values(models).forEach((model: any) => {

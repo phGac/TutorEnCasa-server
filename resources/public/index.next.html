@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Videollamada - Tutor en Casa</title>
+</head>
+<body>
+    <h1>Tutor en Casa</h1>
+
+    <h2>Login</h2>
+    <form id="login">
+        <input type="email" name="email" />
+        <input type="password" name="password" />
+        <input type="submit" value="Entrar" />
+    </form>
+
+    <br/>
+
+    <h2>Crear Cuarto</h2>
+    <form id="create-room">
+        <input type="text" name="id" />
+        <input type="submit" value="Crear" />
+    </form>
+    
+    <h2>Logger</h2>
+    <div id="logger"></div>
+
+    <audio hidden id="audio-stream"></audio>
+    <div id="tiles"></div>
+
+    <script src="/js/lib/amazon-chime-sdk.min.js"></script>
+	<script src="/js/tiles.js"></script>
+	<script src="/js/index.js"></script>
+
+</body>
+</html>

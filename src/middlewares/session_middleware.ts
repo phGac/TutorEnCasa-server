@@ -33,7 +33,7 @@ export function isAdministrator(req: Request, res: Response, next: NextFunction)
 }
 
 export function isTutor(req: Request, res: Response, next: NextFunction) {
-    if(! req.session || ! req.session.user.roles.include(UserRole.TUTOR)) {
+    if(! req.session || ! req.session.user.roles.includes(UserRole.TUTOR)) {
         res.status(400)
             .json({ error: requestMessage["user.role.notAllowed"] });
         return;
@@ -42,14 +42,21 @@ export function isTutor(req: Request, res: Response, next: NextFunction) {
 }
 
 export function setSession(req: Request, res: Response) {
-    console.log(res.locals.user);
     if(req.session && res.locals.auth && res.locals.user) {
         const user = res.locals.user;
         const roles = [ UserRole.STUDENT ];
-        if(user.role_administrator) roles.push(UserRole.ADMINISTRATOR);
-        if(user.role_tutor) roles.push(UserRole.TUTOR);
+        if(user.role_administrator) {
+            user.id_administrator = user.role_administrator.id;
+            roles.push(UserRole.ADMINISTRATOR); 
+        }
+        if(user.role_tutor) {
+            user.id_tutor = user.role_tutor.id; 
+            roles.push(UserRole.TUTOR); 
+        }
         req.session.user = { 
             id: user.id,
+            id_tutor: user.id_tutor,
+            id_administrator: user.id_administrator,
             email: user.email, 
             dni: user.dni,
             roles: roles

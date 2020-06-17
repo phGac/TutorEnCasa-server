@@ -14,22 +14,14 @@ let toggleVideoButton;
 async function getMeetingInfo() {
     try {
         const meetingName = 'TutorEnCasa';
-        const response = await fetch('/api/meeting/join', {
-                            body: `title=${meetingName}&name=User${Math.floor(Math.random()*100)}`,
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
-                            },
-                        })
-                        .then((res) => res.json());
+        const response = await api('POST', '/meeting/new', { id: 'ASDFG' });
         return response;
     } catch (error) {
         console.error(error)
     }
 }
 
-async function startMeeting() {
-    const joinInfo = getMeetingInfo().JoinInfo;
+async function startMeeting(joinInfo) {
     const config = new ChimeSDK.MeetingSessionConfiguration(joinInfo.Meeting, joinInfo.Attendee);
     console.log(`Meeting: ${joinInfo.Meeting.Meeting.MeetingId}`);
     console.log(`Attendee: ${joinInfo.Attendee.Attendee.AttendeeId}`);
@@ -130,36 +122,36 @@ const initObserver = function(){
     const observer = {
 
         audioVideoDidStart: () => {
-        console.log('Meeting Started');
+            console.log('Meeting Started');
         },
         videoAvailabilityDidChange: availability => {
-        console.log(`=> videoAvailabilityDidChange`, availability);
-        if (availability.canStartLocalVideo && !localVideoStarted) {
-            startLocalVideo();
-        }
+            console.log(`=> videoAvailabilityDidChange`, availability);
+            if (availability.canStartLocalVideo && !localVideoStarted) {
+                startLocalVideo();
+            }
         },
         audioVideoDidStartConnecting: reconnecting => {
-        if (reconnecting) {
-            console.log('Attempting to reconnect');
-        }
+            if (reconnecting) {
+                console.log('Attempting to reconnect');
+            }
         },
         audioVideoDidStop: sessionStatus => {
-        // See the "Stopping a session" section for details.
-        console.log('Stopped with a session status code: ', sessionStatus.statusCode());
+            // See the "Stopping a session" section for details.
+            console.log('Stopped with a session status code: ', sessionStatus.statusCode());
         },
         videoTileDidUpdate: tileState => {
-        if (!tileState.boundAttendeeId){
-            return;
-        }
-        console.log('videoTileDidUpdate', tileState.tileId, tileState.boundAttendeeId)
-        meetingSession.audioVideo.bindVideoElement(
-            tileState.tileId, 
-            acquireVideoElement(tileState.tileId)
-        );
+            if (!tileState.boundAttendeeId){
+                return;
+            }
+            console.log('videoTileDidUpdate', tileState.tileId, tileState.boundAttendeeId)
+            meetingSession.audioVideo.bindVideoElement(
+                tileState.tileId, 
+                acquireVideoElement(tileState.tileId)
+            );
         },
         videoTileWasRemoved: tileId => {
-        console.log('remove tile', tileId);
-        releaseVideoElement(tileId)
+            console.log('remove tile', tileId);
+            releaseVideoElement(tileId)
         },
     }
     meetingSession.audioVideo.addObserver(observer);
@@ -177,27 +169,35 @@ async function api(metodo, path, data) {
         body: params.join('&')
     };
 
-    const res = await fetch(`htts://tutorencasa.tk/api${path}`, options);
+    const res = await fetch(`/api${path}`, options); // htts://tutorencasa.tk
     return res.json();
 }
-/**
- * 
- * @param {*} email 
- * @param {*} password 
- */
-const login = async (email, password) => {
-    const response = await fetch('/api/login', {
-        body: `email=${email}&password=${password}`,
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
-        }
-    }).then((res) => res.json());
-    return response;
-};
 
-document.addEventListener('DOMContentLoaded', (event) => {
-    const loginResponse = api('POST', '/login', { email: 'pgac@email.com', password: 'PASS@23pass' });
+function login(email, password) {
+    const loginResponse = await api('POST', '/login', { email, password });
+    console.log(loginResponse);
+}
+
+async function create(id) {
+    try {
+        const response = await api('POST', '/meeting/new', { id });
+        startMeeting(response);
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+async function join(id) {
+    try {
+        const response = await api('POST', '/meeting/join', { id });
+        startMeeting(response);
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+document.addEventListener('DOMContentLoaded', async (event) => {
+    const loginResponse = await api('POST', '/login', { email: 'pgac@email.com', password: 'PASS@23pass' });
     console.log(loginResponse);
     startMeeting();
 });

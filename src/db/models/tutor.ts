@@ -7,6 +7,8 @@ class Tutor extends Model {
 	public id_user!: number;
 	public status!: number;
 
+	public themes!: any[];
+
 	public readonly createdAt!: Date;
 	public readonly updatedAt!: Date|null;
 }

@@ -33,7 +33,7 @@ class UserController {
             })
             .catch((err) => {
                 logger().error(err);
-                res.json({ error: requestMessage["error.unknow"] });
+                res.json({ status: 'failed', error: requestMessage["error.unknow"] });
             });
     }
 
@@ -41,12 +41,12 @@ class UserController {
         switch (req.params.step) {
             case '1':
                 if(! req.body.email || ! req.body.password || ! req.body.dni) {
-                    return res.json({ error: requestMessage["params.missing"] });
+                    return res.json({ status: 'failed', error: requestMessage["params.missing"] });
                 }
                 const { email, password, dni } = req.body;
                 UserService.create({ email, password, dni })
                     .then((user) => {
-                        res.json({ status: 'ok', message: registerMessage["user.status.ok"] });
+                        res.json({ status: 'success', message: registerMessage["user.status.ok"] });
                     })
                     .catch((err) => {
                         if(err.custom) {
@@ -54,13 +54,13 @@ class UserController {
                         }
                         else {
                             logger().error(err.error);
-                            res.json({ error: true });
+                            res.json({ status: 'failed', error: requestMessage["error.unknow"] });
                         }
                     });
                 break;
             case '2':
                 if(! req.body.firstname || ! req.body.lastname || ! req.body.birthdate || ! req.body.dni) {
-                    return res.json({ error: requestMessage["params.missing"] });
+                    return res.json({ status: 'failed', error: requestMessage["params.missing"] });
                 }
                 const data = {
                     firstname: req.body.firstname,
@@ -73,21 +73,21 @@ class UserController {
                         if(info.count == 1) {
                             res.locals.user = info.users[0];
                             res.locals.auth = true;
-                            res.json({ user: info.users[0] });
+                            res.json({ status: 'success', user: info.users[0] });
                             EmailService.sendEmail(new Email('Valida tu cuenta!', `Dirigete al siguiente link para validar tu cuenta (${email}): http://link.com/ajjajka`));
                             next();
                         }
                         else {
-                            res.json({ error: registerMessage["step.two.user.notFound"] });
+                            res.json({ status: 'failed', error: registerMessage["step.two.user.notFound"] });
                         }
                     })
                     .catch((err) => {
                         logger().error(err);
-                        res.json({ error: requestMessage["error.unknow"] });
+                        res.json({ status: 'failed', error: requestMessage["error.unknow"] });
                     });
                 break;
             default:
-                res.json({ error: registerMessage["step.out"] });
+                res.json({ status: 'failed', error: registerMessage["step.out"] });
         }
         
     }

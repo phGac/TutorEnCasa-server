@@ -1,6 +1,6 @@
 import './config/env';
 import './db';
-import express, { Application, Router } from 'express';
+import express, { Application, Router, Request, Response } from 'express';
 import path from 'path';
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
@@ -11,11 +11,13 @@ import cors from 'cors';
 class App {
     private app: Application;
     private port: number;
+    private hostname: string;
 
     constructor() {
         this.app = express();
         this.port = 3000;
         this.configure();
+        this.hostname = '127.0.0.1';
     }
 
     private configure() {
@@ -35,6 +37,14 @@ class App {
         this.app.use(bodyParser.urlencoded({ extended: false }));
         this.app.use(cookieParser());
         this.app.use(express.static(path.join(__dirname, '..', 'resources', 'public')));
+    }
+
+    getApp() {
+        return this.app;
+    }
+
+    setHostname(hostname: string) {
+        this.hostname = hostname;
     }
 
     init(port: number|null = null, callback: Function) {

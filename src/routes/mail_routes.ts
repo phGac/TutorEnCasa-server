@@ -4,10 +4,6 @@ import logger from '../util/logger';
 
 const router = Router();
 
-router.get('/', (req: Request, res: Response) => {
-    res.send('Tutor en Casa!!');
-});
-
 router.get('/email', (req: Request, res: Response) => {
     const from = process.env.AWS_WORKMAIL_EMAIL || '';
     const to = [ process.env.AWS_WORKMAIL_TEST_EMAIL || '' ];

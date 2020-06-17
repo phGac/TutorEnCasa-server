@@ -69,6 +69,7 @@ nodemon.*
 tests/**
 log/**
 package-lock.json
+resources/public/doc
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml

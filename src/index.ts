@@ -1,11 +1,6 @@
 import logger, { TypeLogger } from './util/logger';
 import app from './app';
-
-import indexRoutes from './routes/index_routes';
-import userRoutes from './routes/user_routes';
-import sessionRoutes from './routes/session_routes';
-import meetingRoutes from './routes/meeting_routes';
-import themeRoutes from './routes/theme_routes';
+import routes from './routes';
 
 // configure Logger
 logger(TypeLogger.CONSOLE).init({
@@ -21,11 +16,7 @@ logger(TypeLogger.CONSOLE).init({
     //dirPath: path.join(__dirname, '..', 'log')
 });
 
-app.addRoutes('/', indexRoutes);
-app.addRoutes('/api', sessionRoutes);
-app.addRoutes('/api/user', userRoutes);
-app.addRoutes('/api/meeting', meetingRoutes);
-app.addRoutes('/api/theme', themeRoutes);
+routes(app);
 
 app.init(parseInt(process.env.PORT || ''), (port: number, err: Error) => {
     if(err) {

@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import morgan from 'morgan';
 import bodyParser from 'body-parser';
+import cors from 'cors';
 
 class App {
     private app: Application;
@@ -18,6 +19,7 @@ class App {
     }
 
     private configure() {
+        this.app.use(cors());
         this.app.use(morgan('dev'));
         //this.app.set('trust proxy', 1);
         this.app.use(session({

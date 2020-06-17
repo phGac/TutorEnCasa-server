@@ -4,6 +4,7 @@ import UserService from '../services/user_service';
 import { registerMessage, requestMessage } from '../config/messages';
 import User, { UserStatus } from '../db/models/user';
 import EmailService, { Email } from '../services/email_service';
+import { userToShowClient } from '../util/to_show_client';
 
 class UserController {
     static show(req: Request, res: Response) {
@@ -15,10 +16,20 @@ class UserController {
             return;
         }
         const { id } = req.params;
-        User.findOne({ where: { id } })
+        const options = {
+            where: { id },
+            include: [
+                { association: 'role_tutor' },
+                { association: 'role_administrator' },
+            ]
+        };
+        User.findOne(options)
             .then((user) => {
-                if(user) return res.json({ user });
-                res.json({ user: null });
+                const toShow = (user) ? userToShowClient(user) : null;
+                res.json({ 
+                    status: 'success', 
+                    user: toShow
+                });
             })
             .catch((err) => {
                 logger().error(err);

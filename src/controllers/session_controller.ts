@@ -1,14 +1,16 @@
-import e, { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { requestMessage, loginMessage } from '../config/messages';
 import User from '../db/models/user';
 import { FindOptions } from 'sequelize/types';
 import logger from '../util/logger';
+import { userToShowClient } from '../util/to_show_client';
 
 class SessionController {
     static create(req: Request, res: Response, next: NextFunction) {
         if(! req.body.email || ! req.body.password) {
             res.status(400)
                 .json({
+                    status: 'failed',
                     error: requestMessage["params.missing"]
                 });
             return;
@@ -29,14 +31,14 @@ class SessionController {
         User.findOne(options)
             .then((user) => {
                 if(! user) {
-                    res.json({
+                    res.status(400).json({
                         status: 'failed',
                         error: loginMessage["user.email.wrong"]
                     });
                     return;
                 }
                 else if(user.passwords.length == 0) {
-                    res.json({
+                    res.status(400).json({
                         status: 'failed',
                         error: loginMessage["user.hasNotPassword"]
                     });
@@ -48,16 +50,14 @@ class SessionController {
                             if(valid) {
                                 res.locals.user = user;
                                 res.locals.auth = true;
-                                const userToShow: any = user.get({ plain: true });
-                                delete userToShow.passwords;
                                 res.json({
                                     status: 'success',
-                                    user: userToShow
+                                    user: userToShowClient(user)
                                 });
                                 next();
                             }
                             else {
-                                res.json({
+                                res.status(400).json({
                                     status: 'failed',
                                     error: loginMessage["user.password.wrong"]
                                 });
@@ -65,12 +65,16 @@ class SessionController {
                         })
                         .catch((e) => {
                             logger().error(e);
+                            res.status(400).json({
+                                status: 'failed',
+                                error: requestMessage["error.unknow"]
+                            });
                         });
                 }
             })
             .catch((e: Error) => {
                 logger().error(e);
-                res.json({
+                res.status(400).json({
                     status: 'failed',
                     error: requestMessage["error.unknow"]
                 });

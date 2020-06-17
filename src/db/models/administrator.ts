@@ -26,8 +26,7 @@ Administrator.init({
         allowNull: false,
     }
 }, {
-    sequelize,
-    tableName: 'administrators'
+    sequelize
 });
 
 // @ts-ignore

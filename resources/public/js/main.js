@@ -126,7 +126,6 @@ async function toggleLocalVideo(){
     }
 }
 
-
 const initObserver = function(){
     const observer = {
 
@@ -166,6 +165,26 @@ const initObserver = function(){
     meetingSession.audioVideo.addObserver(observer);
 }
 
+async function api(metodo, path, data) {
+    let params = Object.keys(data).map((name) => {
+        return `${name}=${data[name]}`;
+    });
+    const options = {
+        method: metodo,
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+        },
+        body: params.join('&')
+    };
+
+    const res = await fetch(`htts://tutorencasa.tk/api${path}`, options);
+    return res.json();
+}
+/**
+ * 
+ * @param {*} email 
+ * @param {*} password 
+ */
 const login = async (email, password) => {
     const response = await fetch('/api/login', {
         body: `email=${email}&password=${password}`,
@@ -177,8 +196,8 @@ const login = async (email, password) => {
     return response;
 };
 
-document.addEventListener('DOMContentLoaded', async (event) => {
-    const loginResponse = await login('admin@email.com', 'PASS@23pass');
+document.addEventListener('DOMContentLoaded', (event) => {
+    const loginResponse = api('POST', '/login', { email: 'pgac@email.com', password: 'PASS@23pass' });
     console.log(loginResponse);
     startMeeting();
 });

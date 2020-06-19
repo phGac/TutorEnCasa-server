@@ -45,7 +45,7 @@ Coupon.init({
 // @ts-ignore
 Coupon.associate = function(models) {
     const { User } = models;
-    Coupon.hasOne(User, {
+    Coupon.belongsTo(User, {
         as: 'user',
         foreignKey: 'id_user'
     });

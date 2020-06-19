@@ -25,8 +25,9 @@ class TutorController {
             });
             return;
         }
-               
-        const id_tutor = req.session?.user.id_tutor;
+        
+        // @ts-ignore
+        const id_tutor = req.user.id_tutor;
 
         const name = req.body.name ? req.body.name : undefined;
         const description = req.body.description ? req.body.description : undefined;

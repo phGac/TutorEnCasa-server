@@ -3,38 +3,27 @@ import './db';
 import express, { Application, Router, Request, Response } from 'express';
 import path from 'path';
 import cookieParser from 'cookie-parser';
-import session from 'express-session';
 import morgan from 'morgan';
 import bodyParser from 'body-parser';
 import cors from 'cors';
+import { errorHandler, notFoundHandler } from './middlewares/app_middleware';
 
 class App {
     private app: Application;
     private port: number;
-    private hostname: string;
 
     constructor() {
         this.app = express();
         this.port = 3000;
         this.configure();
-        this.hostname = '127.0.0.1';
     }
 
     private configure() {
         this.app.use(cors());
         this.app.use(morgan('dev'));
-        //this.app.set('trust proxy', 1);
-        this.app.use(session({
-            secret: 'A1qrQdXfdfifJqTs',
-            resave: false,
-            saveUninitialized: true,
-            cookie: { 
-                secure: false,
-                httpOnly: false
-            },
-        }));
-        this.app.use(express.json());
+        this.app.set('trust proxy', 1);
         this.app.use(bodyParser.urlencoded({ extended: false }));
+        this.app.use(bodyParser.json());
         this.app.use(cookieParser());
         this.app.use(express.static(path.join(__dirname, '..', 'resources', 'public')));
     }
@@ -43,11 +32,9 @@ class App {
         return this.app;
     }
 
-    setHostname(hostname: string) {
-        this.hostname = hostname;
-    }
-
     init(port: number|null = null, callback: Function) {
+        this.app.use(errorHandler);
+        this.app.use(notFoundHandler);
         if(port) this.port = port;
         this.app.listen(this.port, (err) => {
             callback(this.port, err);

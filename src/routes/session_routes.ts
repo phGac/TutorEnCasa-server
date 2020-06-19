@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import SessionController from '../controllers/session_controller';
 import UserController from '../controllers/user_controller';
-import { isLoggedIn, setSession, isNotLoggedIn } from '../middlewares/session_middleware';
+import { isLoggedIn, isNotLoggedIn } from '../middlewares/session_middleware';
 
 const router = Router();
 
@@ -34,7 +34,7 @@ const router = Router();
  *
  * @apiUse UserController
  */
-router.post('/register/:step', UserController.create, setSession);
+router.post('/register/:step', UserController.create);
 
  /**
  * @api {post} /login Iniciar Sesión
@@ -56,7 +56,7 @@ router.post('/register/:step', UserController.create, setSession);
  *
  * @apiUse SessionController
  */
-router.post('/login', isNotLoggedIn, SessionController.create, setSession);
+router.post('/login', isNotLoggedIn, SessionController.create); //setSession
 
  /**
  * @api {get} /logout Cerrar Sesión

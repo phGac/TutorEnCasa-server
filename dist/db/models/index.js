@@ -18,6 +18,7 @@ const historypassword_1 = __importDefault(require("./historypassword"));
 const historystatususer_1 = __importDefault(require("./historystatususer"));
 const theme_1 = __importDefault(require("./theme"));
 const tutortheme_1 = __importDefault(require("./tutortheme"));
+const coupon_1 = __importDefault(require("./coupon"));
 const models = {
     Administrator: administrator_1.default,
     Class: class_1.default,
@@ -33,7 +34,8 @@ const models = {
     HistoryPassword: historypassword_1.default,
     HistoryStatusUser: historystatususer_1.default,
     Theme: theme_1.default,
-    TutorTheme: tutortheme_1.default
+    TutorTheme: tutortheme_1.default,
+    Coupon: coupon_1.default
 };
 Object.values(models).forEach((model) => {
     if ('associate' in model) {

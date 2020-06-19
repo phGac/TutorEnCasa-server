@@ -29,7 +29,6 @@ class TutorController {
         });
     }
     static addTheme(req, res) {
-        var _a;
         return __awaiter(this, void 0, void 0, function* () {
             if (!req.body.id_theme && (!req.body.name)) {
                 res.status(400).json({
@@ -38,7 +37,8 @@ class TutorController {
                 });
                 return;
             }
-            const id_tutor = (_a = req.session) === null || _a === void 0 ? void 0 : _a.user.id_tutor;
+            // @ts-ignore
+            const id_tutor = req.user.id_tutor;
             const name = req.body.name ? req.body.name : undefined;
             const description = req.body.description ? req.body.description : undefined;
             let id_theme = null;

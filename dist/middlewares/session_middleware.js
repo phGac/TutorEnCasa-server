@@ -1,68 +1,48 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.setSession = exports.isTutor = exports.isAdministrator = exports.isNotLoggedIn = exports.isLoggedIn = void 0;
+exports.isTutor = exports.isAdministrator = exports.isNotLoggedIn = exports.isLoggedIn = void 0;
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const messages_1 = require("../config/messages");
 const user_1 = require("../db/models/user");
 function isLoggedIn(req, res, next) {
-    if (!req.session || !req.session.user) {
-        res.status(400)
-            .json({ error: messages_1.requestMessage["session.unloged"] });
-        return;
+    const token = req.headers['access-token'] || req.cookies['auth-token'];
+    if (token && typeof token == 'string') {
+        jsonwebtoken_1.default.verify(token, process.env.JWT_KEY || '', (err, decoded) => {
+            if (err)
+                return next({ error: messages_1.loginMessage["user.token.notfound"], custom: true });
+            req.user = decoded;
+            next();
+        });
     }
-    next();
+    else {
+        next({ error: messages_1.loginMessage["user.token.notfound"], custom: true });
+    }
 }
 exports.isLoggedIn = isLoggedIn;
 function isNotLoggedIn(req, res, next) {
-    if (req.session) {
-        req.session.reload(() => { });
-        if (req.session.user) {
-            res.status(400)
-                .json({ error: messages_1.requestMessage["session.already"] });
-            return;
-        }
-    }
-    next();
+    const token = req.headers['access-token'];
+    if (token)
+        next({ error: messages_1.requestMessage["session.already"], custom: true });
+    else
+        next();
 }
 exports.isNotLoggedIn = isNotLoggedIn;
 function isAdministrator(req, res, next) {
-    if (!req.session || !req.session.user.roles.includes(user_1.UserRole.ADMINISTRATOR)) {
-        res.status(400)
-            .json({ error: messages_1.requestMessage["user.role.notAllowed"] });
-        return;
-    }
+    var _a;
+    // @ts-ignore
+    if (!((_a = req.user) === null || _a === void 0 ? void 0 : _a.roles.includes(user_1.UserRole.ADMINISTRATOR)))
+        return next({ error: messages_1.requestMessage["user.role.notAllowed"], custom: true });
     next();
 }
 exports.isAdministrator = isAdministrator;
 function isTutor(req, res, next) {
-    if (!req.session || !req.session.user.roles.includes(user_1.UserRole.TUTOR)) {
-        res.status(400)
-            .json({ error: messages_1.requestMessage["user.role.notAllowed"] });
-        return;
-    }
+    var _a;
+    // @ts-ignore
+    if (!((_a = req.user) === null || _a === void 0 ? void 0 : _a.roles.includes(user_1.UserRole.TUTOR)))
+        return next({ error: messages_1.requestMessage["user.role.notAllowed"], custom: true });
     next();
 }
 exports.isTutor = isTutor;
-function setSession(req, res) {
-    if (req.session && res.locals.auth && res.locals.user) {
-        const user = res.locals.user;
-        const roles = [user_1.UserRole.STUDENT];
-        if (user.role_administrator) {
-            user.id_administrator = user.role_administrator.id;
-            roles.push(user_1.UserRole.ADMINISTRATOR);
-        }
-        if (user.role_tutor) {
-            user.id_tutor = user.role_tutor.id;
-            roles.push(user_1.UserRole.TUTOR);
-        }
-        req.session.user = {
-            id: user.id,
-            id_tutor: user.id_tutor,
-            id_administrator: user.id_administrator,
-            email: user.email,
-            dni: user.dni,
-            roles: roles
-        };
-        req.session.save(() => { });
-    }
-}
-exports.setSession = setSession;

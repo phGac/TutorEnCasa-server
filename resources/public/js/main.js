@@ -173,7 +173,7 @@ async function api(metodo, path, data) {
     return res.json();
 }
 
-function login(email, password) {
+async function login(email, password) {
     const loginResponse = await api('POST', '/login', { email, password });
     console.log(loginResponse);
 }

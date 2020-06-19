@@ -1,9 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
+import jwt from 'jsonwebtoken';
+
 import { requestMessage, loginMessage } from '../config/messages';
-import User from '../db/models/user';
-import { FindOptions } from 'sequelize/types';
-import logger from '../util/logger';
-import { userToShowClient } from '../util/to_show_client';
+import { auth } from '../services/auth_service';
 
 class SessionController {
     static create(req: Request, res: Response, next: NextFunction) {
@@ -16,72 +15,21 @@ class SessionController {
             return;
         }
         const { email, password } = req.body;
-        const options: FindOptions = {
-            where: { email },
-            include: [
-                {
-                    association: 'passwords',
-                    order: [ [ 'createdAt', 'DESC' ]],
-                    limit: 1
-                },
-                { association: 'role_tutor' },
-                { association: 'role_administrator' },
-            ]
-        };
-        User.findOne(options)
+        auth(email, password)
             .then((user) => {
-                if(! user) {
-                    res.status(400).json({
-                        status: 'failed',
-                        error: loginMessage["user.email.wrong"]
-                    });
-                    return;
-                }
-                else if(user.passwords.length == 0) {
-                    res.status(400).json({
-                        status: 'failed',
-                        error: loginMessage["user.hasNotPassword"]
-                    });
-                    return;
-                }
-                else {
-                    user.isValidPassword(password)
-                        .then((valid) => {
-                            if(valid) {
-                                res.locals.user = user;
-                                res.locals.auth = true;
-                                res.json({
-                                    status: 'success',
-                                    user: userToShowClient(user)
-                                });
-                                next();
-                            }
-                            else {
-                                res.status(400).json({
-                                    status: 'failed',
-                                    error: loginMessage["user.password.wrong"]
-                                });
-                            }
-                        })
-                        .catch((e) => {
-                            logger().error(e);
-                            res.status(400).json({
-                                status: 'failed',
-                                error: requestMessage["error.unknow"]
-                            });
-                        });
-                }
+                const token = jwt.sign(user, process.env.JWT_KEY || '', { expiresIn: 1440 });
+                res
+                    //.cookie('auth-token', token)
+                    .json({ status: 'success', user, token });
             })
-            .catch((e: Error) => {
-                logger().error(e);
-                res.status(400).json({
-                    status: 'failed',
-                    error: requestMessage["error.unknow"]
-                });
+            .catch((e) => {
+                next(e);
+                res.json({ status: 'failed', error: e });
             });
     }
     static destroy(req: Request, res: Response) {
-        req.session?.destroy(() => {});
+        if(req.cookies['auth-token'])
+            res.clearCookie('auth-token');
         res.json({ status: 'success' });
     }
 }

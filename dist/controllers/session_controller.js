@@ -3,10 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const messages_1 = require("../config/messages");
-const user_1 = __importDefault(require("../db/models/user"));
-const logger_1 = __importDefault(require("../util/logger"));
-const to_show_client_1 = require("../util/to_show_client");
+const auth_service_1 = require("../services/auth_service");
 class SessionController {
     static create(req, res, next) {
         if (!req.body.email || !req.body.password) {
@@ -18,73 +17,21 @@ class SessionController {
             return;
         }
         const { email, password } = req.body;
-        const options = {
-            where: { email },
-            include: [
-                {
-                    association: 'passwords',
-                    order: [['createdAt', 'DESC']],
-                    limit: 1
-                },
-                { association: 'role_tutor' },
-                { association: 'role_administrator' },
-            ]
-        };
-        user_1.default.findOne(options)
+        auth_service_1.auth(email, password)
             .then((user) => {
-            if (!user) {
-                res.status(400).json({
-                    status: 'failed',
-                    error: messages_1.loginMessage["user.email.wrong"]
-                });
-                return;
-            }
-            else if (user.passwords.length == 0) {
-                res.status(400).json({
-                    status: 'failed',
-                    error: messages_1.loginMessage["user.hasNotPassword"]
-                });
-                return;
-            }
-            else {
-                user.isValidPassword(password)
-                    .then((valid) => {
-                    if (valid) {
-                        res.locals.user = user;
-                        res.locals.auth = true;
-                        res.json({
-                            status: 'success',
-                            user: to_show_client_1.userToShowClient(user)
-                        });
-                        next();
-                    }
-                    else {
-                        res.status(400).json({
-                            status: 'failed',
-                            error: messages_1.loginMessage["user.password.wrong"]
-                        });
-                    }
-                })
-                    .catch((e) => {
-                    logger_1.default().error(e);
-                    res.status(400).json({
-                        status: 'failed',
-                        error: messages_1.requestMessage["error.unknow"]
-                    });
-                });
-            }
+            const token = jsonwebtoken_1.default.sign(user, process.env.JWT_KEY || '', { expiresIn: 1440 });
+            res
+                //.cookie('auth-token', token)
+                .json({ status: 'success', user, token });
         })
             .catch((e) => {
-            logger_1.default().error(e);
-            res.status(400).json({
-                status: 'failed',
-                error: messages_1.requestMessage["error.unknow"]
-            });
+            next(e);
+            res.json({ status: 'failed', error: e });
         });
     }
     static destroy(req, res) {
-        var _a;
-        (_a = req.session) === null || _a === void 0 ? void 0 : _a.destroy(() => { });
+        if (req.cookies['auth-token'])
+            res.clearCookie('auth-token');
         res.json({ status: 'success' });
     }
 }

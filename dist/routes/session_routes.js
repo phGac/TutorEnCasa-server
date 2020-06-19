@@ -37,7 +37,7 @@ const router = express_1.Router();
 *
 * @apiUse UserController
 */
-router.post('/register/:step', user_controller_1.default.create, session_middleware_1.setSession);
+router.post('/register/:step', user_controller_1.default.create);
 /**
 * @api {post} /login Iniciar Sesión
 * @apiVersion 0.0.1
@@ -58,7 +58,7 @@ router.post('/register/:step', user_controller_1.default.create, session_middlew
 *
 * @apiUse SessionController
 */
-router.post('/login', session_middleware_1.isNotLoggedIn, session_controller_1.default.create, session_middleware_1.setSession);
+router.post('/login', session_middleware_1.isNotLoggedIn, session_controller_1.default.create); //setSession
 /**
 * @api {get} /logout Cerrar Sesión
 * @apiVersion 0.0.1

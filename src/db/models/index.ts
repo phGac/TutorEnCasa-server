@@ -13,6 +13,7 @@ import HistoryPassword from './historypassword';
 import HistoryStatusUser from './historystatususer';
 import Theme from './theme';
 import TutorTheme from './tutortheme';
+import Coupon from './coupon';
 
 const models: any = { 
 	Administrator,
@@ -29,7 +30,8 @@ const models: any = {
 	HistoryPassword,
 	HistoryStatusUser,
 	Theme,
-	TutorTheme
+	TutorTheme,
+	Coupon
 };
 
 Object.values(models).forEach((model: any) => {

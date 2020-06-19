@@ -21,20 +21,20 @@ export function auth(email: string, password: string) {
         User.findOne(options)
             .then((user) => {
                 if(! user) {
-                    reject( new Error(loginMessage["user.email.wrong"]) );
+                    reject({ error: loginMessage["user.email.wrong"], custom: true });
                 }
                 else if(user.passwords.length == 0) {
-                    reject( new Error(loginMessage["user.hasNotPassword"]) );
+                    reject({ error: loginMessage["user.hasNotPassword"], custom: true });
                 }
                 else {
                     user.isValidPassword(password)
                         .then((valid) => {
                             if(valid) resolve(userToShowClient(user));
-                            else reject( new Error(loginMessage["user.password.wrong"]) );
+                            else reject({ error: loginMessage["user.password.wrong"], custom: true });
                         })
                         .catch((e) => {
-                            logger().error(e);
-                            reject( new Error(requestMessage["error.unknow"]) );
+                            //logger().error(e);
+                            reject({ error: e, custom: false });
                         });
                 }
             })

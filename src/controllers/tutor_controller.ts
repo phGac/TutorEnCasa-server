@@ -1,8 +1,7 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { findTutor } from "../util/find";
 import { requestMessage } from "../config/messages";
 import Theme from "../db/models/theme";
-import logger from "../util/logger";
 import TutorTheme from "../db/models/tutortheme";
 
 class TutorController {
@@ -17,12 +16,9 @@ class TutorController {
         });
     }
 
-    static async addTheme(req: Request, res: Response) {
+    static async addTheme(req: Request, res: Response, next: NextFunction) {
         if(! req.body.id_theme && (! req.body.name)) {
-            res.status(400).json({
-                status: 'failed',
-                error: requestMessage["params.missing"]
-            });
+            next({ error: requestMessage["params.missing"], custom: true });
             return;
         }
         
@@ -43,7 +39,7 @@ class TutorController {
             id_theme = info[0].id;
         })
         .catch((e) => {
-            logger().error(e);
+            next({ error: e, custom: false });
         });
 
         TutorTheme.findOrCreate({
@@ -56,11 +52,7 @@ class TutorController {
             res.json({ status: 'success' });
         })
         .catch((e) => {
-            logger().error(e);
-            res.status(400).json({
-                status: 'failed',
-                error: requestMessage["error.unknow"]
-            });
+            next({ error: e, custom: false });
         });
     }
 }

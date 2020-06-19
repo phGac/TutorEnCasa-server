@@ -1,15 +1,12 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import MeetingService from "../services/meeting_service";
 import { requestMessage } from "../config/messages";
 import logger from "../util/logger";
 
 class MeetingController {
-    static create(req: Request, res: Response) {
+    static create(req: Request, res: Response, next: NextFunction) {
         if(! req.body.id) {
-            res.json({
-                satus: 'failed',
-                error: requestMessage["params.missing"]
-            });
+            next({ error: requestMessage["params.missing"], custom: true });
             return;
         }
         const { id } = req.body;
@@ -20,23 +17,11 @@ class MeetingController {
                         res.json(data);
                     })
                     .catch(e => {
-                        if(! e.custom) {
-                            logger().error(e.error);
-                            res.json({ satus: 'failed', error: requestMessage["error.unknow"] });
-                        }
-                        else {
-                            res.json({ satus: 'failed', error: e.error });
-                        }
+                        next(e);
                     });
             })
             .catch((e) => {
-                if(! e.custom) {
-                    logger().error(e.error);
-                    res.json({ satus: 'failed', error: requestMessage["error.unknow"] });
-                }
-                else {
-                    res.json({ satus: 'failed', error: e.error });
-                }
+                next(e);
             });
     }
     static join(req: Request, res: Response) {

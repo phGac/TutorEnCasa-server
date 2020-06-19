@@ -7,12 +7,9 @@ import EmailService, { Email } from '../services/email_service';
 import { userToShowClient } from '../util/to_show_client';
 
 class UserController {
-    static show(req: Request, res: Response) {
+    static show(req: Request, res: Response, next: NextFunction) {
         if(! req.params.id) {
-            res.status(400).json({
-                satus: 'failed',
-                error: requestMessage["params.missing"]
-            });
+            next({ error: requestMessage["params.missing"], custom: true });
             return;
         }
         const { id } = req.params;
@@ -32,8 +29,7 @@ class UserController {
                 });
             })
             .catch((err) => {
-                logger().error(err);
-                res.json({ status: 'failed', error: requestMessage["error.unknow"] });
+                next({ error: err, custom: false });
             });
     }
 
@@ -41,7 +37,8 @@ class UserController {
         switch (req.params.step) {
             case '1':
                 if(! req.body.email || ! req.body.password || ! req.body.dni) {
-                    return res.json({ status: 'failed', error: requestMessage["params.missing"] });
+                    next({ error: requestMessage["params.missing"], custom: true });
+                    return;
                 }
                 const { email, password, dni } = req.body;
                 UserService.create({ email, password, dni })
@@ -49,18 +46,13 @@ class UserController {
                         res.json({ status: 'success', message: registerMessage["user.status.ok"] });
                     })
                     .catch((err) => {
-                        if(err.custom) {
-                            res.json({ error: err.error });
-                        }
-                        else {
-                            logger().error(err.error);
-                            res.json({ status: 'failed', error: requestMessage["error.unknow"] });
-                        }
+                        next(err);
                     });
                 break;
             case '2':
                 if(! req.body.firstname || ! req.body.lastname || ! req.body.birthdate || ! req.body.dni) {
-                    return res.json({ status: 'failed', error: requestMessage["params.missing"] });
+                    next({ error: requestMessage["params.missing"], custom: false });
+                    return;
                 }
                 const data = {
                     firstname: req.body.firstname,
@@ -75,19 +67,18 @@ class UserController {
                             res.locals.auth = true;
                             res.json({ status: 'success', user: info.users[0] });
                             EmailService.sendEmail(new Email('Valida tu cuenta!', `Dirigete al siguiente link para validar tu cuenta (${email}): http://link.com/ajjajka`));
-                            next();
                         }
                         else {
-                            res.json({ status: 'failed', error: registerMessage["step.two.user.notFound"] });
+                            next({ error: registerMessage["step.two.user.notFound"], custom: true });
                         }
                     })
                     .catch((err) => {
-                        logger().error(err);
-                        res.json({ status: 'failed', error: requestMessage["error.unknow"] });
+                        next({ error: err, custom: false });
                     });
                 break;
             default:
-                res.json({ status: 'failed', error: registerMessage["step.out"] });
+                next({ error: registerMessage["step.out"], custom: false });
+                break;
         }
         
     }

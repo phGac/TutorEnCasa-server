@@ -1,15 +1,11 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { requestMessage, themeMessage } from "../config/messages";
 import Theme from "../db/models/theme";
-import logger from "../util/logger";
 
 class ThemeController {
-    static create(req: Request, res: Response) {
+    static create(req: Request, res: Response, next: NextFunction) {
         if(! req.body.name) {
-            res.status(400).json({
-                status: 'failed',
-                error: requestMessage["params.missing"]
-            });
+            next({ error: requestMessage["params.missing"], custom: true });
             return;
         }
 
@@ -27,10 +23,9 @@ class ThemeController {
             if(info[1])
                 res.json({ status: 'success', theme: info[0] });
             else
-                res.status(400).json({ status: 'failed', error: themeMessage["theme.exists"] });
+                next({ error: themeMessage["theme.exists"], custom: true });
         }).catch((e) => {
-            logger().error(e);
-            res.json({ status: 'failed', error: requestMessage["error.unknow"] });
+            next({ error: e, custom: false });
         });
     }
     static update() {

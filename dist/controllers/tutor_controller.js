@@ -15,7 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const find_1 = require("../util/find");
 const messages_1 = require("../config/messages");
 const theme_1 = __importDefault(require("../db/models/theme"));
-const logger_1 = __importDefault(require("../util/logger"));
 const tutortheme_1 = __importDefault(require("../db/models/tutortheme"));
 class TutorController {
     static find(req, res) {
@@ -28,13 +27,10 @@ class TutorController {
             }
         });
     }
-    static addTheme(req, res) {
+    static addTheme(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!req.body.id_theme && (!req.body.name)) {
-                res.status(400).json({
-                    status: 'failed',
-                    error: messages_1.requestMessage["params.missing"]
-                });
+                next({ error: messages_1.requestMessage["params.missing"], custom: true });
                 return;
             }
             // @ts-ignore
@@ -52,7 +48,7 @@ class TutorController {
                 id_theme = info[0].id;
             })
                 .catch((e) => {
-                logger_1.default().error(e);
+                next({ error: e, custom: false });
             });
             tutortheme_1.default.findOrCreate({
                 defaults: {
@@ -64,11 +60,7 @@ class TutorController {
                 res.json({ status: 'success' });
             })
                 .catch((e) => {
-                logger_1.default().error(e);
-                res.status(400).json({
-                    status: 'failed',
-                    error: messages_1.requestMessage["error.unknow"]
-                });
+                next({ error: e, custom: false });
             });
         });
     }

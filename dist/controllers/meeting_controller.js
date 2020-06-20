@@ -7,12 +7,9 @@ const meeting_service_1 = __importDefault(require("../services/meeting_service")
 const messages_1 = require("../config/messages");
 const logger_1 = __importDefault(require("../util/logger"));
 class MeetingController {
-    static create(req, res) {
+    static create(req, res, next) {
         if (!req.body.id) {
-            res.json({
-                satus: 'failed',
-                error: messages_1.requestMessage["params.missing"]
-            });
+            next({ error: messages_1.requestMessage["params.missing"], custom: true });
             return;
         }
         const { id } = req.body;
@@ -23,23 +20,11 @@ class MeetingController {
                 res.json(data);
             })
                 .catch(e => {
-                if (!e.custom) {
-                    logger_1.default().error(e.error);
-                    res.json({ satus: 'failed', error: messages_1.requestMessage["error.unknow"] });
-                }
-                else {
-                    res.json({ satus: 'failed', error: e.error });
-                }
+                next(e);
             });
         })
             .catch((e) => {
-            if (!e.custom) {
-                logger_1.default().error(e.error);
-                res.json({ satus: 'failed', error: messages_1.requestMessage["error.unknow"] });
-            }
-            else {
-                res.json({ satus: 'failed', error: e.error });
-            }
+            next(e);
         });
     }
     static join(req, res) {

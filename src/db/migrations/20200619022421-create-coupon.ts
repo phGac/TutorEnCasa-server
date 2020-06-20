@@ -9,8 +9,13 @@ export = {
                 type: Sequelize.UUID
             },
 
-            id_user: {
+            id_user_from: {
                 type: Sequelize.INTEGER
+            },
+
+            id_user_to: {
+                type: Sequelize.INTEGER,
+                defaultValue: 0
             },
 
             message: {

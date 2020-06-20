@@ -25,10 +25,10 @@ function auth(email, password) {
         user_1.default.findOne(options)
             .then((user) => {
             if (!user) {
-                reject(new Error(messages_1.loginMessage["user.email.wrong"]));
+                reject({ error: messages_1.loginMessage["user.email.wrong"], custom: true });
             }
             else if (user.passwords.length == 0) {
-                reject(new Error(messages_1.loginMessage["user.hasNotPassword"]));
+                reject({ error: messages_1.loginMessage["user.hasNotPassword"], custom: true });
             }
             else {
                 user.isValidPassword(password)
@@ -36,11 +36,11 @@ function auth(email, password) {
                     if (valid)
                         resolve(to_show_client_1.userToShowClient(user));
                     else
-                        reject(new Error(messages_1.loginMessage["user.password.wrong"]));
+                        reject({ error: messages_1.loginMessage["user.password.wrong"], custom: true });
                 })
                     .catch((e) => {
-                    logger_1.default().error(e);
-                    reject(new Error(messages_1.requestMessage["error.unknow"]));
+                    //logger().error(e);
+                    reject({ error: e, custom: false });
                 });
             }
         })

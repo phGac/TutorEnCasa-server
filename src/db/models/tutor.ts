@@ -67,4 +67,10 @@ Tutor.associate = function(models) {
 	});
 };
 
+export enum TutorStatus {
+	UNVALIDATED,
+	ACTIVE,
+	INACTIVE
+}
+
 export default Tutor;

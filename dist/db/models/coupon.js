@@ -14,8 +14,12 @@ Coupon.init({
         primaryKey: true,
         defaultValue: uuid_1.v4()
     },
-    id_user: {
+    id_user_from: {
         type: sequelize_1.DataTypes.INTEGER
+    },
+    id_user_to: {
+        type: sequelize_1.DataTypes.INTEGER,
+        defaultValue: 0
     },
     message: {
         type: sequelize_1.DataTypes.TEXT,
@@ -37,7 +41,7 @@ Coupon.init({
 // @ts-ignore
 Coupon.associate = function (models) {
     const { User } = models;
-    Coupon.hasOne(User, {
+    Coupon.belongsTo(User, {
         as: 'user',
         foreignKey: 'id_user'
     });

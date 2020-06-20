@@ -5,7 +5,8 @@ import sequelize from '../index';
 
 class Coupon extends Model {
     id!: string;
-    id_user!: number;
+    id_user_from!: number;
+    id_user_to!: number;
 
     message!: string|null;
     value!: number;
@@ -21,8 +22,12 @@ Coupon.init({
         primaryKey: true,
         defaultValue: uuid()
     },
-    id_user: {
+    id_user_from: {
         type: DataTypes.INTEGER
+    },
+    id_user_to: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0
     },
     message: {
         type: DataTypes.TEXT,

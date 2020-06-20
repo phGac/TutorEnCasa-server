@@ -39,3 +39,10 @@ export function isTutor(req: Request, res: Response, next: NextFunction) {
         return next({ error: requestMessage["user.role.notAllowed"], custom: true });
     next();
 }
+
+export function isNotTutor(req: Request, res: Response, next: NextFunction) {
+    // @ts-ignore
+    if(req.user?.roles.includes(UserRole.TUTOR))
+        return next({ error: requestMessage["user.role.notAllowed"], custom: true });
+    next();
+}

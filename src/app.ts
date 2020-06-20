@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
 import bodyParser from 'body-parser';
 import cors from 'cors';
+import fileUpload from 'express-fileupload';
 import { errorHandler, notFoundHandler } from './middlewares/app_middleware';
 
 class App {
@@ -26,6 +27,11 @@ class App {
         this.app.use(bodyParser.json());
         this.app.use(cookieParser());
         this.app.use(express.static(path.join(__dirname, '..', 'resources', 'public')));
+        this.app.use(fileUpload({
+            limits: { fileSize: 50 * 1024 * 1024 },
+            useTempFiles: true,
+            debug: true
+        }));
     }
 
     getApp() {

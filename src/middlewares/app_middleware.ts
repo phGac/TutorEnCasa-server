@@ -5,7 +5,7 @@ import { requestMessage } from "../config/messages";
 export function errorHandler(error: any, req: Request, res: Response, next: NextFunction) {
     if(error) {
         if(! error.custom) {
-            logger().error(error);
+            logger().error(error.error || error);
             res.status(400).json({ status: 'failed', error: requestMessage["error.unknow"] });
         }
         else {

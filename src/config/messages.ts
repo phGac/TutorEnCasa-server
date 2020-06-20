@@ -26,3 +26,8 @@ export const registerMessage = {
 export const themeMessage = {
     'theme.exists': 'El tema ya existe'
 };
+
+export const tutorMessage = {
+    'request.success': 'Pronto recibirás una notificación!',
+    'request.file.failed': 'Presentamos un error al subir el archivo'
+};

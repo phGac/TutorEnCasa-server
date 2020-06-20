@@ -5,14 +5,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const messages_1 = require("../config/messages");
 const theme_1 = __importDefault(require("../db/models/theme"));
-const logger_1 = __importDefault(require("../util/logger"));
 class ThemeController {
-    static create(req, res) {
+    static create(req, res, next) {
         if (!req.body.name) {
-            res.status(400).json({
-                status: 'failed',
-                error: messages_1.requestMessage["params.missing"]
-            });
+            next({ error: messages_1.requestMessage["params.missing"], custom: true });
             return;
         }
         const { name } = req.body;
@@ -29,10 +25,9 @@ class ThemeController {
             if (info[1])
                 res.json({ status: 'success', theme: info[0] });
             else
-                res.status(400).json({ status: 'failed', error: messages_1.themeMessage["theme.exists"] });
+                next({ error: messages_1.themeMessage["theme.exists"], custom: true });
         }).catch((e) => {
-            logger_1.default().error(e);
-            res.json({ status: 'failed', error: messages_1.requestMessage["error.unknow"] });
+            next({ error: e, custom: false });
         });
     }
     static update() {

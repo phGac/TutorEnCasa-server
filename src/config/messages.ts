@@ -31,3 +31,10 @@ export const tutorMessage = {
     'request.success': 'Pronto recibirás una notificación!',
     'request.file.failed': 'Presentamos un error al subir el archivo'
 };
+
+export const couponMessage = {
+    'user.email.self': 'No puedes compartir tu cupon a tí mismo',
+    'user.notFound': 'El usuario no se ha encontrado',
+    'coupon.notFound': 'El cupon no existe',
+    'coupon.owner.isAnother': 'El cupon no te pertenece',
+};

@@ -36,6 +36,11 @@ Coupon.init({
     expires: {
         type: DataTypes.DATE
     },
+    status: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true
+    },
     createdAt: {
 		type: DataTypes.DATE,
 		allowNull: false,

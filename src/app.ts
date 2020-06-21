@@ -36,10 +36,6 @@ class App {
         }));
     }
 
-    getApp() {
-        return this.app;
-    }
-
     init(port: number|null = null, callback: Function) {
         this.app.use(errorHandler);
         this.app.use(notFoundHandler);

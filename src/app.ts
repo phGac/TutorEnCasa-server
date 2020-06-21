@@ -1,5 +1,3 @@
-import './config/env';
-import './db';
 import express, { Application, Router, Request, Response } from 'express';
 import path from 'path';
 import cookieParser from 'cookie-parser';
@@ -7,7 +5,9 @@ import morgan from 'morgan';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import fileUpload from 'express-fileupload';
+import { mw as requestIp } from 'request-ip';
 import { errorHandler, notFoundHandler } from './middlewares/app_middleware';
+import logger, { TypeLogger } from './util/logger';
 
 class App {
     private app: Application;
@@ -23,7 +23,9 @@ class App {
         this.app.use(cors());
         this.app.use(morgan('dev'));
         this.app.set('trust proxy', 1);
-        this.app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' }));
+        this.app.use(requestIp());
+        this.app.use(logger(TypeLogger.DATA_BASE).configure({ level: 'ERROR' }));
+        this.app.use(bodyParser.urlencoded({ extended: false, limit: '50mb', parameterLimit: 1000000 }));
         this.app.use(bodyParser.json({ limit: '50mb' }));
         this.app.use(cookieParser());
         this.app.use(express.static(path.join(__dirname, '..', 'resources', 'public')));

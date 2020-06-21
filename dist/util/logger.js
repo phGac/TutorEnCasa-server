@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TypeLogger = exports.DataBaseLogger = exports.FileLogger = exports.ConsoleLogger = void 0;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
+const logger_1 = __importDefault(require("../db/models/logger"));
 class LoggerError extends Error {
     constructor(err = undefined) {
         super();
@@ -73,13 +74,13 @@ class ConsoleLogger {
         else
             console.log(`\n${color}>>>>>>>>>>>>>>>>>>>> ERROR >>>>>>>>>>>>>>>>>>>>\x1b[0m\n%s\n${color}<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\x1b[0m\n`, json);
     }
-    info(message) {
+    info(message, type) {
         this.log('info', message, this.color_info);
     }
-    error(message) {
+    error(message, type) {
         this.log('error', message, this.color_error);
     }
-    warning(message) {
+    warning(message, type) {
         this.log('warning', message, this.color_warning);
     }
 }
@@ -105,48 +106,55 @@ class FileLogger {
         this.formatDate = config.formatDate;
         this.dirPath = config.dirPath;
     }
-    log(level, message) {
+    log(level, message, type) {
         const file = path_1.default.resolve(this.dirPath, `${level}.log`);
-        const msg = `${this.getTime()} [${level}]: ${message}`;
+        const msg = `${this.getTime()} [${level}][${type}]: ${message}`;
         fs_1.default.appendFileSync(file, msg);
     }
-    info(message) {
-        this.log('info', message);
+    info(message, type) {
+        this.log('info', message, type);
     }
-    error(message) {
-        this.log('error', message);
+    error(message, type) {
+        this.log('error', message, type);
     }
-    warning(message) {
-        this.log('warning', message);
+    warning(message, type) {
+        this.log('warning', message, type);
     }
 }
 exports.FileLogger = FileLogger;
 class DataBaseLogger {
-    constructor() {
-        this.lastMessage = null;
-        this.formatDate = new Intl.DateTimeFormat('es', { year: 'numeric', month: 'short', day: '2-digit' });
-        this.db = null;
+    constructor() { }
+    init(config) { }
+    log(level, message, info) {
+        logger_1.default.create({
+            level,
+            message,
+            type: info.type,
+            ip: info.ip,
+            path: info.path
+        });
     }
-    getTime() {
-        this.lastMessage = new Date();
-        return this.formatDate.format(this.lastMessage);
+    info(message, info) {
+        this.log('INFORMATION', message, {
+            type: info.type,
+            ip: info.ip,
+            path: info.path
+        });
     }
-    /**
-     *
-     * @param {
-     *  formatDate: Intl.DateTimeFormat,
-     *  db: DataBase
-     * } config
-     */
-    init(config) {
-        this.formatDate = config.formatDate;
+    error(message, info) {
+        this.log('ERROR', message, {
+            type: info.type,
+            ip: info.ip,
+            path: info.path
+        });
     }
-    log(level, message) {
-        console.log(`${this.getTime()} [${level}]: ${message}`);
+    warning(message, info) {
+        this.log('WARNING', message, {
+            type: info.type,
+            ip: info.ip,
+            path: info.path
+        });
     }
-    info(message) { }
-    error(message) { }
-    warning(message) { }
 }
 exports.DataBaseLogger = DataBaseLogger;
 var TypeLogger;

@@ -18,6 +18,8 @@ export function errorHandler(error: any, req: Request, res: Response, next: Next
 }
 
 export function notFoundHandler(req: Request, res: Response, next: NextFunction) {
-    logger().warning(`Ruta no encontrada: ${ req.originalUrl }`);
+    const ip = req.clientIp;
+    const path = req.originalUrl;
+    logger().warning(`Ruta no encontrada [${ip}]: ${path}`, { type: 'NotFound', ip, path });
     res.status(404).json({ status: 'failed', error: "ruta no encontrada" });
 }

@@ -28,6 +28,11 @@ Coupon.init({
     expires: {
         type: sequelize_1.DataTypes.DATE
     },
+    status: {
+        type: sequelize_1.DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true
+    },
     createdAt: {
         type: sequelize_1.DataTypes.DATE,
         allowNull: false,

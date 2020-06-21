@@ -1,15 +1,19 @@
 import fs from 'fs';
 import path from 'path';
 import { Sequelize } from 'sequelize';
+import LoggerModel from '../db/models/logger';
+import { Request, Response, NextFunction } from 'express';
 
-interface Logger {
-    lastMessage: Date|null;
-    formatDate: Intl.DateTimeFormat;
-    init(config: any): void;
-    log(level: string, message: string): void;
-    info(message: string): void;
-    error(message: string|Error): void;
-    warning(message: string): void;
+export interface ILoggerConfig {
+    level: 'INFO'|'WARNING'|'ERROR';
+}
+
+interface ILogger {
+    configure(config: ILoggerConfig): (req: Request, res: Response, next: NextFunction) => void;
+    log(level: string, message: string, type?: string): void;
+    info(message: string, type?: string): void;
+    error(message: string|Error, type?: string): void;
+    warning(message: string, type?: string): void;
 }
 
 class LoggerError extends Error {
@@ -36,14 +40,62 @@ class LoggerError extends Error {
     }
 }
 
-class ConsoleLogger implements Logger {
-    lastMessage: Date|null;
-    formatDate: Intl.DateTimeFormat;
+class Logger implements ILogger {
+    protected ip: string|null;
+    protected path: string|null;
+    protected maxLevel: string|null;
+
+    constructor() {
+        this.ip = null;
+        this.path = null;
+        this.maxLevel = null;
+    }
+
+    configure(config: ILoggerConfig): (req: Request, res: Response, next: NextFunction) => void {
+        this.maxLevel = config.level;
+        return (req: Request, res: Response, next: NextFunction) => {
+            this.ip = req.clientIp || null;
+            this.path = req.originalUrl || null;
+        };
+    }
+
+    protected validateLevel(level: 'INFO'|'WARNING'|'ERROR') {
+        switch (this.maxLevel) {
+            case 'INFO':
+                return (level === 'INFO');
+            case 'WARNING':
+                return (level === 'INFO' || level === 'WARNING');
+            case 'ERROR':
+                return (level === 'INFO' || level === 'WARNING' || level === 'ERROR');
+            default:
+                return false;
+        }
+    }
+
+    log(level: string, message: string, info: any): void {
+        throw new Error("Method not implemented.");
+    }
+    info(message: string, info?: any): void {
+        throw new Error("Method not implemented.");
+    }
+    error(message: string | Error, info?: any): void {
+        throw new Error("Method not implemented.");
+    }
+    warning(message: string, info?: any): void {
+        throw new Error("Method not implemented.");
+    }
+
+}
+
+class ConsoleLogger extends Logger {
+    private lastMessage: Date|null;
+    private formatDate: Intl.DateTimeFormat;
     private color_info: string;
     private color_error: string;
     private color_warning: string;
 
     constructor() {
+        super();
         this.lastMessage = null;
         this.formatDate = new Intl.DateTimeFormat('es', { year: 'numeric', month: 'short', day: '2-digit' });
         this.color_info = '\x1b[40m';
@@ -91,23 +143,27 @@ class ConsoleLogger implements Logger {
             console.log(`\n${color}>>>>>>>>>>>>>>>>>>>> ERROR >>>>>>>>>>>>>>>>>>>>\x1b[0m\n%s\n${color}<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\x1b[0m\n`, json);
     }
 
-    info(message: string): void {
-        this.log('info', message, this.color_info);
+    info(message: string, type?: string): void {
+        if(this.validateLevel('INFO'))
+            this.log('info', message, this.color_info);
     }
-    error(message: string|Error): void {
-        this.log('error', message, this.color_error);
+    error(message: string|Error, type?: string): void {
+        if(this.validateLevel('ERROR'))
+            this.log('error', message, this.color_error);
     }
-    warning(message: string): void {
-        this.log('warning', message, this.color_warning);
+    warning(message: string, type?: string): void {
+        if(this.validateLevel('WARNING'))
+            this.log('warning', message, this.color_warning);
     }
 }
 
-class FileLogger implements Logger {
+class FileLogger extends Logger {
     lastMessage: Date|null;
     formatDate: Intl.DateTimeFormat;
     dirPath: string;
 
     constructor() {
+        super();
         this.lastMessage = null;
         this.formatDate = new Intl.DateTimeFormat('es', { year: 'numeric', month: 'short', day: '2-digit' });
         this.dirPath = './log';
@@ -130,57 +186,53 @@ class FileLogger implements Logger {
         this.dirPath = config.dirPath;
     }
 
-    log(level: string, message: string): void {
+    log(level: string, message: string, type?: string): void {
         const file = path.resolve(this.dirPath, `${level}.log`);
-        const msg = `${this.getTime()} [${level}]: ${message}`;
+        const msg = `${this.getTime()} [${level}][${type}]: ${message}`;
         fs.appendFileSync(file, msg);
     }
 
-    info(message: string): void {
-        this.log('info', message);
+    info(message: string, type?: string): void {
+        if(this.validateLevel('INFO'))
+            this.log('info', message, type);
     }
-    error(message: string): void {
-        this.log('error', message);
+    error(message: string, type?: string): void {
+        if(this.validateLevel('ERROR'))
+            this.log('error', message, type);
     }
-    warning(message: string): void {
-        this.log('warning', message);
+    warning(message: string, type?: string): void {
+        if(this.validateLevel('WARNING'))
+            this.log('warning', message, type);
     }
 }
 
-class DataBaseLogger implements Logger {
-    lastMessage: Date|null;
-    formatDate: Intl.DateTimeFormat;
-    private db: Sequelize|null;
-
+class DataBaseLogger extends Logger {
     constructor() {
-        this.lastMessage = null;
-        this.formatDate = new Intl.DateTimeFormat('es', { year: 'numeric', month: 'short', day: '2-digit' });
-        this.db = null;
+        super();
     }
 
-    private getTime() {
-        this.lastMessage = new Date();
-        return this.formatDate.format(this.lastMessage);
+    log(level: string, message: string, type?: string): void {
+        LoggerModel.create({
+            level,
+            message,
+            type: type,
+            ip: this.ip,
+            path: this.path
+        });
     }
 
-    /**
-     * 
-     * @param {
-     *  formatDate: Intl.DateTimeFormat,
-     *  db: DataBase
-     * } config
-     */
-    init(config: { formatDate: Intl.DateTimeFormat, db: Sequelize }): void {
-        this.formatDate = config.formatDate;
+    info(message: string, type?: string): void {
+        if(this.validateLevel('INFO'))
+            this.log('INFORMATION', message, type);
     }
-
-    log(level: string, message: string): void {
-        console.log(`${this.getTime()} [${level}]: ${message}`);
+    error(message: string, type?: string): void {
+        if(this.validateLevel('ERROR'))
+            this.log('ERROR', message, type);
     }
-
-    info(message: string): void {}
-    error(message: string): void {}
-    warning(message: string): void {}
+    warning(message: string, type?: string): void {
+        if(this.validateLevel('WARNING'))
+            this.log('WARNING', message, type);
+    }
 }
 
 enum TypeLogger {

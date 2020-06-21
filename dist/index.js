@@ -22,20 +22,25 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+require("./config/env");
+require("./db");
 const logger_1 = __importStar(require("./util/logger"));
 const app_1 = __importDefault(require("./app"));
 const routes_1 = __importDefault(require("./routes"));
 // configure Logger
-logger_1.default(logger_1.TypeLogger.CONSOLE).init({
-    formatDate: new Intl.DateTimeFormat('es', {
-        timeZone: 'America/Santiago',
-        year: 'numeric',
-        month: 'short',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false
-    }),
+logger_1.default(logger_1.TypeLogger.DATA_BASE).init({
+/*
+formatDate: new Intl.DateTimeFormat('es', {
+    timeZone: 'America/Santiago',
+    year: 'numeric',
+    month: 'short',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+}),
+*/
+//dirPath: path.join(__dirname, '..', 'log')
 });
 routes_1.default(app_1.default);
 app_1.default.init(parseInt(process.env.PORT || ''), (port, err) => {

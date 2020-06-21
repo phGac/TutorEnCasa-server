@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.TutorStatus = void 0;
 const sequelize_1 = require("sequelize");
 const index_1 = __importDefault(require("../index"));
 class Tutor extends sequelize_1.Model {
@@ -59,4 +60,10 @@ Tutor.associate = function (models) {
         otherKey: 'id_theme'
     });
 };
+var TutorStatus;
+(function (TutorStatus) {
+    TutorStatus[TutorStatus["UNVALIDATED"] = 0] = "UNVALIDATED";
+    TutorStatus[TutorStatus["ACTIVE"] = 1] = "ACTIVE";
+    TutorStatus[TutorStatus["INACTIVE"] = 2] = "INACTIVE";
+})(TutorStatus = exports.TutorStatus || (exports.TutorStatus = {}));
 exports.default = Tutor;

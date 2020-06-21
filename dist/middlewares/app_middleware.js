@@ -9,7 +9,7 @@ const messages_1 = require("../config/messages");
 function errorHandler(error, req, res, next) {
     if (error) {
         if (!error.custom) {
-            logger_1.default().error(error);
+            logger_1.default().error(error.error || error);
             res.status(400).json({ status: 'failed', error: messages_1.requestMessage["error.unknow"] });
         }
         else {
@@ -22,7 +22,8 @@ function errorHandler(error, req, res, next) {
 }
 exports.errorHandler = errorHandler;
 function notFoundHandler(req, res, next) {
-    logger_1.default().warning(`Ruta no encontrada: ${req.originalUrl}`);
+    const ip = req.clientIp;
+    logger_1.default().warning(`Ruta no encontrada [${ip}]: ${req.originalUrl}`);
     res.status(404).json({ status: 'failed', error: "ruta no encontrada" });
 }
 exports.notFoundHandler = notFoundHandler;

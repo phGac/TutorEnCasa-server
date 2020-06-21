@@ -5,6 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const messages_1 = require("../config/messages");
 const coupon_1 = __importDefault(require("../db/models/coupon"));
+const user_1 = __importDefault(require("../db/models/user"));
+const logger_1 = __importDefault(require("../util/logger"));
 class CouponController {
     static show(req, res, next) {
         if (!req.params.id) {
@@ -21,13 +23,12 @@ class CouponController {
         });
     }
     static create(req, res, next) {
-        var _a;
         if (!req.body.value) {
             next({ error: messages_1.requestMessage["params.missing"], custom: true });
             return;
         }
         // @ts-ignore
-        const id_user_from = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
+        const id_user_from = req.user.id;
         const { value } = req.body;
         const message = (req.body.message) ? req.body.message : null;
         coupon_1.default.create({
@@ -43,7 +44,47 @@ class CouponController {
         });
     }
     static update(req, res, next) {
-        //
+        if (!req.body.to || !req.body.code) {
+            next({ error: messages_1.requestMessage["params.missing"], custom: true });
+            return;
+        }
+        // @ts-ignore
+        if (req.body.to == req.user.email) {
+            next({ error: messages_1.couponMessage["user.email.self"], custom: true });
+            return;
+        }
+        const { to, code } = req.body;
+        const message = req.body.message;
+        coupon_1.default.findOne({ where: { id: code } })
+            .then((coupon) => {
+            if (!coupon) {
+                next({ error: messages_1.couponMessage["coupon.notFound"], custom: true });
+                return;
+            }
+            // @ts-ignore
+            if (coupon.id_user_from !== req.user.id) {
+                next({ error: messages_1.couponMessage["coupon.owner.isAnother"], custom: true });
+                return;
+            }
+            user_1.default.findOne({ where: { email: to } })
+                .then((user) => {
+                if (!user) {
+                    next({ error: messages_1.couponMessage["user.notFound"], custom: true });
+                    return;
+                }
+                coupon.update({
+                    id_user_to: user.id,
+                    message
+                })
+                    .catch((err) => {
+                    logger_1.default().error(err);
+                });
+                res.json({ status: 'success' });
+            })
+                .catch((err) => {
+                next({ error: err, custom: false });
+            });
+        });
     }
     static destroy(req, res, next) {
         //

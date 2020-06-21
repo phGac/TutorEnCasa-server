@@ -68,6 +68,7 @@ jest.config.*
 nodemon.*
 tests/**
 log/**
+dist/**
 package-lock.json
 resources/public/doc
 # Elastic Beanstalk Files

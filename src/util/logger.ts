@@ -1,6 +1,5 @@
 import fs from 'fs';
 import path from 'path';
-import { Sequelize } from 'sequelize';
 import LoggerModel from '../db/models/logger';
 import { Request, Response, NextFunction } from 'express';
 
@@ -56,6 +55,7 @@ class Logger implements ILogger {
         return (req: Request, res: Response, next: NextFunction) => {
             this.ip = req.clientIp || null;
             this.path = req.originalUrl || null;
+            next();
         };
     }
 

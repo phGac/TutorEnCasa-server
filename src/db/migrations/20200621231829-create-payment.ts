@@ -12,7 +12,7 @@ export = {
             },
 
             currency: {
-                type: Sequelize.STRIGN(3)
+                type: Sequelize.STRING(3)
             },
 
             token: {

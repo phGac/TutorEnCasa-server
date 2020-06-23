@@ -3,6 +3,21 @@ import MeetingService from "../services/meeting_service";
 import { requestMessage } from "../config/messages";
 import logger from "../util/logger";
 
+class MeetingValidatorController {
+    static show(req: Request, res: Response, next: NextFunction) {
+        next();
+    }
+    static create(req: Request, res: Response, next: NextFunction) {
+        next();
+    }
+    static update(req: Request, res: Response, next: NextFunction) {
+        next();
+    }
+    static destroy(req: Request, res: Response, next: NextFunction) {
+        next();
+    }
+}
+
 class MeetingController {
     static create(req: Request, res: Response, next: NextFunction) {
         if(! req.body.id) {
@@ -57,6 +72,10 @@ class MeetingController {
         const { id } = req.body;
         MeetingService.destroy(id);
     }
+}
+
+export {
+    MeetingValidatorController
 }
 
 export default MeetingController;

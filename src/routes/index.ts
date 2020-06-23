@@ -4,6 +4,7 @@ import meetingRoutes from './meeting_routes';
 import themeRoutes from './theme_routes';
 import tutorRoutes from './tutor_routes';
 import couponRoutes from './coupon_routes';
+import classRoutes from './class_routes';
 
 export default function(app: any) {
     app.addRoutes('/api', sessionRoutes);
@@ -12,6 +13,7 @@ export default function(app: any) {
     app.addRoutes('/api/theme', themeRoutes);
     app.addRoutes('/api/tutor', tutorRoutes);
     app.addRoutes('/api/coupon', couponRoutes);
+    app.addRoutes('/api/class', classRoutes);
 }
 
 /**

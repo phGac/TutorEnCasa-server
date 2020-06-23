@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import SessionController from '../controllers/session_controller';
+import SessionController, { SessionValidatorController } from '../controllers/session_controller';
 import UserController from '../controllers/user_controller';
 import { isLoggedIn, isNotLoggedIn } from '../middlewares/session_middleware';
 
@@ -56,7 +56,7 @@ router.post('/register/:step', UserController.create);
  *
  * @apiUse SessionController
  */
-router.post('/login', isNotLoggedIn, SessionController.create); //setSession
+router.post('/login', isNotLoggedIn, SessionValidatorController.create, SessionController.create);
 
  /**
  * @api {get} /logout Cerrar Sesión
@@ -70,6 +70,6 @@ router.post('/login', isNotLoggedIn, SessionController.create); //setSession
  *
  * @apiUse SessionController
  */
-router.get('/logout', isLoggedIn, SessionController.destroy);
+router.get('/logout', isLoggedIn, SessionValidatorController.destroy, SessionController.destroy);
 
 export default router;

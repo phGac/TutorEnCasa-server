@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import LoggerModel from '../db/models/logger';
+import Log from '../db/models/log';
 import { Request, Response, NextFunction } from 'express';
 
 export interface ILoggerConfig {
@@ -212,7 +212,7 @@ class DataBaseLogger extends Logger {
     }
 
     log(level: string, message: string, type?: string): void {
-        LoggerModel.create({
+        Log.create({
             level,
             message,
             type: type,

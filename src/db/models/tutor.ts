@@ -1,13 +1,16 @@
 import { DataTypes, Model } from 'sequelize';
 
 import sequelize from '../index';
+import AvailabilityTime from './availabilitytime';
+import Theme from './theme';
 
 class Tutor extends Model {
 	public id!: number;
 	public id_user!: number;
 	public status!: number;
 
-	public themes!: any[];
+	public themes!: Theme[];
+	public times!: AvailabilityTime[];
 
 	public readonly createdAt!: Date;
 	public readonly updatedAt!: Date|null;

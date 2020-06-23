@@ -1,10 +1,28 @@
 import { Request, Response, NextFunction } from 'express';
-import logger from '../util/logger';
+import validator from 'validator';
+// @ts-ignore
+import validatorDni from 'verificador-rut';
+
 import UserService from '../services/user_service';
 import { registerMessage, requestMessage } from '../config/messages';
 import User, { UserStatus } from '../db/models/user';
 import EmailService, { Email } from '../services/email_service';
 import { userToShowClient } from '../util/to_show_client';
+
+class UserValidatorController {
+    static show(req: Request, res: Response, next: NextFunction) {
+        next();
+    }
+    static create(req: Request, res: Response, next: NextFunction) {
+        next();
+    }
+    static update(req: Request, res: Response, next: NextFunction) {
+        next();
+    }
+    static destroy(req: Request, res: Response, next: NextFunction) {
+        next();
+    }
+}
 
 class UserController {
     static show(req: Request, res: Response, next: NextFunction) {
@@ -34,6 +52,7 @@ class UserController {
     }
 
     static create(req: Request, res: Response, next: NextFunction) {
+        let dniDv = null;
         switch (req.params.step) {
             case '1':
                 if(! req.body.email || ! req.body.password || ! req.body.dni) {
@@ -41,6 +60,15 @@ class UserController {
                     return;
                 }
                 const { email, password, dni } = req.body;
+                dniDv = validatorDni(dni);
+                if (validator.isEmail(email)) {
+                    next({ error: registerMessage["user.email.invalid"], custom: true });
+                    return;
+                }
+                if (! validatorDni(dni, dniDv)) {
+                    next({ error: registerMessage["user.dni.invalid"], custom: true });
+                    return;
+                }
                 UserService.create({ email, password, dni })
                     .then((user) => {
                         res.json({ status: 'success', message: registerMessage["user.status.ok"] });
@@ -54,10 +82,20 @@ class UserController {
                     next({ error: requestMessage["params.missing"], custom: false });
                     return;
                 }
+                dniDv = validatorDni(req.body.dni);
+                if (! validatorDni(req.body.dni, dniDv)) {
+                    next({ error: registerMessage["user.dni.invalid"], custom: true });
+                    return;
+                }
+                const birthdate = validator.toDate(req.body.birthdate)
+                if(! birthdate) {
+                    next({ error: registerMessage["user.birthday.invalid"], custom: true });
+                    return;
+                }
                 const data = {
                     firstname: req.body.firstname,
                     lastname: req.body.lastname,
-                    birthdate: new Date(req.body.birthdate),
+                    birthdate: birthdate,
                     status: UserStatus.ACTIVE
                 };
                 UserService.update(data, { dni: req.body.dni })
@@ -86,6 +124,10 @@ class UserController {
     static update(req: Request, res: Response) {}
 
     static destroy(req: Request, res: Response) {}
+}
+
+export {
+    UserValidatorController
 }
 
 export default UserController;

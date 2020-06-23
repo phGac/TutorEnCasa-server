@@ -4,24 +4,29 @@ import {
 
 export = {
     up: (queryInterface: QueryInterface, Sequelize: any) => {
-        return queryInterface.createTable('TutorThemes', {
+        return queryInterface.createTable('Payments', {
             id: {
                 allowNull: false,
-                autoIncrement: true,
                 primaryKey: true,
+                type: Sequelize.STRING(36)
+            },
+
+            currency: {
+                type: Sequelize.STRIGN(3)
+            },
+
+            token: {
+                type: Sequelize.STRING(12),
+                comment: 'Id external service',
+                allowNull: true
+            },
+
+            value: {
                 type: Sequelize.INTEGER
             },
 
-            id_tutor: {
+            status: {
                 type: Sequelize.INTEGER
-            },
-
-            id_theme: {
-                type: Sequelize.INTEGER
-            },
-
-            grade: {
-                type: Sequelize.STRING(30)
             },
 
             createdAt: {
@@ -37,6 +42,6 @@ export = {
     },
 
     down: (queryInterface: QueryInterface, Sequelize: any) => {
-        return queryInterface.dropTable('TutorThemes');
+        return queryInterface.dropTable('Payments');
     }
 };

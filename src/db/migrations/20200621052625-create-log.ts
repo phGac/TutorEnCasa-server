@@ -4,7 +4,7 @@ import {
 
 export = {
     up: (queryInterface: QueryInterface, Sequelize: any) => {
-        return queryInterface.createTable('Loggers', {
+        return queryInterface.createTable('Logs', {
             id: {
                 allowNull: false,
                 autoIncrement: true,
@@ -42,6 +42,6 @@ export = {
     },
 
     down: (queryInterface: QueryInterface, Sequelize: any) => {
-        return queryInterface.dropTable('Loggers');
+        return queryInterface.dropTable('Logs');
     }
 };

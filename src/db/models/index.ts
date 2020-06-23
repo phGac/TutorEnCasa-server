@@ -14,6 +14,7 @@ import HistoryStatusUser from './historystatususer';
 import Theme from './theme';
 import TutorTheme from './tutortheme';
 import Coupon from './coupon';
+import Payment from './payment';
 
 const models: any = { 
 	Administrator,
@@ -31,7 +32,8 @@ const models: any = {
 	HistoryStatusUser,
 	Theme,
 	TutorTheme,
-	Coupon
+	Coupon,
+	Payment,
 };
 
 Object.values(models).forEach((model: any) => {

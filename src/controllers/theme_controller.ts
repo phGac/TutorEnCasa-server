@@ -2,6 +2,21 @@ import { Request, Response, NextFunction } from "express";
 import { requestMessage, themeMessage } from "../config/messages";
 import Theme from "../db/models/theme";
 
+class ThemeValidatorController {
+    static show(req: Request, res: Response, next: NextFunction) {
+        next();
+    }
+    static create(req: Request, res: Response, next: NextFunction) {
+        next();
+    }
+    static update(req: Request, res: Response, next: NextFunction) {
+        next();
+    }
+    static destroy(req: Request, res: Response, next: NextFunction) {
+        next();
+    }
+}
+
 class ThemeController {
     static create(req: Request, res: Response, next: NextFunction) {
         if(! req.body.name) {
@@ -37,6 +52,10 @@ class ThemeController {
     static show() {
         //
     }
+}
+
+export {
+    ThemeValidatorController
 }
 
 export default ThemeController;

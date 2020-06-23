@@ -2,7 +2,7 @@ import { DataTypes, Model } from 'sequelize';
 
 import sequelize from '../index';
 
-class Logger extends Model {
+class Log extends Model {
     id!: number;
     
     level!: string;
@@ -14,7 +14,7 @@ class Logger extends Model {
     readonly createdAt!: Date;
 }
 
-Logger.init({
+Log.init({
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -41,4 +41,4 @@ Logger.init({
     }
 }, { sequelize, timestamps: false });
 
-export default Logger;
+export default Log;

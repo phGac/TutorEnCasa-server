@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express';
+import { Router } from 'express';
 import { isLoggedIn, isTutor } from '../middlewares/session_middleware';
 import MeetingController from '../controllers/meeting_controller';
 

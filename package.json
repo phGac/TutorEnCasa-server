@@ -23,7 +23,8 @@
     "request-ip": "^2.1.3",
     "sequelize": "^5.21.9",
     "uuid": "^8.1.0",
-    "validator": "^13.0.0",
+    "validator": "^13.1.1",
+    "verificador-rut": "^2.2.1",
     "zxcvbn": "^4.4.2"
   },
   "devDependencies": {

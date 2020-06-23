@@ -12,7 +12,7 @@ export = {
                 type: Sequelize.INTEGER
             },
 
-            id_tutor: {
+            id_tutor_theme: {
                 type: Sequelize.INTEGER
             },
 
@@ -24,11 +24,6 @@ export = {
                 allowNull: false,
                 type: Sequelize.DATE,
                 defaultValue: DataTypes.NOW
-            },
-
-            updatedAt: {
-                allowNull: false,
-                type: Sequelize.DATE
             }
         });
     },

@@ -71,6 +71,8 @@ log/**
 dist/**
 package-lock.json
 resources/public/doc
+uploads/**
+tmp/**
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml

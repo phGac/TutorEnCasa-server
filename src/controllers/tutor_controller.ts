@@ -41,7 +41,7 @@ class TutorController {
         }
 
         // @ts-ignore
-        const { id } = req.user;
+        const { id, firstname, lastname } = req.user;
         //const { themes } = req.body;
         const file = req.files.file;
 
@@ -49,10 +49,13 @@ class TutorController {
             id_user: id,
             status: TutorStatus.UNVALIDATED
         }).then((tutor) => {
-            res.json({ status: 'success' });
             if(! Array.isArray(file)) {
-                const dir = process.env.DIR_FILE_UPLOADS || path.resolve(__dirname, '..', '..', 'uploaded');
-                file.mv(dir, (err) => {
+                const date = new Date();
+                const date_filename = `${date.getFullYear()}${date.getMonth()}${date.getDay()}_${date.getHours()}${date.getMinutes()}`;
+                const filename = `${date_filename}-${firstname}_${lastname}.pdf`;
+                const dir = process.env.DIR_FILE_UPLOADS || path.resolve(__dirname, '..', '..', 'uploads');
+                const filepath = path.resolve(dir, filename);
+                file.mv(filepath, (err) => {
                     if(err) {
                         next({ error: err, custom: false });
                     }

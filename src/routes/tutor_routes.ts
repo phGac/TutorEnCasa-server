@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { isLoggedIn, isNotTutor, isTutor } from '../middlewares/session_middleware';
-import TutorController from '../controllers/tutor_controller';
+import TutorController, { TutorValidatorController } from '../controllers/tutor_controller';
 
 const router = Router();
 
@@ -22,7 +22,7 @@ const router = Router();
  * 
  * 
  */
-router.post('/request', isLoggedIn, isNotTutor, TutorController.request);
+router.post('/request', isLoggedIn, isNotTutor, TutorValidatorController.request, TutorController.request);
 
 /**
  * 

@@ -6,6 +6,7 @@ import { requestMessage, tutorMessage } from "../config/messages";
 import Theme from "../db/models/theme";
 import TutorTheme from "../db/models/tutortheme";
 import Tutor, { TutorStatus } from "../db/models/tutor";
+import User from "../db/models/user";
 
 class TutorValidatorController {
     static show(req: Request, res: Response, next: NextFunction) {
@@ -19,6 +20,31 @@ class TutorValidatorController {
     }
     static destroy(req: Request, res: Response, next: NextFunction) {
         next();
+    }
+    static async request(req: Request, res: Response, next: NextFunction) {
+        if(! req.files || ! req.files.file) {
+            next({ error: requestMessage["params.missing"], custom: true });
+            return;
+        }
+
+        // @ts-ignore
+        const { id } = req.user;
+
+        const options = { 
+            where: { id }, 
+            include: [ { association: 'role_tutor' } ]
+        };
+        User.findOne(options)
+            .then((user) => {
+                // @ts-ignore
+                if(! user || user.role_tutor)
+                    return next({ error: 'Ya has solicitado ser tutor', custom: true });
+                next();
+            })
+            .catch((e) => {
+                next({ error: e, custom: false });
+            });
+        
     }
 }
 
@@ -34,15 +60,10 @@ class TutorController {
         });
     }
 
-    static async request(req: Request, res: Response, next: NextFunction) {
-        if(! req.files || ! req.files.file) {
-            next({ error: requestMessage["params.missing"], custom: true });
-            return;
-        }
-
+    static request(req: Request, res: Response, next: NextFunction) {
         // @ts-ignore
         const { id, firstname, lastname } = req.user;
-        //const { themes } = req.body;
+        // @ts-ignore
         const file = req.files.file;
 
         Tutor.create({

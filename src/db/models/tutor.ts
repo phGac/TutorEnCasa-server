@@ -43,7 +43,7 @@ Tutor.init({
 
 // @ts-ignore
 Tutor.associate = function(models) {
-	const { Class, AvailabilityTime, HistoryPriceHour, User, StudentTutor, TutorTheme, Theme } = models;
+	const { Class, AvailabilityTime, HistoryPriceHour, User, StudentTutor, TutorTheme, Theme, TutorFileCertificate } = models;
 	Tutor.hasMany(Class, {
 		as: 'classes',
 		foreignKey: 'id_tutor'
@@ -56,6 +56,10 @@ Tutor.associate = function(models) {
 		as: 'priceses',
 		foreignKey: 'id_tutor'
 	});
+	Tutor.belongsTo(User, {
+		as: 'user',
+		foreignKey: 'id_user'
+	});
 	Tutor.belongsToMany(User, {
 		as: 'students',
 		through: StudentTutor,
@@ -67,6 +71,10 @@ Tutor.associate = function(models) {
 		through: TutorTheme,
 		foreignKey: 'id_tutor',
 		otherKey: 'id_theme'
+	});
+    Tutor.hasMany(TutorFileCertificate, {
+        as: 'certificates',
+        foreignKey: 'id_tutor'
 	});
 };
 

@@ -15,8 +15,10 @@ import Theme from './theme';
 import TutorTheme from './tutortheme';
 import Coupon from './coupon';
 import Payment from './payment';
+import File from './file';
+import TutorFileCertificate from './tutorfilecertificate';
 
-const models: any = { 
+export {
 	Administrator,
 	Class,
 	ClassRating,
@@ -34,10 +36,6 @@ const models: any = {
 	TutorTheme,
 	Coupon,
 	Payment,
-};
-
-Object.values(models).forEach((model: any) => {
-	if('associate' in model) {
-		model.associate(models);
-	}
-});
+	File,
+	TutorFileCertificate
+}

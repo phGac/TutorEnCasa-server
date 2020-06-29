@@ -7,6 +7,9 @@ import Theme from "../db/models/theme";
 import TutorTheme from "../db/models/tutortheme";
 import Tutor, { TutorStatus } from "../db/models/tutor";
 import User from "../db/models/user";
+import fileUpload from "express-fileupload";
+import { CreateOptions } from "sequelize/types";
+import { file_upload } from "../services/file_service";
 
 class TutorValidatorController {
     static show(req: Request, res: Response, next: NextFunction) {
@@ -22,8 +25,13 @@ class TutorValidatorController {
         next();
     }
     static async request(req: Request, res: Response, next: NextFunction) {
-        if(! req.files || ! req.files.file) {
+        if(! req.files || ! req.files.file || ! req.body.type) {
             next({ error: requestMessage["params.missing"], custom: true });
+            return;
+        }
+
+        if(Array.isArray(req.files.file) || req.files.file.mimetype != 'application/pdf') {
+            next({ error: 'Formato de archivo no soportado', custom: true });
             return;
         }
 
@@ -39,6 +47,9 @@ class TutorValidatorController {
                 // @ts-ignore
                 if(! user || user.role_tutor)
                     return next({ error: 'Ya has solicitado ser tutor', custom: true });
+
+                res.locals.type = req.body.type;
+                res.locals.file = req.files?.file;
                 next();
             })
             .catch((e) => {
@@ -62,34 +73,29 @@ class TutorController {
 
     static request(req: Request, res: Response, next: NextFunction) {
         // @ts-ignore
-        const { id, firstname, lastname } = req.user;
-        // @ts-ignore
-        const file = req.files.file;
+        const { id } = req.user;
+        const { file, type } = res.locals;
 
-        Tutor.create({
-            id_user: id,
-            status: TutorStatus.UNVALIDATED
-        }).then((tutor) => {
-            if(! Array.isArray(file)) {
-                const date = new Date();
-                const date_filename = `${date.getFullYear()}${date.getMonth()}${date.getDay()}_${date.getHours()}${date.getMinutes()}`;
-                const filename = `${date_filename}-${firstname}_${lastname}.pdf`;
-                const dir = process.env.DIR_FILE_UPLOADS || path.resolve(__dirname, '..', '..', 'uploads');
-                const filepath = path.resolve(dir, filename);
-                file.mv(filepath, (err) => {
-                    if(err) {
-                        next({ error: err, custom: false });
-                    }
-                    else {
-                        res.json({ status: 'success', message: tutorMessage["request.success"] });
-                    }
+        // @ts-ignore
+        file_upload(file, req.user)
+            .then((file) => {       
+                Tutor.create({
+                    id_user: id,
+                    status: TutorStatus.UNVALIDATED,
+                    certificates: [ 
+                        { id_file: file.id, type }
+                    ]
+                }, {
+                    include: [ { association: 'certificates' } ]
+                })
+                .then((tutor) => {
+                    res.json({ status: 'success', message: tutorMessage["request.success"] });
+                })
+                .catch((e) => {
+                    next({ error: e, custom: false });
                 });
-                return;
-            }
-        })
-        .catch((e) => {
-            next({ error: e, custom: false });
-        });
+            })
+            .catch((e) => next(e));
     }
 
     static addThemes(req: Request, res: Response, next: NextFunction) {

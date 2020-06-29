@@ -1,7 +1,6 @@
 import { FindOptions } from "sequelize/types";
 import User from "../db/models/user";
-import logger from "../util/logger";
-import { requestMessage, loginMessage } from "../config/messages";
+import { loginMessage } from "../config/messages";
 import { userToShowClient, UserClient } from "../util/to_show_client";
 
 export function auth(email: string, password: string) {
@@ -33,14 +32,12 @@ export function auth(email: string, password: string) {
                             else reject({ error: loginMessage["user.password.wrong"], custom: true });
                         })
                         .catch((e) => {
-                            //logger().error(e);
                             reject({ error: e, custom: false });
                         });
                 }
             })
             .catch((e: Error) => {
-                logger().error(e);
-                reject( new Error(requestMessage["error.unknow"]) );
+                reject({ error: e, custom: false });
             });
     });
 }

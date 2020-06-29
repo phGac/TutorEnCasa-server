@@ -34,8 +34,6 @@ class SessionController {
             })
             .catch((e) => {
                 next(e);
-                res.json({ status: 'failed', error: e });
-                next({ error: e, custom: true });
             });
     }
     static destroy(req: Request, res: Response) {

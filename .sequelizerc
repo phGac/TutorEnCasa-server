@@ -3,9 +3,9 @@ require('dotenv')
   .config({ path: path.resolve('.env') });
 
 module.exports = {
-  'config': path.resolve('src/config', 'sql.js'),
-  'models-path': path.resolve('src/db', 'models'),
-  'seeders-path': path.resolve('src/db', 'seeders'),
-  'migrations-source-path': path.resolve('src/db', 'migrations'),
-  'migrations-compiled-path': path.resolve('dist/db', 'migrations'),
+  'config': path.resolve(__dirname, 'src', 'config', 'db.js'),
+  'models-path': path.resolve(__dirname, 'src', 'db', 'models'),
+  'seeders-path': path.resolve(__dirname, 'dist', 'db', 'seeders'),
+  'migrations-path': path.resolve(__dirname, 'src', 'db', 'migrations'),
+  'migrations-compiled-path': path.resolve(__dirname, 'dist', 'db', 'migrations'),
 }

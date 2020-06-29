@@ -15,11 +15,13 @@ class StudentTutor extends Model {
 StudentTutor.init({
     id_student: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: false,
+        primaryKey: true
     },
     id_tutor: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: false,
+        primaryKey: true
     },
     createdAt: {
 		type: DataTypes.DATE,

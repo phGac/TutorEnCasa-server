@@ -104,6 +104,7 @@ async function startLocalVideo(){
 }
 
 async function toggleLocalVideo(){
+    
     if (localVideoEnabled){
         await meetingSession.audioVideo.stopLocalVideoTile();
         localVideoEnabled = false;

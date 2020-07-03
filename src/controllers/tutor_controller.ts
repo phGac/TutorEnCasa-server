@@ -8,7 +8,7 @@ import TutorTheme from "../db/models/tutortheme";
 import Tutor, { TutorStatus } from "../db/models/tutor";
 import User from "../db/models/user";
 import fileUpload from "express-fileupload";
-import { CreateOptions } from "sequelize/types";
+import { CreateOptions, UpdateOptions } from "sequelize/types";
 import { file_upload } from "../services/file_service";
 
 class TutorValidatorController {
@@ -57,6 +57,11 @@ class TutorValidatorController {
             });
         
     }
+
+    static validate(req: Request, res: Response, next: NextFunction) {
+        res.locals.id = req.params.id;
+        next();
+    }
 }
 
 class TutorController {
@@ -96,6 +101,25 @@ class TutorController {
                 });
             })
             .catch((e) => next(e));
+    }
+
+    static validate(req: Request, res: Response, next: NextFunction) {
+        const { id } = res.locals;
+        Tutor.update({
+                    status: TutorStatus.ACTIVE
+                }, {
+                where: {
+                    id,
+                    status: TutorStatus.UNVALIDATED
+                }
+            })
+            .then((info) => {
+                if(info[0] == 0) {
+                    next({ error: 'Tutor ya validado', custom: true });
+                    return;
+                }
+                res.json({ status: 'success' });
+            });
     }
 
     static addThemes(req: Request, res: Response, next: NextFunction) {

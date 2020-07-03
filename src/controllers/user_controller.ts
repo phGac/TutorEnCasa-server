@@ -22,6 +22,10 @@ class UserValidatorController {
     static destroy(req: Request, res: Response, next: NextFunction) {
         next();
     }
+    static validate(req: Request, res: Response, next: NextFunction) {
+        res.locals.dni = req.params.dni;
+        next();
+    }
 }
 
 class UserController {
@@ -61,7 +65,7 @@ class UserController {
                 }
                 const { email, password, dni } = req.body;
                 dniDv = validatorDni(dni);
-                if (validator.isEmail(email)) {
+                if (! validator.isEmail(email)) {
                     next({ error: registerMessage["user.email.invalid"], custom: true });
                     return;
                 }
@@ -71,7 +75,24 @@ class UserController {
                 }
                 UserService.create({ email, password, dni })
                     .then((user) => {
-                        res.json({ status: 'success', message: registerMessage["user.status.ok"] });
+                        res.render(
+                            'templates/emails/simple', 
+                            { url: `https://tutorencasa.tk/api/user/${dni}/validate` }, 
+                            (err: Error, html: string) => {
+                                if(err) {
+                                    next({ error: err, custom: false });
+                                    return;
+                                }
+                                else {
+                                    EmailService.sendEmail(new Email('Valida tu cuenta! - Tutor en Casa', html))
+                                        .then((messageId) => {
+                                            res.json({ status: 'success', message: registerMessage["user.status.ok"] });
+                                        })
+                                        .catch((e) => {
+                                            next({ error: e, custom: false });
+                                        });
+                                }
+                        });
                     })
                     .catch((err) => {
                         next(err);
@@ -104,7 +125,6 @@ class UserController {
                             res.locals.user = info.users[0];
                             res.locals.auth = true;
                             res.json({ status: 'success', user: info.users[0] });
-                            EmailService.sendEmail(new Email('Valida tu cuenta!', `Dirigete al siguiente link para validar tu cuenta (${email}): http://link.com/ajjajka`));
                         }
                         else {
                             next({ error: registerMessage["step.two.user.notFound"], custom: true });
@@ -124,6 +144,25 @@ class UserController {
     static update(req: Request, res: Response) {}
 
     static destroy(req: Request, res: Response) {}
+
+    static validate(req: Request, res: Response, next: NextFunction) {
+        const { dni } = res.locals;
+        User.update({
+                    status: UserStatus.ACTIVE
+                }, {
+                where: {
+                    dni,
+                    status: UserStatus.UNVALIDATED
+                }
+            })
+            .then((info) => {
+                if(info[0] == 0) {
+                    next({ error: 'Usuario ya validado', custom: true });
+                    return;
+                }
+                res.json({ status: 'success' });
+            });
+    }
 }
 
 export {

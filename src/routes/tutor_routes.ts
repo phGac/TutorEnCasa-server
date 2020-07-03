@@ -1,8 +1,10 @@
 import { Router } from 'express';
-import { isLoggedIn, isNotTutor, isTutor } from '../middlewares/session_middleware';
+import { isLoggedIn, isNotTutor, isTutor, isNotLoggedIn } from '../middlewares/session_middleware';
 import TutorController, { TutorValidatorController } from '../controllers/tutor_controller';
 
 const router = Router();
+
+router.get('/request/validate/:id', isNotLoggedIn, TutorValidatorController.validate, TutorController.validate);
 
 /**
  * 

@@ -10,7 +10,7 @@ import { Request, Response } from 'express';
 
 export default function(app: any) {
     app.index((req: Request, res: Response) => {
-        res.redirect('/public');
+        res.redirect('/public/');
     });
     app.addRoutes('/public', clientRoutes);
     app.addRoutes('/api', sessionRoutes);

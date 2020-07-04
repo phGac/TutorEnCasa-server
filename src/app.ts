@@ -33,7 +33,6 @@ class App {
         this.app.use('/public', express.static(path.join(__dirname, '..', 'resources', 'public')));
         this.app.use(fileUpload({
             limits: { fileSize: 50 * 1024 * 1024 },
-            useTempFiles: true,
             debug: true
         }));
     }

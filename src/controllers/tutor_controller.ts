@@ -1,15 +1,10 @@
 import { Request, Response, NextFunction } from "express";
-import path from 'path';
 
 import { findTutor } from "../util/find";
 import { requestMessage, tutorMessage } from "../config/messages";
-import Theme from "../db/models/theme";
-import TutorTheme from "../db/models/tutortheme";
-import Tutor, { TutorStatus } from "../db/models/tutor";
-import User from "../db/models/user";
-import fileUpload from "express-fileupload";
-import { CreateOptions, UpdateOptions } from "sequelize/types";
-import { file_upload } from "../services/file_service";
+import { Theme, TutorTheme, Tutor, User } from '../db/models';
+import { TutorStatus } from "../db/models/tutor";
+import FileService from "../services/file_service";
 
 class TutorValidatorController {
     static show(req: Request, res: Response, next: NextFunction) {
@@ -82,7 +77,7 @@ class TutorController {
         const { file, type } = res.locals;
 
         // @ts-ignore
-        file_upload(file, req.user)
+        FileService.upload(file, req.user)
             .then((file) => {       
                 Tutor.create({
                     id_user: id,

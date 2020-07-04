@@ -1,9 +1,10 @@
 import { Request, Response, NextFunction } from "express";
+import { FindOptions } from "sequelize/types";
+
 import { PaymentService } from "../services/payment_service";
 import { requestMessage } from "../config/messages";
 import validator from "validator";
-import Tutor from "../db/models/tutor";
-import { FindOptions } from "sequelize/types";
+import { Tutor } from "../db/models";
 
 class ClassValidatorController {
     static create(req: Request, res: Response, next: NextFunction) {

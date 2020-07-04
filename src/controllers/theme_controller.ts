@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { requestMessage, themeMessage } from "../config/messages";
-import Theme from "../db/models/theme";
+import { Theme } from "../db/models";
 
 class ThemeValidatorController {
     static show(req: Request, res: Response, next: NextFunction) {

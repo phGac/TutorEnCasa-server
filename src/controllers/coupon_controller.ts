@@ -1,9 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import { requestMessage, couponMessage } from "../config/messages";
-import Coupon from "../db/models/coupon";
-import User from "../db/models/user";
+
+import { User, Coupon } from '../db/models';
 import logger from "../util/logger";
-import validator from "validator";
 
 class CouponController {
     static show(req: Request, res: Response, next: NextFunction) {

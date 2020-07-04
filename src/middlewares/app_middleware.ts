@@ -9,11 +9,12 @@ export function errorHandler(error: any, req: Request, res: Response, next: Next
             if(error instanceof Error)
                 error = error.message;
             
-            logger().error(error.error || error);
+            logger().error(error);
             res.status(400).json({ status: 'failed', error: requestMessage["error.unknow"] });
         }
         else {
-            res.status(400).json({ status: 'failed', error: error.error });
+            error = error.error || error;
+            res.status(400).json({ status: 'failed', error });
         }
     }
     else {
@@ -21,7 +22,7 @@ export function errorHandler(error: any, req: Request, res: Response, next: Next
     }
 }
 
-export function notFoundHandler(req: Request, res: Response, next: NextFunction) {
+export function notFoundHandler(req: Request, res: Response) {
     const ip = req.clientIp;
     const path = req.originalUrl;
     logger().warning(`Ruta no encontrada [${ip}]: ${path}`, 'HTTP:404:NotFound');

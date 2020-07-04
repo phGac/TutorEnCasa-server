@@ -41,4 +41,3 @@ export function auth(email: string, password: string) {
             });
     });
 }
-

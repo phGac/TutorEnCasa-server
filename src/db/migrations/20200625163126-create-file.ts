@@ -20,7 +20,11 @@ export = {
                 type: Sequelize.STRING
             },
 
-            path: {
+            key: {
+                type: Sequelize.STRING
+            },
+
+            url: {
                 type: Sequelize.STRING
             },
 

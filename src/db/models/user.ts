@@ -104,8 +104,12 @@ User.associate = function(models) {
 		foreignKey: 'id_user'
 	});
 	User.hasMany(Coupon, {
-		as: 'coupons',
-		foreignKey: 'id_user'
+		as: 'coupons_created',
+		foreignKey: 'id_user_from'
+	});
+	User.hasMany(Coupon, {
+		as: 'coupons_given',
+		foreignKey: 'id_user_to'
 	});
 };
 

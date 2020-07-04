@@ -9,6 +9,8 @@ class SessionValidatorController {
         if(! req.body.email || ! req.body.password)
             return next({ error: requestMessage["params.missing"], custom: true });
 
+        console.log(req.body);
+
         res.locals.email = req.body.email;
         res.locals.password = req.body.password;
         next();

@@ -3,6 +3,7 @@ import { requestMessage, couponMessage } from "../config/messages";
 import Coupon from "../db/models/coupon";
 import User from "../db/models/user";
 import logger from "../util/logger";
+import validator from "validator";
 
 class CouponController {
     static show(req: Request, res: Response, next: NextFunction) {
@@ -29,16 +30,16 @@ class CouponController {
         const { value } = req.body;
         const message = (req.body.message) ? req.body.message : null;
         Coupon.create({
-            id_user_from,
-            message,
-            value
-        })
-        .then((coupon) => {
-            res.json({ status: 'success', code: coupon.id });
-        })
-        .catch((e) => {
-            next({ error: e, custom: false });
-        });
+                id_user_from,
+                message,
+                value
+            })
+            .then((coupon) => {
+                res.json({ status: 'success', code: coupon.id });
+            })
+            .catch((e) => {
+                next({ error: e, custom: false });
+            });
     }
     static update(req: Request, res: Response, next: NextFunction) {
         if(! req.body.to || ! req.body.code) {
@@ -65,23 +66,26 @@ class CouponController {
                     return;
                 }
                 User.findOne({ where: { email: to } })
-                .then((user) => {
-                    if(! user) {
-                        next({ error: couponMessage["user.notFound"], custom: true });
-                        return;
-                    }
-                    coupon.update({
-                        id_user_to: user.id,
-                        message
+                    .then((user) => {
+                        if(! user) {
+                            next({ error: couponMessage["user.notFound"], custom: true });
+                            return;
+                        }
+                        coupon.update({
+                            id_user_to: user.id,
+                            message
+                        })
+                        .catch((err) => {
+                            logger().error(err);
+                        });
+                        res.json({ status: 'success' });
                     })
                     .catch((err) => {
-                        logger().error(err);
+                        next({ error: err, custom: false });
                     });
-                    res.json({ status: 'success' });
-                })
-                .catch((err) => {
-                    next({ error: err, custom: false });
-                });
+            })
+            .catch((err) => {
+                next({ error: err, custom: false });
             });
         
     }

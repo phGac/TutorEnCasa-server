@@ -11,16 +11,23 @@ class Coupon extends Model {
     message!: string|null;
     value!: number;
     expires!: Date;
+    status!: number;
 
     readonly createdAt!: Date;
 	readonly updatedAt!: Date|null;
+}
+
+enum CouponStatus {
+    UNPAY,
+    PAY,
+    USED
 }
 
 Coupon.init({
     id: {
         type: DataTypes.UUIDV4,
         primaryKey: true,
-        defaultValue: uuid()
+        defaultValue: () => uuid()
     },
     id_user_from: {
         type: DataTypes.INTEGER
@@ -33,13 +40,16 @@ Coupon.init({
         type: DataTypes.TEXT,
         allowNull: true
     },
+    value: {
+        type: DataTypes.INTEGER
+    },
     expires: {
         type: DataTypes.DATE
     },
     status: {
-        type: DataTypes.BOOLEAN,
+        type: DataTypes.TINYINT,
         allowNull: false,
-        defaultValue: true
+        defaultValue: CouponStatus.UNPAY
     },
     createdAt: {
 		type: DataTypes.DATE,
@@ -56,9 +66,17 @@ Coupon.init({
 Coupon.associate = function(models) {
     const { User } = models;
     Coupon.belongsTo(User, {
-        as: 'user',
-        foreignKey: 'id_user'
+        as: 'from',
+        foreignKey: 'id_user_from'
     });
+    Coupon.belongsTo(User, {
+        as: 'to',
+        foreignKey: 'id_user_to'
+    });
+}
+
+export {
+    CouponStatus
 }
 
 export default Coupon;

@@ -73,6 +73,8 @@ package-lock.json
 resources/public/doc
 uploads/**
 tmp/**
+artillery.config.yaml
+reports/**
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml

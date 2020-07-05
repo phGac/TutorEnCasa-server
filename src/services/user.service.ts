@@ -1,4 +1,4 @@
-import User, { UserStatus } from '../db/models/user';
+import User, { UserStatus } from '../db/models/user.model';
 import { registerMessage } from '../config/messages';
 import { WhereOptions } from 'sequelize/types';
 

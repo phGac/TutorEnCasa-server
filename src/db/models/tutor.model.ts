@@ -1,8 +1,8 @@
 import { DataTypes, Model } from 'sequelize';
 
 import sequelize from '../index';
-import AvailabilityTime from './availabilitytime';
-import Theme from './theme';
+import AvailabilityTime from './availabilitytime.model';
+import Theme from './theme.model';
 
 class Tutor extends Model {
 	public id!: number;

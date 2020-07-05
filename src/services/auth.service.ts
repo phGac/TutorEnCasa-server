@@ -1,5 +1,5 @@
 import { FindOptions } from "sequelize/types";
-import User from "../db/models/user";
+import User from "../db/models/user.model";
 import { loginMessage } from "../config/messages";
 import { userToShowClient, UserClient } from "../util/to_show_client";
 

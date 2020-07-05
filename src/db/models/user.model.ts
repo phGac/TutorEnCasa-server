@@ -2,7 +2,7 @@ import { Model, DataTypes, fn, col } from 'sequelize';
 import bcrypt from 'bcrypt';
 
 import sequelize from '../index';
-import HistoryPassword from './historypassword';
+import HistoryPassword from './historypassword.model';
 import { loginMessage } from '../../config/messages';
 
 class User extends Model {

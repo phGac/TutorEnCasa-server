@@ -1,4 +1,4 @@
-import Tutor from "../db/models/tutor";
+import Tutor from "../db/models/tutor.model";
 import { FindOptions } from "sequelize/types";
 
 export interface FindTutorOptions {

@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import MeetingService from "../services/meeting_service";
+import MeetingService from "../services/meeting.service";
 import { requestMessage } from "../config/messages";
 import logger from "../util/logger";
 

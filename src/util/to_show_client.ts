@@ -1,4 +1,4 @@
-import User, { UserRole } from "../db/models/user";
+import User, { UserRole } from "../db/models/user.model";
 
 export interface UserClient extends Express.User {
     id: number;

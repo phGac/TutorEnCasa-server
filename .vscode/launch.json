@@ -8,6 +8,34 @@
             "processId": "${command:PickProcess}",
             "restart": true,
             "protocol": "inspector"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Jest single run",
+            "program": "${workspaceFolder}/node_modules/jest/bin/jest.js",
+            "args": [
+                "-c",
+                "jest.config.json",
+                "--verbose"
+            ],
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Jest watchAll run",
+            "program": "${workspaceFolder}/node_modules/jest/bin/jest.js",
+            "args": [
+                "-c",
+                "jest.config.json",
+                "--watchAll",
+                "--verbose",
+                "-i"
+            ],
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen"
         }
     ]
 }

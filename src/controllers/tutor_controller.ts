@@ -3,8 +3,8 @@ import { Request, Response, NextFunction } from "express";
 import { findTutor } from "../util/find";
 import { requestMessage, tutorMessage } from "../config/messages";
 import { Theme, TutorTheme, Tutor, User } from '../db/models';
-import { TutorStatus } from "../db/models/tutor";
-import FileService from "../services/file_service";
+import { TutorStatus } from "../db/models/tutor.model";
+import FileService from "../services/file.service";
 
 class TutorValidatorController {
     static show(req: Request, res: Response, next: NextFunction) {

@@ -1,12 +1,13 @@
-import userRoutes from './user_routes';
-import sessionRoutes from './session_routes';
-import meetingRoutes from './meeting_routes';
-import themeRoutes from './theme_routes';
-import tutorRoutes from './tutor_routes';
-import couponRoutes from './coupon_routes';
-import classRoutes from './class_routes';
-import clientRoutes from './client_routes';
 import { Request, Response } from 'express';
+
+import userRoutes from './user.route';
+import sessionRoutes from './session.route';
+import meetingRoutes from './meeting.route';
+import themeRoutes from './theme.route';
+import tutorRoutes from './tutor.route';
+import couponRoutes from './coupon.route';
+import classRoutes from './class.route';
+import clientRoutes from './client.route';
 
 export default function(app: any) {
     app.index((req: Request, res: Response) => {

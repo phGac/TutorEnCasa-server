@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
 import { requestMessage, loginMessage } from '../config/messages';
-import { auth } from '../services/auth_service';
+import { auth } from '../services/auth.service';
 
 class SessionValidatorController {
     static create(req: Request, res: Response, next: NextFunction) {

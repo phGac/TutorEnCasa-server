@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import jwt from 'jsonwebtoken';
 
 import { requestMessage, loginMessage } from "../config/messages";
-import { UserRole } from "../db/models/user";
+import { UserRole } from "../db/models/user.model";
 
 export function isLoggedIn(req: Request, res: Response, next: NextFunction) {
     const token = req.headers['access-token'] || req.cookies['auth-token'];

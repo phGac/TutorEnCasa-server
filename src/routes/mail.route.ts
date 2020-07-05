@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import EmailService, { Email } from '../services/email_service';
+import EmailService, { Email } from '../services/email.service';
 import logger from '../util/logger';
 
 const router = Router();

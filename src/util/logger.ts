@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import Log from '../db/models/log';
+import Log from '../db/models/log.model';
 import { Request, Response, NextFunction } from 'express';
 
 export interface ILoggerConfig {
@@ -39,7 +39,7 @@ class LoggerError extends Error {
     }
 }
 
-class Logger implements ILogger {
+class Logger {
     protected ip: string|null;
     protected path: string|null;
     protected maxLevel: string|null;
@@ -71,23 +71,9 @@ class Logger implements ILogger {
                 return false;
         }
     }
-
-    log(level: string, message: string, info: any): void {
-        throw new Error("Method not implemented.");
-    }
-    info(message: string, info?: any): void {
-        throw new Error("Method not implemented.");
-    }
-    error(message: string | Error, info?: any): void {
-        throw new Error("Method not implemented.");
-    }
-    warning(message: string, info?: any): void {
-        throw new Error("Method not implemented.");
-    }
-
 }
 
-class ConsoleLogger extends Logger {
+class ConsoleLogger extends Logger implements ILogger {
     private lastMessage: Date|null;
     private formatDate: Intl.DateTimeFormat;
     private color_info: string;
@@ -157,7 +143,7 @@ class ConsoleLogger extends Logger {
     }
 }
 
-class FileLogger extends Logger {
+class FileLogger extends Logger implements ILogger {
     lastMessage: Date|null;
     formatDate: Intl.DateTimeFormat;
     dirPath: string;
@@ -206,7 +192,7 @@ class FileLogger extends Logger {
     }
 }
 
-class DataBaseLogger extends Logger {
+class DataBaseLogger extends Logger implements ILogger {
     constructor() {
         super();
     }
@@ -242,11 +228,11 @@ enum TypeLogger {
 };
 
 class SimpleLog {
-    private static instance: Logger;
+    private static instance: ILogger;
 
     constructor() {}
 
-    public static log(type: TypeLogger): Logger {
+    public static log(type: TypeLogger): ILogger {
         if(! SimpleLog.instance) {
             switch (type) {
                 case TypeLogger.CONSOLE:

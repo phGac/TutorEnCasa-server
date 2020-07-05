@@ -2,7 +2,7 @@
 
 import { QueryInterface, Sequelize } from "sequelize/types";
 
-import { encryptPassword }  from '../../services/hash_service';
+import { encryptPassword }  from '../../services/hash.service';
 
 module.exports = {
   	up: async (queryInterface: QueryInterface, sequelize: Sequelize) => {

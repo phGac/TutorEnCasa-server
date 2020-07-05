@@ -41,11 +41,13 @@
     "@types/morgan": "^1.9.0",
     "@types/passport-local": "^1.0.33",
     "@types/request-ip": "0.0.35",
+    "@types/supertest": "^2.0.10",
     "@types/uuid": "^8.0.0",
     "@types/validator": "^13.0.0",
     "@types/zxcvbn": "^4.4.0",
     "jest": "^26.0.1",
     "nodemon": "^2.0.4",
+    "supertest": "^4.0.2",
     "ts-jest": "^26.1.0",
     "ts-loader": "^7.0.5",
     "ts-node": "^8.10.2",
@@ -55,10 +57,10 @@
   },
   "scripts": {
     "dev:watch": "tsc --watch",
-    "dev:debug": "nodemon --inspect ./src/index.ts",
-    "test": "jest",
+    "dev:debug": "env NODE_ENV=development nodemon --inspect ./src/index.ts",
+    "test": "env NODE_ENV=test jest --detectOpenHandles --forceExit",
     "prod:ts": "tsc",
-    "prod:start": "node ./dist/index.js"
+    "prod:start": "env NODE_ENV=production node ./dist/index.js"
   },
   "keywords": [],
   "author": "",

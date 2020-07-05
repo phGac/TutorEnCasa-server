@@ -1,5 +1,5 @@
 import { Client, CreatePaymentResponse } from 'khipu-client';
-import PaymentModel, { PaymentStatus } from '../db/models/payment';
+import PaymentModel, { PaymentStatus } from '../db/models/payment.model';
 import BankResponse from 'khipu-client/dist/banksResponse';
 
 const client =  new Client({

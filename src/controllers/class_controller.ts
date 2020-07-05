@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { FindOptions } from "sequelize/types";
 
-import { PaymentService } from "../services/payment_service";
+import { PaymentService } from "../services/payment.service";
 import { requestMessage } from "../config/messages";
 import validator from "validator";
 import { Tutor } from "../db/models";

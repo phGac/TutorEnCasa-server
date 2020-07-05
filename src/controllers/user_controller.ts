@@ -3,10 +3,10 @@ import validator from 'validator';
 // @ts-ignore
 import validatorDni from 'verificador-rut';
 
-import UserService from '../services/user_service';
+import UserService from '../services/user.service';
 import { registerMessage, requestMessage } from '../config/messages';
-import User, { UserStatus } from '../db/models/user';
-import EmailService, { Email } from '../services/email_service';
+import User, { UserStatus } from '../db/models/user.model';
+import EmailService, { Email } from '../services/email.service';
 import { userToShowClient } from '../util/to_show_client';
 
 class UserValidatorController {

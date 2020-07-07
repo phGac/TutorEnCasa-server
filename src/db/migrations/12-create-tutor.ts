@@ -1,10 +1,11 @@
 import {
     QueryInterface,
+    DataTypes
 } from 'sequelize';
 
 export = {
     up: (queryInterface: QueryInterface, Sequelize: any) => {
-        return queryInterface.createTable('TutorThemes', {
+        return queryInterface.createTable('Tutors', {
             id: {
                 allowNull: false,
                 autoIncrement: true,
@@ -12,21 +13,28 @@ export = {
                 type: Sequelize.INTEGER
             },
 
-            id_tutor: {
-                type: Sequelize.INTEGER
+            id_user: {
+                type: Sequelize.INTEGER,
+                allowNull: false,
+                references: {
+                    model: 'Users',
+                    key: 'id'
+                }
             },
 
-            id_theme: {
-                type: Sequelize.INTEGER
+            status: {
+                type: Sequelize.INTEGER,
+                allowNull: false
             },
 
-            grade: {
-                type: Sequelize.STRING(30)
+            description: {
+                type: Sequelize.STRING(500)
             },
 
             createdAt: {
                 allowNull: false,
-                type: Sequelize.DATE
+                type: Sequelize.DATE,
+                defaultValue: DataTypes.NOW
             },
 
             updatedAt: {
@@ -37,6 +45,6 @@ export = {
     },
 
     down: (queryInterface: QueryInterface, Sequelize: any) => {
-        return queryInterface.dropTable('TutorThemes');
+        return queryInterface.dropTable('Tutors');
     }
 };

@@ -15,7 +15,7 @@ beforeAll((done) => {
     });
 }, 10000); // 10s
 
-import { auth } from '../src/services/auth_service';
+import { auth } from '../src/services/auth.service';
 
 describe('Auth', () => {
     it('valid', async (done) => {

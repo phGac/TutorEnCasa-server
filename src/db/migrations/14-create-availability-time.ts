@@ -11,19 +11,27 @@ export = {
             },
 
             id_tutor: {
-                type: Sequelize.INTEGER
+                type: Sequelize.INTEGER,
+                allowNull: false,
+                references: {
+                    model: 'Tutors',
+                    key: 'id'
+                }
             },
 
             start: {
-                type: Sequelize.DATE
+                type: Sequelize.DATE,
+                allowNull: false
             },
 
             finish: {
-                type: Sequelize.DATE
+                type: Sequelize.DATE,
+                allowNull: false
             },
 
             status: {
                 type: Sequelize.INTEGER,
+                allowNull: false
             },
 
             createdAt: {

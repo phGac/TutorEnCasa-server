@@ -11,11 +11,17 @@ export = {
             },
 
             id_administrator: {
-                type: Sequelize.INTEGER
+                type: Sequelize.INTEGER,
+                allowNull: false,
+                references: {
+                    model: 'Administrators',
+                    key: 'id'
+                }
             },
 
             type: {
-                type: Sequelize.INTEGER
+                type: Sequelize.INTEGER,
+                allowNull: false
             },
 
             createdAt: {

@@ -18,11 +18,13 @@ export = {
             },
 
             level: {
-                type: Sequelize.STRING(20)
+                type: Sequelize.STRING(20),
+                allowNull: false
             },
 
             message: {
-                type: Sequelize.STRING(255)
+                type: Sequelize.STRING(255),
+                allowNull: false
             },
 
             ip: {

@@ -1,10 +1,8 @@
-import {
-    QueryInterface, DataTypes
-} from 'sequelize';
+import { QueryInterface, DataTypes } from 'sequelize';
 
 export = {
     up: (queryInterface: QueryInterface, Sequelize: any) => {
-        return queryInterface.createTable('ClassRatings', {
+        return queryInterface.createTable('Classes', {
             id: {
                 allowNull: false,
                 autoIncrement: true,
@@ -12,21 +10,28 @@ export = {
                 type: Sequelize.INTEGER
             },
 
-            id_class: {
-                type: Sequelize.INTEGER
+            id_tutor: {
+                type: Sequelize.INTEGER,
+                allowNull: false,
+                references: {
+                    model: 'Tutors',
+                    key: 'id'
+                }
             },
 
-            id_user: {
-                type: Sequelize.INTEGER
+            start: {
+                type: Sequelize.DATE,
+                allowNull: false
             },
 
-            value: {
-                type: Sequelize.INTEGER
+            finish: {
+                type: Sequelize.DATE,
+                allowNull: false
             },
 
-            commentary: {
-                type: Sequelize.TEXT,
-                allowNull: true
+            price_hour: {
+                type: Sequelize.INTEGER,
+                allowNull: false
             },
 
             createdAt: {
@@ -43,6 +48,6 @@ export = {
     },
 
     down: (queryInterface: QueryInterface, Sequelize: any) => {
-        return queryInterface.dropTable('ClassRatings');
+        return queryInterface.dropTable('Classes');
     }
 };

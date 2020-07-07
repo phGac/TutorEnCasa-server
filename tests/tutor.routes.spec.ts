@@ -8,6 +8,7 @@ import routes from '../src/routes';
 const globalData = {
     token: null,
     uid: null,
+    tutors: []
 };
 beforeAll((done) => {
     routes(app);
@@ -30,10 +31,23 @@ beforeAll((done) => {
     });
 }, 10000); // 10s
 
-describe('User', () => {
+describe('Tutor', () => {
+    it('Unvalidateds', (done) => {
+        request(app.getApp())
+            .get('/api/tutor/request')
+            .send()
+            .set({ 'access-token': globalData.token })
+            .then((res) => {
+                expect(res.status).toBe(200);
+                expect(res.body.status).toBe('success');
+                if(res.body.tutors)
+                    globalData.tutors = res.body.tutors;
+                done();
+            });
+    });
     it('Show', (done) => {
         request(app.getApp())
-            .get(`/api/user/${globalData.uid}`)
+            .get(`/api/tutor/${globalData.tutors[0].id}`)
             .send()
             .set({ 'access-token': globalData.token })
             .then((res) => {

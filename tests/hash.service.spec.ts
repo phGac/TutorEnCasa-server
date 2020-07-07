@@ -15,7 +15,7 @@ beforeAll((done) => {
     });
 }, 10000); // 10s
 
-import { encryptPassword } from '../src/services/hash_service';
+import { encryptPassword } from '../src/services/hash.service';
 
 describe('Encrypt Password', () => {
     it('Secure', (done) => {

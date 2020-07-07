@@ -5,9 +5,14 @@ import { requestMessage, tutorMessage } from "../config/messages";
 import { Theme, TutorTheme, Tutor, User } from '../db/models';
 import { TutorStatus } from "../db/models/tutor.model";
 import FileService from "../services/file.service";
+import { FindOptions } from "sequelize/types";
+import validator from "validator";
 
 class TutorValidatorController {
     static show(req: Request, res: Response, next: NextFunction) {
+        if(! validator.isInt(req.params.id))
+            return next({ error: 'Tipo de valor inválido', custom: true });
+        res.locals.id = parseInt(req.params.id);
         next();
     }
     static create(req: Request, res: Response, next: NextFunction) {
@@ -19,7 +24,7 @@ class TutorValidatorController {
     static destroy(req: Request, res: Response, next: NextFunction) {
         next();
     }
-    static async request(req: Request, res: Response, next: NextFunction) {
+    static newRequest(req: Request, res: Response, next: NextFunction) {
         if(! req.files || ! req.files.file || ! req.body.type) {
             next({ error: requestMessage["params.missing"], custom: true });
             return;
@@ -53,6 +58,10 @@ class TutorValidatorController {
         
     }
 
+    static request(req: Request, res: Response, next: NextFunction) {
+        next();
+    }
+
     static validate(req: Request, res: Response, next: NextFunction) {
         res.locals.id = req.params.id;
         next();
@@ -60,7 +69,28 @@ class TutorValidatorController {
 }
 
 class TutorController {
-    static find(req: Request, res: Response) {
+    static show(req: Request, res: Response, next: NextFunction) {
+        const { id } = res.locals;
+        const options: FindOptions = {
+            where: { id },
+            include: [
+                { association: 'themes' },
+                { association: 'certificates' }
+            ]
+        };
+        Tutor.findOne(options)
+            .then((tutor) => {
+                if(! tutor) return next({ error: 'Tutor no encontrado', custom: true });
+                res.json({
+                    status: 'success',
+                    tutor
+                });
+            })
+            .catch((err) => {
+                next({ error: err, custom: false });
+            });
+    }
+    static find(req: Request, res: Response, next: NextFunction) {
         findTutor({
             where: {
                 //
@@ -72,6 +102,31 @@ class TutorController {
     }
 
     static request(req: Request, res: Response, next: NextFunction) {
+        const options: FindOptions = {
+            where: {
+                status: TutorStatus.UNVALIDATED
+            },
+            include: [
+                { association: 'user' },
+                { 
+                    association: 'certificates',
+                    limit: 1,
+                    order: [ [ 'createdAt', 'DESC' ]]
+                }
+            ]
+        };
+        Tutor.findAll(options)
+            .then((tutors) => {
+                res.json({ 
+                    status: 'success',
+                    tutors 
+                });
+            })
+            .catch((err) => {
+                next({ error: err, custom: false });
+            });
+    }
+    static newRequest(req: Request, res: Response, next: NextFunction) {
         // @ts-ignore
         const { id } = req.user;
         const { file, type } = res.locals;

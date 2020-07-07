@@ -2,38 +2,26 @@ import { QueryInterface } from 'sequelize';
 
 export = {
     up: (queryInterface: QueryInterface, Sequelize: any) => {
-        return queryInterface.createTable('Coupons', {
+        return queryInterface.createTable('HistoryPasswords', {
             id: {
                 allowNull: false,
+                autoIncrement: true,
                 primaryKey: true,
-                type: Sequelize.UUID
-            },
-
-            id_user_from: {
                 type: Sequelize.INTEGER
             },
 
-            id_user_to: {
+            id_user: {
                 type: Sequelize.INTEGER,
-                defaultValue: 0
+                allowNull: false,
+                references: {
+                    model: 'Users',
+                    key: 'id'
+                }
             },
 
-            message: {
-                type: Sequelize.TEXT,
-                allowNull: true
-            },
-
-            value: {
-                type: Sequelize.INTEGER
-            },
-
-            expires: {
-                type: Sequelize.DATE
-            },
-
-            status: {
-                type: Sequelize.BOOLEAN,
-                defaultValue: true
+            password: {
+                type: Sequelize.STRING,
+                allowNull: false
             },
 
             createdAt: {
@@ -49,6 +37,6 @@ export = {
     },
 
     down: (queryInterface: QueryInterface, Sequelize: any) => {
-        return queryInterface.dropTable('Coupons');
+        return queryInterface.dropTable('HistoryPasswords');
     }
 };

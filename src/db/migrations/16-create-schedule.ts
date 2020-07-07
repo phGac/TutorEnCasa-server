@@ -11,11 +11,21 @@ export = {
             },
 
             id_class: {
-                type: Sequelize.INTEGER
+                type: Sequelize.INTEGER,
+                allowNull: false,
+                references: {
+                    model: 'Classes',
+                    key: 'id'
+                }
             },
 
             id_student: {
-                type: Sequelize.INTEGER
+                type: Sequelize.INTEGER,
+                allowNull: false,
+                references: {
+                    model: 'Users',
+                    key: 'id'
+                }
             },
 
             createdAt: {

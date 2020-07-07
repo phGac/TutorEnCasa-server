@@ -7,8 +7,9 @@ import Theme from './theme.model';
 class Tutor extends Model {
 	public id!: number;
 	public id_user!: number;
-	public status!: number;
 
+	public status!: number;
+	public description!: string;
 	public themes!: Theme[];
 	public times!: AvailabilityTime[];
 
@@ -29,6 +30,10 @@ Tutor.init({
 	status: {
 		type: DataTypes.INTEGER,
 		allowNull: false
+	},
+	description: {
+		type: DataTypes.STRING(500),
+		allowNull: true
 	},
 	createdAt: {
 		type: DataTypes.DATE,
@@ -81,7 +86,8 @@ Tutor.associate = function(models) {
 export enum TutorStatus {
 	UNVALIDATED,
 	ACTIVE,
-	INACTIVE
+	INACTIVE,
+	REJECTED
 }
 
 export default Tutor;

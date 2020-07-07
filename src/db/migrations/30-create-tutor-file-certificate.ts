@@ -1,10 +1,10 @@
 import {
-    QueryInterface, DataTypes
+    QueryInterface
 } from 'sequelize';
 
 export = {
     up: (queryInterface: QueryInterface, Sequelize: any) => {
-        return queryInterface.createTable('Themes', {
+        return queryInterface.createTable('TutorFileCertificates', {
             id: {
                 allowNull: false,
                 autoIncrement: true,
@@ -12,18 +12,31 @@ export = {
                 type: Sequelize.INTEGER
             },
 
-            id_theme_parent: {
+            id_tutor: {
                 type: Sequelize.INTEGER,
-                allowNull: true
+                allowNull: false,
+                references: {
+                    model: 'Tutors',
+                    key: 'id'
+                }
             },
 
-            name: {
-                type: Sequelize.STRING(20),
+            id_file: {
+                type: Sequelize.INTEGER,
+                allowNull: false,
+                references: {
+                    model: 'Files',
+                    key: 'id'
+                }
+            },
+
+            type: {
+                type: Sequelize.INTEGER,
                 allowNull: false
             },
 
             description: {
-                type: Sequelize.TEXT,
+                type: Sequelize.STRING(300),
                 allowNull: true
             },
 
@@ -40,6 +53,6 @@ export = {
     },
 
     down: (queryInterface: QueryInterface, Sequelize: any) => {
-        return queryInterface.dropTable('Themes');
+        return queryInterface.dropTable('TutorFileCertificates');
     }
 };

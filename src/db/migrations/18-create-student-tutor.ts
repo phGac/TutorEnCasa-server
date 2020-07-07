@@ -4,20 +4,25 @@ import {
 
 export = {
     up: (queryInterface: QueryInterface, Sequelize: any) => {
-        return queryInterface.createTable('Administrators', {
-            id: {
-                allowNull: false,
-                autoIncrement: true,
-                primaryKey: true,
-                type: Sequelize.INTEGER
+        return queryInterface.createTable('StudentTutors', {
+
+            id_student: {
+                type: Sequelize.INTEGER,
+                primaryKey: true
             },
 
-            id_user: {
-                type: Sequelize.INTEGER
+            id_tutor: {
+                type: Sequelize.INTEGER,
+                primaryKey: true,
+                references: {
+                    model: 'Tutors',
+                    key: 'id'
+                }
             },
 
             status: {
-                type: Sequelize.INTEGER
+                type: Sequelize.INTEGER,
+                allowNull: false
             },
 
             createdAt: {
@@ -34,6 +39,6 @@ export = {
     },
 
     down: (queryInterface: QueryInterface, Sequelize: any) => {
-        return queryInterface.dropTable('Administrators');
+        return queryInterface.dropTable('StudentTutors');
     }
 };

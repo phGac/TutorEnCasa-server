@@ -12,7 +12,8 @@ export = {
             },
 
             currency: {
-                type: Sequelize.STRING(3)
+                type: Sequelize.STRING(3),
+                allowNull: false
             },
 
             token: {
@@ -22,11 +23,13 @@ export = {
             },
 
             value: {
-                type: Sequelize.INTEGER
+                type: Sequelize.INTEGER,
+                allowNull: false
             },
 
             status: {
-                type: Sequelize.INTEGER
+                type: Sequelize.INTEGER,
+                allowNull: false
             },
 
             createdAt: {

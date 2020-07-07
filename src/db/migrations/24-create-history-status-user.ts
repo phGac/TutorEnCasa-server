@@ -1,10 +1,10 @@
 import {
-    QueryInterface, DataTypes,
+    QueryInterface,
 } from 'sequelize';
 
 export = {
     up: (queryInterface: QueryInterface, Sequelize: any) => {
-        return queryInterface.createTable('HistoryStatusClasses', {
+        return queryInterface.createTable('HistoryStatusUsers', {
             id: {
                 allowNull: false,
                 autoIncrement: true,
@@ -12,12 +12,18 @@ export = {
                 type: Sequelize.INTEGER
             },
 
-            id_class: {
-                type: Sequelize.INTEGER
+            id_user: {
+                type: Sequelize.INTEGER,
+                allowNull: false,
+                references: {
+                    model: 'Users',
+                    key: 'id'
+                }
             },
 
             status: {
-                type: Sequelize.INTEGER
+                type: Sequelize.INTEGER,
+                allowNull: false
             },
 
             commentary: {
@@ -26,8 +32,7 @@ export = {
 
             createdAt: {
                 allowNull: false,
-                type: Sequelize.DATE,
-                defaultValue: DataTypes.NOW
+                type: Sequelize.DATE
             },
 
             updatedAt: {
@@ -38,6 +43,6 @@ export = {
     },
 
     down: (queryInterface: QueryInterface, Sequelize: any) => {
-        return queryInterface.dropTable('HistoryStatusClasses');
+        return queryInterface.dropTable('HistoryStatusUsers');
     }
 };

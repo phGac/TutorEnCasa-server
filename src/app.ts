@@ -30,7 +30,10 @@ class App {
         this.app.set('views', path.resolve(__dirname, '..', 'resources', 'views'));
         this.app.set('view engine', 'ejs');
         this.app.use(requestIp());
-        this.app.use(logger(TypeLogger.DATA_BASE).configure({ level: 'ERROR' }));
+        if(process.env.NODE_ENV == 'development')
+            this.app.use(logger(TypeLogger.CONSOLE).configure({ level: 'ERROR' }));
+        else
+            this.app.use(logger(TypeLogger.DATA_BASE).configure({ level: 'ERROR' }));
         this.app.use(bodyParser.json({ limit: '50mb' }));
         this.app.use(bodyParser.urlencoded({ extended: false, limit: '50mb', parameterLimit: 1000000 }));
         this.app.use(cookieParser());

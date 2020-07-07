@@ -5,7 +5,7 @@ import {
 
 export = {
     up: (queryInterface: QueryInterface, Sequelize: any) => {
-        return queryInterface.createTable('Tutors', {
+        return queryInterface.createTable('HistoryAccesses', {
             id: {
                 allowNull: false,
                 autoIncrement: true,
@@ -14,11 +14,16 @@ export = {
             },
 
             id_user: {
-                type: Sequelize.INTEGER
+                type: Sequelize.INTEGER,
+                allowNull: false,
+                references: {
+                    model: 'Users',
+                    key: 'id'
+                }
             },
 
-            status: {
-                type: Sequelize.INTEGER
+            ip: {
+                type: Sequelize.STRING
             },
 
             createdAt: {
@@ -35,6 +40,6 @@ export = {
     },
 
     down: (queryInterface: QueryInterface, Sequelize: any) => {
-        return queryInterface.dropTable('Tutors');
+        return queryInterface.dropTable('HistoryAccesses');
     }
 };

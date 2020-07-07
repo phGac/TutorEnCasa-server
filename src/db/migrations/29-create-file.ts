@@ -1,8 +1,10 @@
-import { QueryInterface } from 'sequelize';
+import {
+    QueryInterface
+} from 'sequelize';
 
 export = {
     up: (queryInterface: QueryInterface, Sequelize: any) => {
-        return queryInterface.createTable('HistoryPasswords', {
+        return queryInterface.createTable('Files', {
             id: {
                 allowNull: false,
                 autoIncrement: true,
@@ -10,27 +12,32 @@ export = {
                 type: Sequelize.INTEGER
             },
 
-            id_user: {
-                type: Sequelize.INTEGER
+            name: {
+                type: Sequelize.STRING,
+                allowNull: false
             },
 
-            password: {
+            mime: {
+                type: Sequelize.STRING,
+                allowNull: false
+            },
+
+            key: {
+                type: Sequelize.STRING,
+                allowNull: false
+            },
+
+            url: {
                 type: Sequelize.STRING
             },
 
             createdAt: {
-                allowNull: false,
                 type: Sequelize.DATE
             },
-
-            updatedAt: {
-                allowNull: false,
-                type: Sequelize.DATE
-            }
         });
     },
 
     down: (queryInterface: QueryInterface, Sequelize: any) => {
-        return queryInterface.dropTable('HistoryPasswords');
+        return queryInterface.dropTable('Files');
     }
 };

@@ -1,11 +1,10 @@
 import {
-    QueryInterface,
-    DataTypes
+    QueryInterface, DataTypes,
 } from 'sequelize';
 
 export = {
     up: (queryInterface: QueryInterface, Sequelize: any) => {
-        return queryInterface.createTable('HistoryAccesses', {
+        return queryInterface.createTable('HistoryPriceHours', {
             id: {
                 allowNull: false,
                 autoIncrement: true,
@@ -13,28 +12,29 @@ export = {
                 type: Sequelize.INTEGER
             },
 
-            id_user: {
-                type: Sequelize.INTEGER
+            id_tutor_theme: {
+                type: Sequelize.INTEGER,
+                allowNull: false,
+                references: {
+                    model: 'tutorThemes',
+                    key: 'id'
+                }
             },
 
-            ip: {
-                type: Sequelize.STRING
+            price: {
+                type: Sequelize.INTEGER,
+                allowNull: false
             },
 
             createdAt: {
                 allowNull: false,
                 type: Sequelize.DATE,
                 defaultValue: DataTypes.NOW
-            },
-
-            updatedAt: {
-                allowNull: false,
-                type: Sequelize.DATE
             }
         });
     },
 
     down: (queryInterface: QueryInterface, Sequelize: any) => {
-        return queryInterface.dropTable('HistoryAccesses');
+        return queryInterface.dropTable('HistoryPriceHours');
     }
 };

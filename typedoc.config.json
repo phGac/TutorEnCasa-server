@@ -1,0 +1,12 @@
+{
+    "inputFiles": "./src",
+    "mode": "file",
+    "out": "doc",
+    "exclude": [
+        "./src/db/migrations",
+        "./src/db/migrations",
+        "./src/config",
+        "./src/index.ts"
+    ],
+    "theme": "./node_modules/typedoc-neo-theme/bin/default"
+}

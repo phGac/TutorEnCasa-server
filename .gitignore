@@ -69,7 +69,6 @@ nodemon.*
 log/**
 dist/**
 package-lock.json
-resources/public/doc
 uploads/**
 tmp/**
 artillery.config.yaml

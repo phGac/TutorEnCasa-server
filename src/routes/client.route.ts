@@ -3,8 +3,12 @@ import { Router, Request, Response } from 'express';
 
 const router = Router();
 
-router.get('/doc', (req: Request, res: Response) => {
-    res.sendFile(path.resolve(__dirname, '..', '..', 'resources', 'public', 'doc', 'index.html'));
+router.get('/doc/api', (req: Request, res: Response) => {
+    res.sendFile(path.resolve(__dirname, '..', '..', 'resources', 'public', 'doc', 'api', 'index.html'));
+});
+
+router.get('/doc/app', (req: Request, res: Response) => {
+    res.sendFile(path.resolve(__dirname, '..', '..', 'resources', 'public', 'doc', 'app', 'index.html'));
 });
 
 router.get('/reports/local', (req: Request, res: Response) => {

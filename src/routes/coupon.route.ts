@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { isLoggedIn, isTutor } from '../middlewares/session.middleware';
-import CouponController from '../controllers/coupon_controller';
+import CouponController, { CouponValidatorController } from '../controllers/coupon_controller';
 
 const router = Router();
 
@@ -22,12 +22,14 @@ const router = Router();
  * 
  * @apiUse CouponController
  */
-router.post('/new', isLoggedIn, isTutor, CouponController.create);
+router.post('/new', isLoggedIn, CouponValidatorController.create, CouponController.create);
 
-router.get('/:id', isLoggedIn, CouponController.show);
+router.get(['/', '/:id'], isLoggedIn, CouponValidatorController.show, CouponController.show);
 
-router.put('/:id', isLoggedIn, CouponController.update);
+router.get('/:id/status', isLoggedIn, CouponValidatorController.status, CouponController.status);
 
-router.delete('/:id', isLoggedIn, isTutor, CouponController.destroy);
+router.put('/:id/gift', isLoggedIn, CouponValidatorController.gift, CouponController.gift);
+
+router.delete('/:id', isLoggedIn, CouponValidatorController.destroy, CouponController.destroy);
 
 export default router;

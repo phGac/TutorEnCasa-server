@@ -3,6 +3,8 @@ import jwt from 'jsonwebtoken';
 
 import { requestMessage, loginMessage } from '../config/messages';
 import { auth } from '../services/auth.service';
+import { HistoryAccess } from '../db/models';
+import logger from '../util/logger';
 
 class SessionValidatorController {
     static create(req: Request, res: Response, next: NextFunction) {
@@ -29,7 +31,14 @@ class SessionController {
         const { email, password } = res.locals;
         auth(email, password)
             .then((user) => {
-                const token = jwt.sign(user, process.env.JWT_KEY || '', { expiresIn: 1440 });
+                HistoryAccess.create({
+                    id_user: user.id,
+                    ip: req.clientIp
+                })
+                .catch((e) => {
+                    logger().error(e, 'APP');
+                });
+                const token = jwt.sign(user, process.env.JWT_KEY || '', { expiresIn: '2h' });
                 res.json({ status: 'success', user, token });
             })
             .catch((e) => {

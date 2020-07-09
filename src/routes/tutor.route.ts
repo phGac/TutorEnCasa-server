@@ -4,6 +4,8 @@ import TutorController, { TutorValidatorController } from '../controllers/tutor_
 
 const router = Router();
 
+router.get('/times', isLoggedIn, isTutor, TutorValidatorController.times, TutorController.times);
+
 /**
  * 
  * @api {post} /tutor/:id Ver Tutor

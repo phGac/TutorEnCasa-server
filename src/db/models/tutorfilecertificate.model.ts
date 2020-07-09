@@ -48,7 +48,7 @@ TutorFileCertificate.associate = function(models) {
         as: 'tutor',
         foreignKey: 'id_tutor'
     });
-    TutorFileCertificate.hasOne(File, {
+    TutorFileCertificate.belongsTo(File, {
         as: 'file',
         foreignKey: 'id_file'
     });

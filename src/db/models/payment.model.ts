@@ -1,5 +1,4 @@
 import { DataTypes, Model } from 'sequelize';
-import { v4 as uuid } from 'uuid';
 
 import sequelize from '../index';
 
@@ -10,6 +9,7 @@ class Payment extends Model {
     value!: number;
     status!: number;
     currency!: string;
+    subject!: string;
 
     readonly createdAt!: Date;
     readonly updatedAt!: Date;
@@ -17,9 +17,9 @@ class Payment extends Model {
 
 Payment.init({
     id: {
-        type: DataTypes.UUIDV4,
-        defaultValue: uuid(),
-        primaryKey: true
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
     },
     token: {
         type: DataTypes.STRING,
@@ -31,6 +31,9 @@ Payment.init({
     },
     currency: {
         type: DataTypes.STRING(3)
+    },
+    subject: {
+        type: DataTypes.STRING(100)
     },
     status: {
         type: DataTypes.INTEGER
@@ -44,9 +47,10 @@ Payment.init({
 }, { sequelize });
 
 enum PaymentStatus {
-    UNPAID,
+    PENDING,
+    VERIFYING,
+    CANCELLED,
     PAID,
-    CANCELLED
 }
 
 export {

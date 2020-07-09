@@ -1,53 +1,43 @@
-import { QueryInterface } from 'sequelize';
+import {
+    QueryInterface
+} from 'sequelize';
 
-export = {
+module.exports = {
     up: (queryInterface: QueryInterface, Sequelize: any) => {
-        return queryInterface.createTable('AvailabilityTimes', {
+        return queryInterface.createTable('ClassTimes', {
             id: {
                 allowNull: false,
                 autoIncrement: true,
                 primaryKey: true,
                 type: Sequelize.INTEGER
             },
-
-            id_tutor: {
+            id_class: {
                 type: Sequelize.INTEGER,
                 allowNull: false,
                 references: {
-                    model: 'Tutors',
+                    model: 'Classes',
                     key: 'id'
                 }
             },
-
-            start: {
-                type: Sequelize.DATE,
-                allowNull: false
-            },
-            
-            minutes: {
+            id_availability_time: {
                 type: Sequelize.INTEGER,
-                allowNull: false
-            },
-
-            status: {
-                type: Sequelize.INTEGER,
-                allowNull: false
-            },
-
-            createdAt: {
-                type: Sequelize.DATE,
                 allowNull: false,
-                defaultValue: Sequelize.NOW
+                references: {
+                    model: 'AvailabilityTimes',
+                    key: 'id'
+                }
             },
-
+            createdAt: {
+                allowNull: false,
+                type: Sequelize.DATE
+            },
             updatedAt: {
                 allowNull: false,
                 type: Sequelize.DATE
             }
         });
     },
-
     down: (queryInterface: QueryInterface, Sequelize: any) => {
-        return queryInterface.dropTable('AvailabilityTimes');
+        return queryInterface.dropTable('ClassTimes');
     }
 };

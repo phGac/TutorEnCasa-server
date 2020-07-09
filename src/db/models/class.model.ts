@@ -5,6 +5,7 @@ import sequelize from '../index';
 class Class extends Model {
 	public id!: number;
 	public id_tutor!: number;
+	public id_time!: number;
 
 	public start!: Date;
 	public finish!: Date;

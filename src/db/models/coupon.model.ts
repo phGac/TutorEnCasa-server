@@ -1,17 +1,19 @@
 import { DataTypes, Model, UUIDV4 } from 'sequelize';
-import { v4 as uuid } from 'uuid';
+import { generate as voucher } from 'voucher-code-generator';
 
 import sequelize from '../index';
+import CouponGift from './coupongift.model';
 
 class Coupon extends Model {
     id!: string;
-    id_user_from!: number;
-    id_user_to!: number;
+    id_payment!: number;
+    id_user!: number;
 
-    message!: string|null;
     value!: number;
     expires!: Date;
     status!: number;
+
+    gift!: CouponGift;
 
     readonly createdAt!: Date;
 	readonly updatedAt!: Date|null;
@@ -25,20 +27,15 @@ enum CouponStatus {
 
 Coupon.init({
     id: {
-        type: DataTypes.UUIDV4,
+        type: DataTypes.STRING(10),
         primaryKey: true,
-        defaultValue: () => uuid()
+        defaultValue: () => (voucher({ length: 10, count: 1 })[0])
     },
-    id_user_from: {
+    id_payment: {
         type: DataTypes.INTEGER
     },
-    id_user_to: {
-        type: DataTypes.INTEGER,
-        defaultValue: 0
-    },
-    message: {
-        type: DataTypes.TEXT,
-        allowNull: true
+    id_user: {
+        type: DataTypes.INTEGER
     },
     value: {
         type: DataTypes.INTEGER
@@ -64,14 +61,18 @@ Coupon.init({
 
 // @ts-ignore
 Coupon.associate = function(models) {
-    const { User } = models;
+    const { User, CouponGift, Payment } = models;
     Coupon.belongsTo(User, {
         as: 'from',
-        foreignKey: 'id_user_from'
+        foreignKey: 'id_user'
     });
-    Coupon.belongsTo(User, {
-        as: 'to',
-        foreignKey: 'id_user_to'
+    Coupon.hasOne(CouponGift, {
+        as: 'gift',
+        foreignKey: 'id_coupon'
+    });
+    Coupon.belongsTo(Payment, {
+        as: 'payment',
+        foreignKey: 'id_payment'
     });
 }
 

@@ -32,7 +32,6 @@ class FileService {
                     File.create({
                         name: filename,
                         mime: file.mimetype,
-                        url: data.Location,
                         key: data.Key
                     })
                     .then((fileInstance) => {
@@ -46,10 +45,10 @@ class FileService {
         });
     }
 
-    static download(file: File) {
+    static download(key: string) {
         const options = {
             Bucket: process.env.AWS_S3_BUCKET || '',
-            Key: file.key
+            Key: key
         };
         const stream = this.s3.getObject(options).createReadStream();
         return stream;

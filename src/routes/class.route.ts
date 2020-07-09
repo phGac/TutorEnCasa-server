@@ -6,4 +6,6 @@ const router = Router();
 
 router.post('/new', isLoggedIn, ClassValidatorController.create, ClassController.create);
 
+router.post('/join', isLoggedIn, ClassValidatorController.join, ClassController.join);
+
 export default router;

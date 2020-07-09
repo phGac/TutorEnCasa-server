@@ -8,7 +8,8 @@ export = {
             id: {
                 allowNull: false,
                 primaryKey: true,
-                type: Sequelize.STRING(36)
+                type: Sequelize.INTEGER,
+                autoIncrement: true
             },
 
             currency: {
@@ -24,6 +25,11 @@ export = {
 
             value: {
                 type: Sequelize.INTEGER,
+                allowNull: false
+            },
+
+            subject: {
+                type: Sequelize.STRING(100),
                 allowNull: false
             },
 

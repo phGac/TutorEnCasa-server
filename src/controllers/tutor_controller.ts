@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 
 import { findTutor } from "../util/find";
 import { requestMessage, tutorMessage } from "../config/messages";
-import { Theme, TutorTheme, Tutor, User } from '../db/models';
+import { Theme, TutorTheme, Tutor, User, AvailabilityTime } from '../db/models';
 import { TutorStatus } from "../db/models/tutor.model";
 import FileService from "../services/file.service";
 import { FindOptions } from "sequelize/types";
@@ -66,6 +66,10 @@ class TutorValidatorController {
         res.locals.id = req.params.id;
         next();
     }
+    
+    static times(req: Request, res: Response, next: NextFunction) {
+        next();
+    }
 }
 
 class TutorController {
@@ -126,6 +130,7 @@ class TutorController {
                 next({ error: err, custom: false });
             });
     }
+
     static newRequest(req: Request, res: Response, next: NextFunction) {
         // @ts-ignore
         const { id } = req.user;
@@ -200,6 +205,27 @@ class TutorController {
         });
 
         res.json({ status: 'success' });
+    }
+    static times(req: Request, res: Response, next: NextFunction) {
+        // @ts-ignore
+        const { id_tutor } = req.user;
+
+        const options: FindOptions = {
+            where: { 
+                id_tutor,
+                status: 1
+            }
+        };
+        AvailabilityTime.findAll(options)
+            .then((times) => {
+                res.json({
+                    status: 'success',
+                    times
+                });
+            })
+            .catch((e) => {
+                next({ error: e, custom: false });
+            });
     }
 }
 

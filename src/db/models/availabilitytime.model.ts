@@ -7,7 +7,7 @@ class AvailabilityTime extends Model {
     public id_tutor!: number;
 
     public start!: Date;
-    public finish!: Date;
+    public minutes!: number;
     public status!: number;
 
     public readonly createdAt!: Date;
@@ -28,9 +28,10 @@ AvailabilityTime.init({
         type: DataTypes.DATE,
         allowNull: false
     },
-    finish: {
-        type: DataTypes.DATE,
-        allowNull: false
+    minutes: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 60
     },
     status: {
         type: DataTypes.INTEGER,
@@ -55,5 +56,14 @@ AvailabilityTime.associate = function(models) {
         foreignKey: 'id_tutor'
     });
 };
+
+enum AvailabilityTimeStatus {
+    INACTIVE,
+    ACTIVE
+}
+
+export {
+    AvailabilityTimeStatus
+}
 
 export default AvailabilityTime;

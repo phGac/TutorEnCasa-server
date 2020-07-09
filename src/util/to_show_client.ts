@@ -18,15 +18,19 @@ export function userToShowClient(user: User): UserClient {
     const toShow: any = user.get({ plain: true, clone: true });
     toShow.roles = [ UserRole.STUDENT ];
     if(toShow.passwords) delete toShow.passwords;
-    if(toShow.role_tutor) {
-        toShow.id_tutor = toShow.role_tutor.id;
+    if(toShow.role_tutor || toShow.role_tutor == null) {
+        if(toShow.role_tutor != null) {
+            toShow.id_tutor = toShow.role_tutor.id;
+            toShow.roles.push(UserRole.TUTOR);
+        }
         delete toShow.role_tutor;
-        toShow.roles.push(UserRole.TUTOR);
     }
-    if(toShow.role_administrator) {
-        toShow.id_administrator = toShow.role_administrator.id;
+    if(toShow.role_administrator || toShow.role_administrator == null) {
+        if(toShow.role_administrator != null) {
+            toShow.id_administrator = toShow.role_administrator.id;
+            toShow.roles.push(UserRole.ADMINISTRATOR);
+        }
         delete toShow.role_administrator;
-        toShow.roles.push(UserRole.ADMINISTRATOR);
     }
     return toShow;
 }

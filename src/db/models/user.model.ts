@@ -3,10 +3,12 @@ import bcrypt from 'bcrypt';
 
 import sequelize from '../index';
 import HistoryPassword from './historypassword.model';
+import Coupon from './coupon.model';
 import { loginMessage } from '../../config/messages';
 
 class User extends Model {
-    public id!: number;
+	public id!: number;
+	
     public firstname!: string|null;
 	public lastname!: string|null;
 	public email!: string;
@@ -14,6 +16,7 @@ class User extends Model {
 	public passwords!: HistoryPassword[];
 	public birthdate!: Date|null;
 	public status!: number;
+	public coupons!: Coupon[];
 
     public readonly createdAt!: Date;
 	public readonly updatedAt!: Date;
@@ -72,16 +75,10 @@ User.init({
 
 // @ts-ignore
 User.associate = function(models) {
-	const { Tutor, StudentTutor, Schedule, HistoryAccess, HistoryPassword, ClassRating, Administrator, Coupon } = models;
+	const { Tutor, Schedule, HistoryAccess, HistoryPassword, ClassRating, Administrator, Coupon, CouponGift } = models;
 	User.hasMany(HistoryPassword, {
 		as: 'passwords',
 		foreignKey: 'id_user'
-	});
-	User.belongsToMany(Tutor, {
-		as: 'tutors',
-		through: StudentTutor,
-		foreignKey: 'id_student',
-		otherKey: 'id_tutor'
 	});
 	User.hasMany(Schedule, {
 		as: 'schedules',
@@ -104,12 +101,12 @@ User.associate = function(models) {
 		foreignKey: 'id_user'
 	});
 	User.hasMany(Coupon, {
-		as: 'coupons_created',
-		foreignKey: 'id_user_from'
+		as: 'coupons',
+		foreignKey: 'id_user'
 	});
-	User.hasMany(Coupon, {
-		as: 'coupons_given',
-		foreignKey: 'id_user_to'
+	User.hasMany(CouponGift, {
+		as: 'gifts',
+		foreignKey: 'id_user'
 	});
 };
 

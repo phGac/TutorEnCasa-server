@@ -26,6 +26,7 @@
     "uuid": "^8.1.0",
     "validator": "^13.1.1",
     "verificador-rut": "^2.2.1",
+    "voucher-code-generator": "^1.1.1",
     "zxcvbn": "^4.4.2"
   },
   "devDependencies": {
@@ -44,6 +45,7 @@
     "@types/supertest": "^2.0.10",
     "@types/uuid": "^8.0.0",
     "@types/validator": "^13.0.0",
+    "@types/voucher-code-generator": "^1.1.0",
     "@types/zxcvbn": "^4.4.0",
     "jest": "^26.0.1",
     "nodemon": "^2.0.4",

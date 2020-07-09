@@ -3,6 +3,7 @@ import { DataTypes, Model } from 'sequelize';
 import sequelize from '../index';
 import AvailabilityTime from './availabilitytime.model';
 import Theme from './theme.model';
+import File from './file.model';
 
 class Tutor extends Model {
 	public id!: number;
@@ -12,6 +13,7 @@ class Tutor extends Model {
 	public description!: string;
 	public themes!: Theme[];
 	public times!: AvailabilityTime[];
+	public certificates!: File[];
 
 	public readonly createdAt!: Date;
 	public readonly updatedAt!: Date|null;
@@ -48,7 +50,7 @@ Tutor.init({
 
 // @ts-ignore
 Tutor.associate = function(models) {
-	const { Class, AvailabilityTime, HistoryPriceHour, User, StudentTutor, TutorTheme, Theme, TutorFileCertificate } = models;
+	const { Class, AvailabilityTime, HistoryPriceHour, User, TutorTheme, Theme, TutorFileCertificate, File } = models;
 	Tutor.hasMany(Class, {
 		as: 'classes',
 		foreignKey: 'id_tutor'
@@ -65,21 +67,17 @@ Tutor.associate = function(models) {
 		as: 'user',
 		foreignKey: 'id_user'
 	});
-	Tutor.belongsToMany(User, {
-		as: 'students',
-		through: StudentTutor,
-		foreignKey: 'id_tutor',
-		otherKey: 'id_student'
-	});
 	Tutor.belongsToMany(Theme, {
 		as: 'themes',
 		through: TutorTheme,
 		foreignKey: 'id_tutor',
 		otherKey: 'id_theme'
 	});
-    Tutor.hasMany(TutorFileCertificate, {
+    Tutor.belongsToMany(File, {
         as: 'certificates',
-        foreignKey: 'id_tutor'
+		through: TutorFileCertificate,
+		foreignKey: 'id_tutor',
+		otherKey: 'id_file'
 	});
 };
 

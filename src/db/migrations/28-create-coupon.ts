@@ -2,42 +2,48 @@ import { QueryInterface } from 'sequelize';
 
 export = {
     up: (queryInterface: QueryInterface, Sequelize: any) => {
-        return queryInterface.createTable('AvailabilityTimes', {
+        return queryInterface.createTable('Coupons', {
             id: {
                 allowNull: false,
-                autoIncrement: true,
                 primaryKey: true,
-                type: Sequelize.INTEGER
+                type: Sequelize.STRING(10)
             },
 
-            id_tutor: {
+            id_payment: {
                 type: Sequelize.INTEGER,
                 allowNull: false,
                 references: {
-                    model: 'Tutors',
+                    model: 'Payments',
                     key: 'id'
                 }
             },
 
-            start: {
-                type: Sequelize.DATE,
-                allowNull: false
+            id_user: {
+                type: Sequelize.INTEGER,
+                allowNull: false,
+                references: {
+                    model: 'Users',
+                    key: 'id'
+                }
             },
-            
-            minutes: {
+
+            value: {
                 type: Sequelize.INTEGER,
                 allowNull: false
+            },
+
+            expires: {
+                type: Sequelize.DATE
             },
 
             status: {
-                type: Sequelize.INTEGER,
-                allowNull: false
+                type: Sequelize.BOOLEAN,
+                defaultValue: true
             },
 
             createdAt: {
-                type: Sequelize.DATE,
                 allowNull: false,
-                defaultValue: Sequelize.NOW
+                type: Sequelize.DATE
             },
 
             updatedAt: {
@@ -48,6 +54,6 @@ export = {
     },
 
     down: (queryInterface: QueryInterface, Sequelize: any) => {
-        return queryInterface.dropTable('AvailabilityTimes');
+        return queryInterface.dropTable('Coupons');
     }
 };

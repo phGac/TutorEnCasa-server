@@ -1,15 +1,25 @@
-import { QueryInterface } from 'sequelize';
+import {
+    QueryInterface
+} from 'sequelize';
 
-export = {
+module.exports = {
     up: (queryInterface: QueryInterface, Sequelize: any) => {
-        return queryInterface.createTable('Coupons', {
+        return queryInterface.createTable('CouponGifts', {
             id: {
                 allowNull: false,
+                autoIncrement: true,
                 primaryKey: true,
-                type: Sequelize.UUID
+                type: Sequelize.INTEGER
             },
-
-            id_user_from: {
+            id_coupon: {
+                type: Sequelize.STRING,
+                allowNull: false,
+                references: {
+                    model: 'Coupons',
+                    key: 'id'
+                }
+            },
+            id_user: {
                 type: Sequelize.INTEGER,
                 allowNull: false,
                 references: {
@@ -17,49 +27,21 @@ export = {
                     key: 'id'
                 }
             },
-
-            id_user_to: {
-                type: Sequelize.INTEGER,
-                allowNull: false,
-                defaultValue: 0,
-                references: {
-                    model: 'Users',
-                    key: 'id'
-                }
-            },
-
             message: {
-                type: Sequelize.TEXT,
+                type: Sequelize.STRING,
                 allowNull: true
             },
-
-            value: {
-                type: Sequelize.INTEGER,
-                allowNull: false
-            },
-
-            expires: {
-                type: Sequelize.DATE
-            },
-
-            status: {
-                type: Sequelize.BOOLEAN,
-                defaultValue: true
-            },
-
             createdAt: {
                 allowNull: false,
                 type: Sequelize.DATE
             },
-
             updatedAt: {
                 allowNull: false,
                 type: Sequelize.DATE
             }
         });
     },
-
     down: (queryInterface: QueryInterface, Sequelize: any) => {
-        return queryInterface.dropTable('Coupons');
+        return queryInterface.dropTable('CouponGifts');
     }
 };

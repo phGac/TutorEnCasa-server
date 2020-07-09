@@ -5,7 +5,6 @@ import HistoryAccess from './historyaccess.model';
 import HistoryPriceHour from './historypricehour.model';
 import HistoryStatusClass from './historystatusclass.model';
 import Schedule from './schedule.model';
-import StudentTutor from './studenttutor.model';
 import AvailabilityTime from './availabilitytime.model';
 import Tutor from './tutor.model';
 import User from './user.model';
@@ -17,6 +16,9 @@ import Coupon from './coupon.model';
 import Payment from './payment.model';
 import File from './file.model';
 import TutorFileCertificate from './tutorfilecertificate.model';
+import ClassPayment from './classpayment';
+import CouponGift from './coupongift.model';
+import ClassTime from './classtime.model';
 
 export {
 	Administrator,
@@ -26,7 +28,6 @@ export {
 	HistoryPriceHour,
 	HistoryStatusClass,
 	Schedule,
-	StudentTutor,
 	AvailabilityTime,
 	Tutor,
 	User,
@@ -37,5 +38,8 @@ export {
 	Coupon,
 	Payment,
 	File,
-	TutorFileCertificate
+	TutorFileCertificate,
+	ClassPayment,
+	CouponGift,
+	ClassTime
 }

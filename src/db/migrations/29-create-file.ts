@@ -27,10 +27,6 @@ export = {
                 allowNull: false
             },
 
-            url: {
-                type: Sequelize.STRING
-            },
-
             createdAt: {
                 type: Sequelize.DATE
             },

@@ -4,7 +4,9 @@ import { FindOptions } from "sequelize/types";
 import { PaymentService } from "../services/payment.service";
 import { requestMessage } from "../config/messages";
 import validator from "validator";
-import { Tutor } from "../db/models";
+import { Tutor, Class } from "../db/models";
+import { TutorStatus } from "../db/models/tutor.model";
+import TutorService from "../services/tutor.service";
 
 class ClassValidatorController {
     static create(req: Request, res: Response, next: NextFunction) {
@@ -21,6 +23,9 @@ class ClassValidatorController {
         res.locals.id_theme = req.body.id_theme;
         next();
     }
+    static join(req: Request, res: Response, next: NextFunction) {
+        next();
+    }
     static update(req: Request, res: Response, next: NextFunction) {
         next();
     }
@@ -34,25 +39,48 @@ class ClassValidatorController {
 
 class ClassController {
     static create(req: Request, res: Response, next: NextFunction) {
-        const { date, minutes, id_tutor, id_theme } = res.locals;
+        const { id_theme } = res.locals;
+
+        // @ts-ignore
+        const { id_tutor } = req.user;
+        const date: Date = res.locals.date;
+        const minutes: number = res.locals.minutes;
 
         const options: FindOptions = {
-            where: { id: id_tutor },
-            include: [
-                { 
-                    association: 'themes',
-                    //where: { id: id_theme }
-                },
-                { association: 'times' }
-            ]
+            where: { 
+                id: id_tutor,
+                status: TutorStatus.ACTIVE
+            },
+            include: [{ association: 'themes' }]
         };
         Tutor.findOne(options)
             .then((tutor) => {
-                if(! tutor) return next({ error: 'El tutor no se ha encontrado', custom: true });
-                // validar si está disponible el tutor
-                res.json({ tutor });
+                if(! tutor) {
+                    next({ error: 'El tutor no está habilitado', custom: true });
+                    return;
+                }
+                const finish = TutorService.addMinutes(date, minutes);
+                TutorService.isAvailable(id_tutor, {
+                    day: date.getDay(),
+                    start: date,
+                    finish
+                })
+                .then((id_time) => {
+                    if(! id_time) {
+                        next({ error: 'El tutor no dispone de tiempo para la clase', custom: true });
+                        return;
+                    }
+                    Class.create({
+                        id_tutor,
+                        start: date,
+                        finish
+                    });
+                    res.json({ status: 'success' });
+                });
+            })
+            .catch((e) => {
+                next({ error: e, custom: false });
             });
-
         /*
         PaymentService.create(300)
             .then((info) => {
@@ -68,6 +96,9 @@ class ClassController {
                 next(e);
             });
         */
+    }
+    static join(req: Request, res: Response, next: NextFunction) {
+        next();
     }
     static update(req: Request, res: Response, next: NextFunction) {}
     static destroy(req: Request, res: Response, next: NextFunction) {}

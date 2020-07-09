@@ -8,7 +8,6 @@ class File extends Model {
     name!: string;
     mime!: string;
     key!: string;
-    url!: string;
 
     readonly createdAt!: Date;
 }
@@ -27,9 +26,6 @@ File.init({
     },
     key: {
         type: DataTypes.STRING
-    },
-    url: {
-        type: DataTypes.STRING(300)
     },
     createdAt: {
         type: DataTypes.DATE,

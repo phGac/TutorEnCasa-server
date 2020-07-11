@@ -1,18 +1,11 @@
-import { FindOptions, fn, where } from "sequelize";
-
-import { AvailabilityTime, Class } from "../db/models";
+import { AvailabilityTime } from "../db/models";
+import { where, fn, col, Op, FindOptions } from "sequelize";
 import { AvailabilityTimeStatus } from "../db/models/availabilitytime.model";
 
 interface AvailabilityTimeDate {
     day: number;
-    start: {
-        hour: number;
-        minutes: number;
-    } | Date;
-    finish: {
-        hour: number;
-        minutes: number;
-    } | Date;
+    start: Date;
+    finish:  Date;
 }
 
 class TutorService {
@@ -22,13 +15,18 @@ class TutorService {
         return Date.parse(`01/01/2020 ${hour}:${minute}:00`);
     }
 
-    static isAvailable(id_tutor: number, date: AvailabilityTimeDate) {
-        return new Promise((resolve :(id_time: number|null) => void, reject) => {
+    static isAvailable(id_tutor: number, date: Date, minutes: number) {
+        return new Promise((resolve: (times: AvailabilityTime[]|null) => void, reject) => {
+
             const options: FindOptions = {
-                where: { 
+                where: {
                     id_tutor,
-                    status: AvailabilityTimeStatus.ACTIVE
+                    status: AvailabilityTimeStatus.ACTIVE,
+                    start: {
+                        [Op.between]: [ date.toISOString(), this.addMinutes(date, minutes).toISOString() ]
+                    },
                 },
+                order: [ 'start' ]
             };
             AvailabilityTime.findAll(options)
                 .then((times) => {
@@ -37,30 +35,42 @@ class TutorService {
                         return;
                     }
 
-                    resolve(null);
-                    /*
-                    const hout_start = (date.start instanceof Date) ? date.start.getHours() : date.start.hour;
-                    const hout_finish = (date.finish instanceof Date) ? date.finish.getHours() : date.finish.hour;
-                    const minute_start = (date.start instanceof Date) ? date.start.getMinutes() : date.start.minutes;
-                    const minute_finish = (date.finish instanceof Date) ? date.finish.getMinutes() : date.finish.minutes;
-                    const time = times.find((time) => 
-                        (
-                            this.toDate(time.hour_start, time.minute_start) <= this.toDate(hout_start, minute_start) &&
-                            this.toDate(time.hour_finish, time.minute_finish) >= this.toDate(hout_finish, minute_finish)
-                        )
-                    );
-                    if(! time) {
-                        resolve(null);
-                        return;
+                    const timesDone = [];
+                    let lastFinish: Date|null = null;
+                    let total = 0;
+                    for (let index = 0; index < times.length; index++) {
+                        const time = times[index];
+                        if(lastFinish != null) {
+                            if(lastFinish.getTime() !== time.start.getTime()) {
+                                resolve(null);
+                                return;
+                            }
+                        }
+                        timesDone.push(time);
+                        total += time.minutes;
+                        lastFinish = this.addMinutes(time.start, time.minutes);
+                        if(total >= minutes)
+                            break;
                     }
-                    console.log(time);
-                    resolve(null);
-                    */
+                    if(total >= minutes)
+                        resolve(timesDone);
+                    else
+                        resolve(null);
                 })
                 .catch((e) => {
                     reject({ error: e, custom: false });
                 });
         });
+    }
+
+    private static toDateFormat(dt: Date) {
+        return `${
+            (dt.getMonth()+1).toString().padStart(2, '0')}/${
+            dt.getDate().toString().padStart(2, '0')}/${
+            dt.getFullYear().toString().padStart(4, '0')} ${
+            dt.getHours().toString().padStart(2, '0')}:${
+            dt.getMinutes().toString().padStart(2, '0')}:${
+            dt.getSeconds().toString().padStart(2, '0')}`
     }
 
     static addMinutes(date: Date, minutes: number) {

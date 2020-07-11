@@ -12,16 +12,6 @@ export = {
                 type: Sequelize.INTEGER
             },
 
-            id_theme_parent: {
-                type: Sequelize.INTEGER,
-                allowNull: true,
-                references: {
-                    model: 'Themes',
-                    key: 'id'
-                },
-                defaultValue: 0
-            },
-
             name: {
                 type: Sequelize.STRING(20),
                 allowNull: false

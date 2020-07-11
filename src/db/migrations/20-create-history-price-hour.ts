@@ -16,7 +16,7 @@ export = {
                 type: Sequelize.INTEGER,
                 allowNull: false,
                 references: {
-                    model: 'tutorThemes',
+                    model: 'TutorThemes',
                     key: 'id'
                 }
             },

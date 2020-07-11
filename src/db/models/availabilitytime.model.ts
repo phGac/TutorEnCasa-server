@@ -59,7 +59,8 @@ AvailabilityTime.associate = function(models) {
 
 enum AvailabilityTimeStatus {
     INACTIVE,
-    ACTIVE
+    ACTIVE,
+    RESERVED
 }
 
 export {

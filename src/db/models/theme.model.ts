@@ -4,7 +4,6 @@ import sequelize from '../index';
 
 class Theme extends Model {
     id!: number;
-    id_theme_parent!: number;
 
     name!: string;
     description!: string|null;
@@ -18,11 +17,6 @@ Theme.init({
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true
-    },
-    id_theme_parent: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        defaultValue: 0
     },
     name: {
         type: DataTypes.STRING(20)

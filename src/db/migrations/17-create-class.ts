@@ -19,14 +19,13 @@ export = {
                 }
             },
 
-            start: {
-                type: Sequelize.DATE,
-                allowNull: false
-            },
-
-            finish: {
-                type: Sequelize.DATE,
-                allowNull: false
+            id_tutor_theme: {
+                type: Sequelize.INTEGER,
+                allowNull: false,
+                references: {
+                    model: 'TutorThemes',
+                    key: 'id'
+                }
             },
 
             price_hour: {

@@ -5,10 +5,9 @@ import sequelize from '../index';
 class Class extends Model {
 	public id!: number;
 	public id_tutor!: number;
-	public id_time!: number;
+	public id_tutor_theme!: number;
 
-	public start!: Date;
-	public finish!: Date;
+	public readonly price_hour!: number;
 
 	public readonly createdAt!: Date;
 	public readonly updatedAt!: Date|null;
@@ -21,6 +20,14 @@ Class.init({
 		primaryKey: true
 	},
 	id_tutor: {
+		type: DataTypes.INTEGER,
+		allowNull: false
+	},
+	id_tutor_theme: {
+		type: DataTypes.INTEGER,
+		allowNull: false
+	},
+	price_hour: {
 		type: DataTypes.INTEGER,
 		allowNull: false
 	},

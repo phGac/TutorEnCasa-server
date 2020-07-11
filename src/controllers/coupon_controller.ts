@@ -51,33 +51,36 @@ class CouponController {
         // @ts-ignore
         const id_user = req.user?.id;
         const { id } = res.locals;
-        let options: FindOptions = {
+        const options: FindOptions = {
             attributes: [],
             where: { id: id_user },
             include: []
         };
-        if(! id) {
-            options.include?.push(
+        if(! id && options.include) {
+            options.include.push(
                 {
                     association: 'coupons',
-                    required: true
+                    attributes: [[ 'id', 'code' ], 'value', 'createdAt']
                 },
                 { 
                     association: 'gifts'
                 }
             );
         }
-        else {
-            options.include?.push({
+        else if(options.include) {
+            options.include.push({
                 association: 'coupons',
+                attributes: [[ 'id', 'code' ], 'value', 'createdAt'],
                 include: [ { association: 'payment' } ],
-                required: true,
                 where: { id }
             });
         }
         User.findOne(options)
             .then((user) => {
-                if(user) {
+                if(! user) {
+                    next({ error: 'No encontrado', custom: true });
+                }
+                else {
                     const info = user.get({ plain: true });
                     res.json({
                         status: 'success',
@@ -85,7 +88,7 @@ class CouponController {
                     });
                 }
             })
-            .catch((e) => {
+            .catch((e: Error) => {
                 next({ error: e, custom: false });
             });
     }
@@ -100,14 +103,14 @@ class CouponController {
                     id_payment: info.payment.payment.id,
                     value
                 })
-                .then((coupon) => {
+                .then((coupon: Coupon) => {
                     res.json({ 
                         status: 'success', 
                         code: coupon.id,
                         url: info.payment.khipu.payment_url
                     });
                 })
-                .catch((e) => {
+                .catch((e: Error) => {
                     next({ error: e, custom: false });
                 });
             })
@@ -151,16 +154,16 @@ class CouponController {
                             id_user: user.id,
                             message
                         })
-                        .catch((err) => {
+                        .catch((err: Error) => {
                             logger().error(err);
                         });
                         res.json({ status: 'success' });
                     })
-                    .catch((err) => {
+                    .catch((err: Error) => {
                         next({ error: err, custom: false });
                     });
             })
-            .catch((err) => {
+            .catch((err: Error) => {
                 next({ error: err, custom: false });
             });
         

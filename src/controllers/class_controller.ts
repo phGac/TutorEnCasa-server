@@ -4,9 +4,11 @@ import { FindOptions } from "sequelize/types";
 import { PaymentService } from "../services/payment.service";
 import { requestMessage } from "../config/messages";
 import validator from "validator";
-import { Tutor, Class } from "../db/models";
+import { Tutor, Class, ClassTime } from "../db/models";
 import { TutorStatus } from "../db/models/tutor.model";
 import TutorService from "../services/tutor.service";
+import logger from "../util/logger";
+import { AvailabilityTimeStatus } from "../db/models/availabilitytime.model";
 
 class ClassValidatorController {
     static create(req: Request, res: Response, next: NextFunction) {
@@ -51,7 +53,13 @@ class ClassController {
                 id: id_tutor,
                 status: TutorStatus.ACTIVE
             },
-            include: [{ association: 'themes' }]
+            include: [{ 
+                association: 'themes',
+                required: true,
+                where: {
+                    id: id_theme
+                }
+            }]
         };
         Tutor.findOne(options)
             .then((tutor) => {
@@ -59,43 +67,44 @@ class ClassController {
                     next({ error: 'El tutor no está habilitado', custom: true });
                     return;
                 }
-                const finish = TutorService.addMinutes(date, minutes);
-                TutorService.isAvailable(id_tutor, {
-                    day: date.getDay(),
-                    start: date,
-                    finish
-                })
-                .then((id_time) => {
-                    if(! id_time) {
-                        next({ error: 'El tutor no dispone de tiempo para la clase', custom: true });
-                        return;
-                    }
-                    Class.create({
-                        id_tutor,
-                        start: date,
-                        finish
-                    });
-                    res.json({ status: 'success' });
-                });
-            })
-            .catch((e) => {
-                next({ error: e, custom: false });
-            });
-        /*
-        PaymentService.create(300)
-            .then((info) => {
-                PaymentService.pay(info.payment.id, 'El pago por una clase')
-                    .then((payInfo) => {
-                        res.json(payInfo);
+                TutorService.isAvailable(id_tutor, date, minutes)
+                    .then((times) => {
+                        if(! times) {
+                            next({ error: 'El tutor no está disponible el día seleccionado', custom: true });
+                            return;
+                        }
+                        Class.create({
+                            id_tutor,
+                            id_tutor_theme: 1,
+                            price_hour: 1000
+                        })
+                        .then((classI) => {
+                            times.forEach((time) => {
+                                time.update({ status: AvailabilityTimeStatus.RESERVED })
+                                    .catch((e) => logger().error(e));
+                                ClassTime.create({
+                                        id_class: classI.id,
+                                        id_availability_time: time.id
+                                    })
+                                    .catch((e) => logger().error(e));
+                            });
+                            res.json({
+                                status: 'success', 
+                                times,
+                                class: classI
+                            });
+                        })
+                        .catch((e) => {
+                            next({ error: e, custom: false });
+                        });
                     })
                     .catch((e) => {
-                        next({ error: e, custom: false });
+                        next(e);
                     });
             })
-            .catch((e) => {
-                next(e);
+            .catch((e: Error) => {
+                next({ error: e, custom: false });
             });
-        */
     }
     static join(req: Request, res: Response, next: NextFunction) {
         next();

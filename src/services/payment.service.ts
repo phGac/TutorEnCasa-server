@@ -1,6 +1,7 @@
 import { Client, CreatePaymentResponse, PaymentResponse } from 'khipu-client';
 import Payment, { PaymentStatus } from '../db/models/payment.model';
 import BankResponse from 'khipu-client/dist/banksResponse';
+import logger from '../util/logger';
 
 const client =  new Client({
     receiverId: process.env.KHIPU_ID || '',
@@ -16,7 +17,10 @@ class PaymentService {
                 currency: 'CLP'
             })
             .then(async (paymentResponse) => {
-                await payment.update({ token: paymentResponse.payment_id });
+                await payment.update({ token: paymentResponse.payment_id })
+                    .catch((e) => {
+                        logger().error(e, 'APP');
+                    });
                 resolve(paymentResponse);
             })
             .catch((e) => {
@@ -32,11 +36,13 @@ class PaymentService {
                     return PaymentStatus.PAID;
                 case 'verifying': 
                     if(payment.status != PaymentStatus.VERIFYING)
-                        payment.update({ status: PaymentStatus.VERIFYING });
+                        payment.update({ status: PaymentStatus.VERIFYING })
+                            .catch((e) => logger().error(e, 'APP'));
                     return PaymentStatus.VERIFYING;
                 case 'pending':
                     if(payment.status != PaymentStatus.PENDING)
-                        payment.update({ status: PaymentStatus.PENDING });
+                        payment.update({ status: PaymentStatus.PENDING })
+                            .catch((e) => logger().error(e, 'APP'));
                     return PaymentStatus.PENDING;
             }
         }

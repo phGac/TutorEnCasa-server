@@ -123,7 +123,7 @@ class CouponController {
             .then((info) => {
                 Coupon.create({
                     id_user,
-                    id_payment: info.payment.payment.id,
+                    id_payment: info.payment.id,
                     value
                 })
                 .then((coupon: Coupon) => {
@@ -140,7 +140,7 @@ class CouponController {
                     res.json({ 
                         status: 'success', 
                         code: coupon.id,
-                        url: info.payment.khipu.payment_url
+                        url: info.khipu.payment_url
                     });
                 })
                 .catch((e: Error) => {

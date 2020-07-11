@@ -18,6 +18,8 @@ class ClassValidatorController {
         const date = validator.toDate(req.body.date);
         if(! date)
             return next({ error: 'Formato fecha incorrecto', custom: true });
+        else if(! validator.isInt(req.body.minutes) || (req.body.minutes % 60) != 0)
+            return next({ error: 'Formato del tiempo es incorrecto', custom: true });
 
         res.locals.date = date;
         res.locals.minutes = req.body.minutes;
@@ -67,6 +69,14 @@ class ClassController {
                     next({ error: 'El tutor no está habilitado', custom: true });
                     return;
                 }
+                // @ts-ignore
+                else if(! tutor.themes[0].TutorTheme.price) {
+                    next({ error: 'El tutor no está habilitado', custom: true });
+                    return;
+                }
+                // @ts-ignore
+                const price = tutor.themes[0].TutorTheme.price * (minutes / 60);
+                const total = price * (minutes / 60);
                 TutorService.isAvailable(id_tutor, date, minutes)
                     .then((times) => {
                         if(! times) {
@@ -76,7 +86,7 @@ class ClassController {
                         Class.create({
                             id_tutor,
                             id_tutor_theme: 1,
-                            price_hour: 1000
+                            price_hour: price
                         })
                         .then((classI) => {
                             times.forEach((time) => {
@@ -88,11 +98,18 @@ class ClassController {
                                     })
                                     .catch((e) => logger().error(e));
                             });
-                            res.json({
-                                status: 'success', 
-                                times,
-                                class: classI
-                            });
+                            PaymentService.create(total, 'Pago por una clase')
+                                .then((info) => {
+                                    res.json({
+                                        status: 'success', 
+                                        times,
+                                        class: classI,
+                                        payment_url: info.khipu.payment_url
+                                    });
+                                })
+                                .catch((e) => {
+                                    next(e);
+                                });
                         })
                         .catch((e) => {
                             next({ error: e, custom: false });

@@ -43,37 +43,28 @@ class PaymentService {
         return PaymentStatus.PAID;
     }
     static create(amount: number, subject: string) {
-        return new Promise((resolve: (data: { banks: BankResponse['banks'], payment: { payment: Payment, khipu: CreatePaymentResponse } }) => void, reject) => {
-            client.getBanks()
-                .then((banks) => {
-                    Payment.create({
-                        value: amount,
-                        status: PaymentStatus.PENDING,
-                        currency: 'CLP',
-                        subject
-                    })
-                    .then((payment) => {
-                        this.createKhipuPayment(payment)
-                            .then((info) => {
-                                resolve({ 
-                                    banks: banks.banks, 
-                                    payment: {
-                                        payment,
-                                        khipu: info
-                                    }
-                                });
-                            })
-                            .catch((e) => {
-                                reject(e);
-                            });
+        return new Promise((resolve: (data: { payment: Payment, khipu: CreatePaymentResponse }) => void, reject) => {
+            Payment.create({
+                value: amount,
+                status: PaymentStatus.PENDING,
+                currency: 'CLP',
+                subject
+            })
+            .then((payment) => {
+                this.createKhipuPayment(payment)
+                    .then((info) => {
+                        resolve({
+                            payment,
+                            khipu: info
+                        });
                     })
                     .catch((e) => {
-                        reject({ error: e, custom: false });
+                        reject(e);
                     });
-                })
-                .catch((e) => {
-                    reject({ error: e, custom: false });
-                });
+            })
+            .catch((e) => {
+                reject({ error: e, custom: false });
+            });
         });
     }
 

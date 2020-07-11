@@ -8,6 +8,7 @@ class TutorTheme extends Model {
     id_theme!: number;
 
     grade!: string;
+    price!: number;
 
     readonly createdAt!: Date;
 	readonly updatedAt!: Date|null;
@@ -27,6 +28,10 @@ TutorTheme.init({
     },
     grade: {
         type: DataTypes.STRING(30)
+    },
+    price: {
+        type: DataTypes.INTEGER,
+        allowNull: true
     },
     createdAt: {
         type: DataTypes.DATE,

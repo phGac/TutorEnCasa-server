@@ -38,7 +38,7 @@ Log.init({
         type: DataTypes.STRING(300)
     },
     trace: {
-        type: DataTypes.STRING(300),
+        type: DataTypes.TEXT,
         allowNull: true
     },
     createdAt: {

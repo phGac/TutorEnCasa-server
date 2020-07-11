@@ -36,7 +36,7 @@ export = {
             },
 
             trace: {
-                type: Sequelize.STRING(300),
+                type: Sequelize.TEXT,
                 allowNull: true
             },
 

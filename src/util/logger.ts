@@ -208,7 +208,7 @@ class DataBaseLogger extends Logger implements ILogger {
 
     log(level: string, message: string|Error, type?: string): void {
         const e = new LoggerError(message);
-        const trace = (e.tracert.length > 0) ? e.tracert[0] : null;
+        const trace = (e.tracert.length > 0) ? e.tracert.join('\n') : null;
         Log.create({
             level,
             message: e.message,

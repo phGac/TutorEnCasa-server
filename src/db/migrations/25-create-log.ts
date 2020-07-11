@@ -35,6 +35,11 @@ export = {
                 type: Sequelize.STRING(300)
             },
 
+            trace: {
+                type: Sequelize.STRING(300),
+                allowNull: true
+            },
+
             createdAt: {
                 allowNull: false,
                 type: Sequelize.DATE

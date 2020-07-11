@@ -3,13 +3,14 @@ import { DataTypes, Model } from 'sequelize';
 import sequelize from '../index';
 
 class Log extends Model {
-    id!: number;
+    readonly id!: number;
     
-    level!: string;
-    type!: string|null;
-    message!: string;
-    ip!: string;
-    path!: string;
+    readonly level!: string;
+    readonly type!: string|null;
+    readonly message!: string;
+    readonly ip!: string;
+    readonly path!: string;
+    readonly trace!: string;
 
     readonly createdAt!: Date;
 }
@@ -30,10 +31,15 @@ Log.init({
         type: DataTypes.STRING(255)
     },
     ip: {
-        type: DataTypes.STRING(40)
+        type: DataTypes.STRING(40),
+        allowNull: true
     },
     path: {
         type: DataTypes.STRING(300)
+    },
+    trace: {
+        type: DataTypes.STRING(300),
+        allowNull: true
     },
     createdAt: {
         type: DataTypes.DATE,

@@ -206,13 +206,16 @@ class DataBaseLogger extends Logger implements ILogger {
         super();
     }
 
-    log(level: string, message: string, type?: string): void {
+    log(level: string, message: string|Error, type?: string): void {
+        const e = new LoggerError(message);
+        const trace = (e.tracert.length > 0) ? e.tracert[0] : null;
         Log.create({
             level,
-            message,
-            type: type,
+            message: e.message,
+            type,
             ip: this.ip,
-            path: this.path
+            path: this.path,
+            trace
         });
     }
 
@@ -220,7 +223,7 @@ class DataBaseLogger extends Logger implements ILogger {
         if(this.validateLevel('INFO'))
             this.log('INFORMATION', message, type);
     }
-    error(message: string, type?: string): void {
+    error(message: string|Error, type?: string): void {
         if(this.validateLevel('ERROR'))
             this.log('ERROR', message, type);
     }

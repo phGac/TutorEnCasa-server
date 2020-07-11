@@ -9,7 +9,7 @@ import logger from '../util/logger';
 class SessionValidatorController {
     static create(req: Request, res: Response, next: NextFunction) {
         if(! req.body.email || ! req.body.password)
-            return next({ error: requestMessage["params.missing"], custom: true });
+            return next({ error: new Error(requestMessage["params.missing"]), custom: true });
 
         res.locals.email = req.body.email;
         res.locals.password = req.body.password;

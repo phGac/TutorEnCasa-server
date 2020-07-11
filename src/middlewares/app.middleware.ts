@@ -4,18 +4,21 @@ import { requestMessage } from "../config/messages";
 
 export function errorHandler(error: any, req: Request, res: Response, next: NextFunction) {
     if(error) {
+        let message = null;
         if(! error.custom) {
             error = error.error || error;
-            if(error instanceof Error)
-                error = error.message;
-            
             logger().error(error);
-            res.status(400).json({ status: 'failed', error: requestMessage["error.unknow"] });
+            message = requestMessage["error.unknow"];
         }
         else {
             error = error.error || error;
-            res.status(400).json({ status: 'failed', error });
+            if(error instanceof Error)
+                message = error.message;
+            else
+                message = error;
         }
+
+        res.status(400).json({ status: 'failed', error: message });
     }
     else {
         next();

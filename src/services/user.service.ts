@@ -25,10 +25,10 @@ class UserService {
             const { email, dni } = data;
             User.findOne({ where: { dni } })
                 .then(async (userbyDni) => {
-                    if(userbyDni) return reject({ error: registerMessage["user.exists"], custom: true});
+                    if(userbyDni) return reject({ error: new Error(registerMessage["user.exists"]), custom: true});
                     
                     const userByEmail = await User.findOne({ where: { email } });
-                    if(userByEmail) return reject({ error: registerMessage["user.email.used"], custom: true});
+                    if(userByEmail) return reject({ error: new Error(registerMessage["user.email.used"]), custom: true});
                     
                     const password = data.password;
                     delete data.password;
@@ -46,21 +46,21 @@ class UserService {
                         })
                         .catch((err) => {
                             reject({
-                                error: err,
+                                error: new Error(err),
                                 custom: false
                             });
                         });
                 })
                 .catch((err) => {
                     reject({
-                        error: err,
+                        error: new Error(err),
                         custom: false
                     });
                 });
         });
     }
     static update(data: UserServiceUpdateData, where: WhereOptions) {
-        return new Promise((resolve: (info: { count: number, users: User[] }) => void, reject: (e: Error) => void) => {
+        return new Promise((resolve: (info: { count: number, users: User[] }) => void, reject: (e: { error: Error, custom: boolean }) => void) => {
             User.update(data, { where })
                 .then((info) => {
                     User.findAll({ where, raw: true })
@@ -71,7 +71,7 @@ class UserService {
                             });
                         });
                 })
-                .catch((err) => reject(err));
+                .catch((err) => reject({ error: err, custom: false }));
         });
     }
 }

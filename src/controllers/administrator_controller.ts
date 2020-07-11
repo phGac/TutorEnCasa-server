@@ -26,14 +26,14 @@ class AdministratorValidatorController {
     }
     static tutorCertificate(req: Request, res: Response, next: NextFunction) {
         if(! req.params.id) {
-            return next({ error: requestMessage["params.missing"], custom: true });
+            return next({ error: new Error(requestMessage["params.missing"]), custom: true });
         }
         res.locals.id = req.params.id;
         next();
     }
     static tutorValidate(req: Request, res: Response, next: NextFunction) {
         if(! req.params.id || ! validator.isInt(req.params.id)) {
-            return next({ error: requestMessage["params.missing"], custom: true });
+            return next({ error: new Error(requestMessage["params.missing"]), custom: true });
         }
         res.locals.id = req.params.id;
         next();
@@ -41,7 +41,7 @@ class AdministratorValidatorController {
     static logs(req: Request, res: Response, next: NextFunction) {
         if(req.query.top && typeof req.query.top == 'string') {
             if(! validator.isInt(req.query.top))
-                return next({ error: requestMessage["params.missing"], custom: true });
+                return next({ error: new Error(requestMessage["params.missing"]), custom: true });
             else
                 res.locals.top = parseInt(req.query.top);
         }
@@ -121,7 +121,7 @@ class AdministratorController {
                     stream.pipe(res);
                 }
                 else {
-                    next({ error: 'Usuario no encontrado', custom: true });
+                    next({ error: new Error('Usuario no encontrado'), custom: true });
                 }
             })
             .catch((e) => {
@@ -138,7 +138,7 @@ class AdministratorController {
                     res.json({ status: 'success' });
                 }
                 else {
-                    next({ error: 'Tutor no existe o ya está validado', custom: true });
+                    next({ error: new Error('Tutor no existe o ya está validado'), custom: true });
                 }
             })
             .catch((e) => {

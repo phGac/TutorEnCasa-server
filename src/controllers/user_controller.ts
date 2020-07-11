@@ -31,7 +31,7 @@ class UserValidatorController {
 class UserController {
     static show(req: Request, res: Response, next: NextFunction) {
         if(! req.params.id) {
-            next({ error: requestMessage["params.missing"], custom: true });
+            next({ error: new Error(requestMessage["params.missing"]), custom: true });
             return;
         }
         const { id } = req.params;
@@ -60,17 +60,17 @@ class UserController {
         switch (req.params.step) {
             case '1':
                 if(! req.body.email || ! req.body.password || ! req.body.dni) {
-                    next({ error: requestMessage["params.missing"], custom: true });
+                    next({ error: new Error(requestMessage["params.missing"]), custom: true });
                     return;
                 }
                 const { email, password, dni } = req.body;
                 dniDv = validatorDni(dni);
                 if (! validator.isEmail(email)) {
-                    next({ error: registerMessage["user.email.invalid"], custom: true });
+                    next({ error: new Error(registerMessage["user.email.invalid"]), custom: true });
                     return;
                 }
                 if (! validatorDni(dni, dniDv)) {
-                    next({ error: registerMessage["user.dni.invalid"], custom: true });
+                    next({ error: new Error(registerMessage["user.dni.invalid"]), custom: true });
                     return;
                 }
                 UserService.create({ email, password, dni })
@@ -100,17 +100,17 @@ class UserController {
                 break;
             case '2':
                 if(! req.body.firstname || ! req.body.lastname || ! req.body.birthdate || ! req.body.dni) {
-                    next({ error: requestMessage["params.missing"], custom: false });
+                    next({ error: new Error(requestMessage["params.missing"]), custom: false });
                     return;
                 }
                 dniDv = validatorDni(req.body.dni);
                 if (! validatorDni(req.body.dni, dniDv)) {
-                    next({ error: registerMessage["user.dni.invalid"], custom: true });
+                    next({ error: new Error(registerMessage["user.dni.invalid"]), custom: true });
                     return;
                 }
                 const birthdate = validator.toDate(req.body.birthdate)
                 if(! birthdate) {
-                    next({ error: registerMessage["user.birthday.invalid"], custom: true });
+                    next({ error: new Error(registerMessage["user.birthday.invalid"]), custom: true });
                     return;
                 }
                 const data = {
@@ -127,15 +127,15 @@ class UserController {
                             res.json({ status: 'success', user: info.users[0] });
                         }
                         else {
-                            next({ error: registerMessage["step.two.user.notFound"], custom: true });
+                            next({ error: new Error(registerMessage["step.two.user.notFound"]), custom: true });
                         }
                     })
                     .catch((err) => {
-                        next({ error: err, custom: false });
+                        next(err);
                     });
                 break;
             default:
-                next({ error: registerMessage["step.out"], custom: false });
+                next({ error: new Error(registerMessage["step.out"]), custom: false });
                 break;
         }
         
@@ -157,7 +157,7 @@ class UserController {
             })
             .then((info) => {
                 if(info[0] == 0) {
-                    next({ error: 'Usuario ya validado', custom: true });
+                    next({ error: new Error('Usuario ya validado'), custom: true });
                     return;
                 }
                 res.json({ status: 'success' });

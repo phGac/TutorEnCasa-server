@@ -21,7 +21,7 @@ class MeetingValidatorController {
 class MeetingController {
     static create(req: Request, res: Response, next: NextFunction) {
         if(! req.body.id) {
-            next({ error: requestMessage["params.missing"], custom: true });
+            next({ error: new Error(requestMessage["params.missing"]), custom: true });
             return;
         }
         const { id } = req.body;
@@ -39,11 +39,9 @@ class MeetingController {
                 next(e);
             });
     }
-    static join(req: Request, res: Response) {
+    static join(req: Request, res: Response, next: NextFunction) {
         if(! req.body.id) {
-            res.json({
-                error: requestMessage["params.missing"]
-            });
+            next({ error: new Error(requestMessage["params.missing"]), custom: true });
             return;
         }
         const { id } = req.body;
@@ -52,21 +50,12 @@ class MeetingController {
                 res.json(data);
             })
             .catch(e => {
-                if(! e.custom) {
-                    logger().error(e.error);
-                    res.json({ error: requestMessage["error.unknow"] });
-                }
-                else {
-                    res.json({ error: e.error });
-                }
+                next(e);
             });
     }
-    static destroy(req: Request, res: Response) {
+    static destroy(req: Request, res: Response, next: NextFunction) {
         if(! req.body.id) {
-            res.json({
-                satus: 'failed',
-                error: requestMessage["params.missing"]
-            });
+            next({ error: new Error(requestMessage["params.missing"]), custom: true });
             return;
         }
         const { id } = req.body;

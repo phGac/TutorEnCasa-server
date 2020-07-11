@@ -20,7 +20,7 @@ class ThemeValidatorController {
 class ThemeController {
     static create(req: Request, res: Response, next: NextFunction) {
         if(! req.body.name) {
-            next({ error: requestMessage["params.missing"], custom: true });
+            next({ error: new Error(requestMessage["params.missing"]), custom: true });
             return;
         }
 
@@ -38,7 +38,7 @@ class ThemeController {
             if(info[1])
                 res.json({ status: 'success', theme: info[0] });
             else
-                next({ error: themeMessage["theme.exists"], custom: true });
+                next({ error: new Error(themeMessage["theme.exists"]), custom: true });
         }).catch((e) => {
             next({ error: e, custom: false });
         });

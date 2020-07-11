@@ -11,7 +11,7 @@ import validator from "validator";
 class TutorValidatorController {
     static show(req: Request, res: Response, next: NextFunction) {
         if(! validator.isInt(req.params.id))
-            return next({ error: 'Tipo de valor inválido', custom: true });
+            return next({ error: new Error('Tipo de valor inválido'), custom: true });
         res.locals.id = parseInt(req.params.id);
         next();
     }
@@ -26,12 +26,12 @@ class TutorValidatorController {
     }
     static newRequest(req: Request, res: Response, next: NextFunction) {
         if(! req.files || ! req.files.file || ! req.body.type) {
-            next({ error: requestMessage["params.missing"], custom: true });
+            next({ error: new Error(requestMessage["params.missing"]), custom: true });
             return;
         }
 
         if(Array.isArray(req.files.file) || req.files.file.mimetype != 'application/pdf') {
-            next({ error: 'Formato de archivo no soportado', custom: true });
+            next({ error: new Error('Formato de archivo no soportado'), custom: true });
             return;
         }
 
@@ -46,7 +46,7 @@ class TutorValidatorController {
             .then((user) => {
                 // @ts-ignore
                 if(! user || user.role_tutor)
-                    return next({ error: 'Ya has solicitado ser tutor', custom: true });
+                    return next({ error: new Error('Ya has solicitado ser tutor'), custom: true });
 
                 res.locals.type = req.body.type;
                 res.locals.file = req.files?.file;
@@ -84,7 +84,7 @@ class TutorController {
         };
         Tutor.findOne(options)
             .then((tutor) => {
-                if(! tutor) return next({ error: 'Tutor no encontrado', custom: true });
+                if(! tutor) return next({ error: new Error('Tutor no encontrado'), custom: true });
                 res.json({
                     status: 'success',
                     tutor
@@ -170,7 +170,7 @@ class TutorController {
             })
             .then((info) => {
                 if(info[0] == 0) {
-                    next({ error: 'Tutor ya validado', custom: true });
+                    next({ error: new Error('Tutor ya validado'), custom: true });
                     return;
                 }
                 res.json({ status: 'success' });
@@ -179,7 +179,7 @@ class TutorController {
 
     static addThemes(req: Request, res: Response, next: NextFunction) {
         if(! req.body.themes || ! Array.isArray(req.body.themes)) {
-            next({ error: requestMessage["params.missing"], custom: true });
+            next({ error: new Error(requestMessage["params.missing"]), custom: true });
             return;
         }
         

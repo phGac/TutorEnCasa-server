@@ -30,7 +30,7 @@ export function findTutor(options: FindTutorOptions) {
                 resolve(tutors);
             })
             .catch((e) => {
-                reject(e);
+                reject({ error: e, custom: false });
             });
     });
 }

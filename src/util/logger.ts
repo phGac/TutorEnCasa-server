@@ -16,24 +16,24 @@ interface ILogger {
 }
 
 class LoggerError extends Error {
-    public tracert: string[];
+    public readonly tracert: string[];
 
-    constructor(err: Error|undefined = undefined) {
+    constructor(err: Error|string) {
         super();
-        if(err) this.message = err.message;
 
         this.tracert = [];
         let stack: string[] = [];
-        if(this.stack) {
-            if(err && err.stack) {
+        if(err instanceof Error) {
+            this.message = err.message;
+            if(err.stack) {
                 const atArray = err.stack.split('at ');
                 atArray.shift();
                 stack = atArray.map(item => item.trim());
             }
-            else {
-                const func = (this.stack.split('at '))[3];
-                stack.push(func);
-            }
+        }
+        else if(this.stack) {
+            const func = (this.stack.split('at '))[3];
+            stack.push(func);
         }
         this.tracert = stack;
     }
@@ -83,7 +83,16 @@ class ConsoleLogger extends Logger implements ILogger {
     constructor() {
         super();
         this.lastMessage = null;
-        this.formatDate = new Intl.DateTimeFormat('es', { year: 'numeric', month: 'short', day: '2-digit' });
+        this.formatDate = new Intl.DateTimeFormat('es-CL', {
+            year: 'numeric', 
+            month: '2-digit', 
+            day: '2-digit', 
+            hour: '2-digit',
+            minute: '2-digit', 
+            second: '2-digit',
+            hour12: false,
+            timeZone: 'America/Santiago'
+        });
         this.color_info = '\x1b[40m';
         this.color_error = '\x1b[41m';
         this.color_warning = '\x1b[43m';
@@ -115,15 +124,15 @@ class ConsoleLogger extends Logger implements ILogger {
     }
 
     log(level: string, message: string|Error, color: string = '\x1b[40m'): void {
-        const e = (message instanceof Error) ? new LoggerError(message) : new LoggerError();
+        const e = new LoggerError(message);
         const log = {
             level,
-            message: (typeof message == 'string') ? message : e.message,
+            message: e.message,
             timestamp: this.getTime(),
             tracert: e.tracert
         };
         const json = JSON.stringify(log, null, 4);
-        if(level != 'error')
+        if(level != 'ERROR')
             console.log(`${color}%s\x1b[0m`, json);
         else
             console.log(`\n${color}>>>>>>>>>>>>>>>>>>>> ERROR >>>>>>>>>>>>>>>>>>>>\x1b[0m\n%s\n${color}<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\x1b[0m\n`, json);

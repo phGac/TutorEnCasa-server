@@ -14,17 +14,17 @@ class CouponValidatorController {
     }
     static create(req: Request, res: Response, next: NextFunction) {
         if(! req.body.value) {
-            next({ error: requestMessage["params.missing"], custom: true });
+            next({ error: new Error(requestMessage["params.missing"]), custom: true });
             return;
         }
         else if(req.body.to) {
             if(! validator.isEmail(req.body.to)) {
-                return next({ error: 'Formato de correo incorrecto', custom: true });
+                return next({ error: new Error('Formato de correo incorrecto'), custom: true });
             }
             User.findOne({ where: { email: req.body.to } })
                 .then((user) => {
                     if(! user) {
-                        next({ error: 'El usuario a regalar no existe', custom: false });
+                        next({ error: new Error('El usuario a regalar no existe'), custom: false });
                     }
                     else {
                         res.locals.value = req.body.value;
@@ -46,11 +46,11 @@ class CouponValidatorController {
     }
     static gift(req: Request, res: Response, next: NextFunction) {
         if(! req.params.id || ! req.body.to) {
-            return next({ error: requestMessage["params.missing"], custom: true });
+            return next({ error: new Error(requestMessage["params.missing"]), custom: true });
         }
         // @ts-ignore
         if(req.body.to == req.user.email) {
-            return next({ error: couponMessage["user.email.self"], custom: true });
+            return next({ error: new Error(couponMessage["user.email.self"]), custom: true });
         }
         res.locals.id = req.params.id;
         res.locals.to = req.params.to;
@@ -62,7 +62,7 @@ class CouponValidatorController {
     }
     static status(req: Request, res: Response, next: NextFunction) {
         if(! req.params.id) {
-            return next({ error: requestMessage["params.missing"], custom: true });
+            return next({ error: new Error(requestMessage["params.missing"]), custom: true });
         }
         res.locals.id = req.params.id;
         next();
@@ -101,7 +101,7 @@ class CouponController {
         User.findOne(options)
             .then((user) => {
                 if(! user) {
-                    next({ error: 'No encontrado', custom: true });
+                    next({ error: new Error('No encontrado'), custom: true });
                 }
                 else {
                     const info = user.get({ plain: true });
@@ -168,18 +168,18 @@ class CouponController {
         Coupon.findOne(couponOptions)
             .then((coupon) => {
                 if(! coupon) {
-                    next({ error: couponMessage["coupon.notFound"], custom: true });
+                    next({ error: new Error(couponMessage["coupon.notFound"]), custom: true });
                     return;
                 }
                 // @ts-ignore
                 if(coupon.id_user !== req.user.id || coupon.gift) {
-                    next({ error: couponMessage["coupon.owner.isAnother"], custom: true });
+                    next({ error: new Error(couponMessage["coupon.owner.isAnother"]), custom: true });
                     return;
                 }
                 User.findOne({ where: { email: to } })
                     .then((user) => {
                         if(! user) {
-                            next({ error: couponMessage["user.notFound"], custom: true });
+                            next({ error: new Error(couponMessage["user.notFound"]), custom: true });
                             return;
                         }
                         CouponGift.create({

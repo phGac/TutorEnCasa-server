@@ -1,6 +1,5 @@
 import { Client, CreatePaymentResponse, PaymentResponse } from 'khipu-client';
 import Payment, { PaymentStatus } from '../db/models/payment.model';
-import BankResponse from 'khipu-client/dist/banksResponse';
 import logger from '../util/logger';
 
 const client =  new Client({
@@ -78,7 +77,7 @@ class PaymentService {
         return new Promise((resolve: (info: { payment: Payment, khipu: CreatePaymentResponse }) => void, reject) => {
             Payment.findOne({ where: { id } })
                 .then((payment) => {
-                    if(! payment) return reject({ error: 'Pago no encontrado', custom: true });
+                    if(! payment) return reject({ error: new Error('Pago no encontrado'), custom: true });
                     this.createKhipuPayment(payment)
                         .then((info) => {
                             resolve({ 
@@ -100,7 +99,7 @@ class PaymentService {
         return new Promise((resolve: (info: { payment: Payment, message: string }) => void, reject) => {
             Payment.findOne({ where: { id } })
                 .then((payment) => {
-                    if(! payment) return reject({ error: 'Pago no encontrado', custom: true });
+                    if(! payment) return reject({ error: new Error('Pago no encontrado'), custom: true });
                     client.confirmPayment(payment.token)
                         .then((confirm) => {
                             payment.update({ status: PaymentStatus.PAID });
@@ -134,7 +133,7 @@ class PaymentService {
                             });
                     }
                     else {
-                        reject({ error: 'El pago no existe', custom: true });
+                        reject({ error: new Error('El pago no existe'), custom: true });
                     }
                 })
                 .catch((e) => {
@@ -162,7 +161,7 @@ class PaymentService {
                             });
                     }
                     else {
-                        reject({ error: 'El pago no existe', custom: true });
+                        reject({ error: new Error('El pago no existe'), custom: true });
                     }
                 })
                 .catch((e) => {

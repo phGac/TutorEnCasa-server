@@ -30,9 +30,9 @@ class MeetingService {
     }
     static join(id: string) {
         return new Promise((resolve: (data: { Meeting: PromiseResult<Chime.CreateMeetingResponse, AWSError>, Attendee: PromiseResult<Chime.CreateAttendeeResponse, AWSError> }) => void, reject: (e: { error: Error|string, custom: boolean }) => void) => {
-            if(! meetingTable[id]) return reject({ error: 'No encontrado', custom: true });
+            if(! meetingTable[id]) return reject({ error: new Error('No encontrado'), custom: true });
             const meeting = meetingTable[id];
-            if(! meeting.Meeting || ! meeting.Meeting.MeetingId) return reject({ error: 'No encontrado', custom: true });
+            if(! meeting.Meeting || ! meeting.Meeting.MeetingId) return reject({ error: new Error('No encontrado'), custom: true });
             chime.createAttendee({
                 MeetingId: meeting.Meeting.MeetingId,
                 ExternalUserId: uuid()

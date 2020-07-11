@@ -1,4 +1,6 @@
-import { Model } from "sequelize";
+import { Model, DataTypes } from "sequelize";
+
+import sequelize from '../index';
 
 class ClassTime extends Model {
     id!: number;
@@ -8,5 +10,26 @@ class ClassTime extends Model {
     readonly createdAt!: Date;
     readonly updatedAt!: Date;
 }
+
+ClassTime.init({
+    id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    id_class: {
+        type: DataTypes.INTEGER
+    },
+    id_availability_time: {
+        type: DataTypes.INTEGER
+    },
+    createdAt: {
+        type: DataTypes.DATE
+    },
+    updatedAt: {
+        type: DataTypes.DATE
+    }
+}, { sequelize });
 
 export default ClassTime;

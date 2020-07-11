@@ -51,4 +51,15 @@ HistoryStatusClass.associate = function(models: any) {
     });
 };
 
+enum HistoryStatusClassStatus {
+    UNPAY,
+    PAY,
+    CANCELL,
+    FINISHED
+}
+
+export {
+    HistoryStatusClassStatus
+}
+
 export default HistoryStatusClass;

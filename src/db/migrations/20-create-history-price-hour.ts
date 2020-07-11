@@ -11,7 +11,7 @@ export = {
                 primaryKey: true,
                 type: Sequelize.INTEGER
             },
-
+            
             id_tutor_theme: {
                 type: Sequelize.INTEGER,
                 allowNull: false,

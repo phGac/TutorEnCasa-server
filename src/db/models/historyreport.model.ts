@@ -39,4 +39,12 @@ HistoryReport.associate = function(models) {
     });
 };
 
+enum HistoryReportType {
+    //
+}
+
+export {
+    HistoryReportType
+}
+
 export default HistoryReport;

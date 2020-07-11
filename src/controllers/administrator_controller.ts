@@ -50,6 +50,9 @@ class AdministratorValidatorController {
         }
         next();
     }
+    static reports(req: Request, res: Response, next: NextFunction) {
+        next();
+    }
 }
 
 class AdministratorController {
@@ -159,6 +162,9 @@ class AdministratorController {
             .catch((e) => {
                 next({ error: e, custom: false });
             });
+    }
+    static reports(req: Request, res: Response, next: NextFunction) {
+        //
     }
 }
 

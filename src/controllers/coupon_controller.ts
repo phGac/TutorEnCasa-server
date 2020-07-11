@@ -5,7 +5,6 @@ import { User, Coupon, CouponGift } from '../db/models';
 import logger from "../util/logger";
 import PaymentService from "../services/payment.service";
 import { FindOptions } from "sequelize/types";
-import { PaymentStatus } from "../db/models/payment.model";
 import validator from "validator";
 
 class CouponValidatorController {
@@ -18,8 +17,32 @@ class CouponValidatorController {
             next({ error: requestMessage["params.missing"], custom: true });
             return;
         }
-        res.locals.value = req.body.value;
-        next();
+        else if(req.body.to) {
+            if(! validator.isEmail(req.body.to)) {
+                return next({ error: 'Formato de correo incorrecto', custom: true });
+            }
+            User.findOne({ where: { email: req.body.to } })
+                .then((user) => {
+                    if(! user) {
+                        next({ error: 'El usuario a regalar no existe', custom: false });
+                    }
+                    else {
+                        res.locals.value = req.body.value;
+                        res.locals.to = user.id;
+                        res.locals.message = (req.body.message) ? req.body.message : null;
+                        next();
+                    }
+                })
+                .catch((e) => {
+                    next({ error: e, custom: false });
+                });
+        }
+        else {
+            res.locals.value = req.body.value;
+            res.locals.to = undefined;
+            res.locals.message = undefined;
+            next();
+        }
     }
     static gift(req: Request, res: Response, next: NextFunction) {
         if(! req.params.id || ! req.body.to) {
@@ -31,7 +54,7 @@ class CouponValidatorController {
         }
         res.locals.id = req.params.id;
         res.locals.to = req.params.to;
-        res.locals.message = (req.body.message) ? req.body.message : undefined;
+        res.locals.message = (req.body.message) ? req.body.message : null;
         next();
     }
     static destroy(req: Request, res: Response, next: NextFunction) {
@@ -93,7 +116,7 @@ class CouponController {
             });
     }
     static create(req: Request, res: Response, next: NextFunction) {
-        const { value } = res.locals;
+        const { value, to, message } = res.locals;
         // @ts-ignore
         const id_user = req.user.id;
         PaymentService.create(value, 'Compra por un cupón')
@@ -104,6 +127,16 @@ class CouponController {
                     value
                 })
                 .then((coupon: Coupon) => {
+                    if(to) {
+                        CouponGift.create({
+                            id_coupon: coupon.id,
+                            id_user: to,
+                            message
+                        })
+                        .catch((e) => {
+                            logger().error(e);
+                        });
+                    }
                     res.json({ 
                         status: 'success', 
                         code: coupon.id,

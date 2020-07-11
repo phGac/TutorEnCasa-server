@@ -9,7 +9,6 @@ import AvailabilityTime from './availabilitytime.model';
 import Tutor from './tutor.model';
 import User from './user.model';
 import HistoryPassword from './historypassword.model';
-import HistoryStatusUser from './historystatususer.model';
 import Theme from './theme.model';
 import TutorTheme from './tutortheme.model';
 import Coupon from './coupon.model';
@@ -32,7 +31,6 @@ export {
 	Tutor,
 	User,
 	HistoryPassword,
-	HistoryStatusUser,
 	Theme,
 	TutorTheme,
 	Coupon,

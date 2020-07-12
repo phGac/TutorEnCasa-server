@@ -4,6 +4,8 @@ import { isLoggedIn } from '../middlewares/session.middleware';
 
 const router = Router();
 
+router.get('/', isLoggedIn, ClassValidatorController.show, ClassController.show);
+
 router.post('/new', isLoggedIn, ClassValidatorController.create, ClassController.create);
 
 router.post('/join', isLoggedIn, ClassValidatorController.join, ClassController.join);

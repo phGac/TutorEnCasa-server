@@ -6,6 +6,7 @@ import { PaymentService } from "../services/payment.service";
 import { requestMessage } from "../config/messages";
 import { Tutor, Class, ClassTime } from "../db/models";
 import { TutorStatus } from "../db/models/tutor.model";
+import { HistoryStatusClassStatus } from "../db/models/historystatusclass.model";
 import TutorService from "../services/tutor.service";
 import logger from "../util/logger";
 import { AvailabilityTimeStatus } from "../db/models/availabilitytime.model";
@@ -128,7 +129,71 @@ class ClassController {
     }
     static update(req: Request, res: Response, next: NextFunction) {}
     static destroy(req: Request, res: Response, next: NextFunction) {}
-    static show(req: Request, res: Response, next: NextFunction) {}
+    static show(req: Request, res: Response, next: NextFunction) {
+        // @ts-ignore
+        const id = req.user?.id;
+        const options: FindOptions = {
+            where: { id },
+            attributes: [ 'id', 'price_hour', 'createdAt' ],
+            include: [
+                {
+                    association: 'tutor',
+                    attributes: ['id'],
+                    include: [
+                        {
+                            association: 'user',
+                            attributes: ['firstname', 'lastname', 'email'],
+                            required: true
+                        }
+                    ],
+                    required: true
+                },
+                { 
+                    association: 'statuses',
+                    where: { 
+                        status: [ HistoryStatusClassStatus.UNPAY, HistoryStatusClassStatus.PAY ] 
+                    },
+                    order: [[ 'createdAt', 'DESC' ]],
+                    attributes: ['status'],
+                    limit: 1,
+                    required: true
+                },
+                {
+                    association: 'times',
+                    attributes: ['start', 'minutes'],
+                    required: true,
+                    through: {
+                        attributes: []
+                    }
+                }
+            ]
+        };
+        Class.findAll(options)
+            .then((classes) => {
+                const classAll = classes.map((classI) => {
+                    // @ts-ignore
+                    const start = classI.times[0].start;
+                    // @ts-ignore
+                    const total = classI.times.reduce((accumulator, time) => accumulator.minutes + time.minutes);
+                    return {
+                        // @ts-ignore
+                        tutor: classI.tutor.user,
+                        // @ts-ignore
+                        status: classI.statuses[0].status,
+                        price_hour: classI.price_hour,
+                        start,
+                        minutes: total,
+                    };
+                });
+                res.json({
+                    status: 'success',
+                    classes: classAll
+                });
+            })
+            .catch((e) => {
+                next({ error: e, custom: false });
+            });
+    }
 }
 
 export {

@@ -33,9 +33,9 @@ async function startMeeting(joinInfo) {
 
     const deviceController =  new ChimeSDK.DefaultDeviceController(logger);
     meetingSession = new ChimeSDK.DefaultMeetingSession(
-      config,
-      logger,
-      deviceController
+        config,
+        logger,
+        deviceController
     );
 
     initUserInterface();
@@ -52,22 +52,22 @@ function initUserInterface(){
     // UI event listeners
     startButton = document.getElementById('startButton');
     startButton.addEventListener('click', ()=> {
-      meetingSession.audioVideo.start(); 
-      startButton.style.display = 'none';
+        meetingSession.audioVideo.start(); 
+        startButton.style.display = 'none';
     });
-  
+
     toggleVideoButton = document.getElementById('toggleVideoButton');
     toggleVideoButton.addEventListener('click', ()=> {
-      toggleLocalVideo();
+        toggleLocalVideo();
     });
-  
+
     let tilesElement = document.getElementById('tiles')
     for (let i=0; i<=16; i++){
-      let videoElement = document.createElement('video')
-      videoElement.id = `video-${i+1}`
-      videoElement.setAttribute('autoplay', true)
-      videoElements.push(videoElement);
-      tilesElement.appendChild(videoElement)
+        let videoElement = document.createElement('video')
+        videoElement.id = `video-${i+1}`
+        videoElement.setAttribute('autoplay', true)
+        videoElements.push(videoElement);
+        tilesElement.appendChild(videoElement)
     }
 }
 
@@ -75,7 +75,7 @@ const initAudioInput = async function(){
     // Audio Input
     let audioDevices = await meetingSession.audioVideo.listAudioInputDevices();
     if (!audioDevices.length){
-      console.error('You need sound devices to run this demo')
+        console.error('You need sound devices to run this demo')
     }
     await meetingSession.audioVideo.chooseAudioInputDevice(audioDevices[0]);
 }

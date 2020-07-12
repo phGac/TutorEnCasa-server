@@ -44,7 +44,7 @@ Class.init({
 
 // @ts-ignore
 Class.associate = function(models: any) {
-	const { Tutor, Schedule, ClassRating, HistoryStatusClass } = models;
+	const { Tutor, Schedule, ClassRating, HistoryStatusClass, ClassTime, AvailabilityTime } = models;
 	Class.belongsTo(Tutor, {
 		as: 'tutor',
 		foreignKey: 'id_tutor'
@@ -60,6 +60,12 @@ Class.associate = function(models: any) {
 	Class.hasMany(HistoryStatusClass, {
 		as: 'statuses',
 		foreignKey: 'id_class'
+	});
+	Class.belongsToMany(AvailabilityTime, {
+		as: 'times',
+		through: ClassTime,
+		foreignKey: 'id_class',
+		otherKey: 'id_availability_time'
 	});
 };
 

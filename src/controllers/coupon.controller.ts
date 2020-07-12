@@ -24,7 +24,7 @@ class CouponValidatorController {
             User.findOne({ where: { email: req.body.to } })
                 .then((user) => {
                     if(! user) {
-                        next({ error: new Error('El usuario a regalar no existe'), custom: false });
+                        next({ error: new Error('El usuario a regalar no existe'), custom: true });
                     }
                     else {
                         res.locals.value = req.body.value;

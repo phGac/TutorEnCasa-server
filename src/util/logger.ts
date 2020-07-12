@@ -32,6 +32,7 @@ class LoggerError extends Error {
             }
         }
         else if(this.stack) {
+            this.message = err;
             const func = (this.stack.split('at '))[3];
             stack.push(func);
         }

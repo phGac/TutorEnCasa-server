@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import UserController, { UserValidatorController } from '../controllers/user_controller';
+import UserController, { UserValidatorController } from '../controllers/user.controller';
 import { isLoggedIn, isAdministrator, isNotLoggedIn } from '../middlewares/session.middleware';
 
 const router = Router();

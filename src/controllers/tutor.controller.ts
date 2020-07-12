@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 
 import { findTutor } from "../util/find";
 import { requestMessage, tutorMessage } from "../config/messages";
-import { Theme, TutorTheme, Tutor, User, AvailabilityTime } from '../db/models';
+import { Theme, TutorTheme, Tutor, User, AvailabilityTime, TutorFileCertificate } from '../db/models';
 import { TutorStatus } from "../db/models/tutor.model";
 import FileService from "../services/file.service";
 import { FindOptions } from "sequelize/types";
@@ -15,16 +15,8 @@ class TutorValidatorController {
         res.locals.id = parseInt(req.params.id);
         next();
     }
+
     static create(req: Request, res: Response, next: NextFunction) {
-        next();
-    }
-    static update(req: Request, res: Response, next: NextFunction) {
-        next();
-    }
-    static destroy(req: Request, res: Response, next: NextFunction) {
-        next();
-    }
-    static newRequest(req: Request, res: Response, next: NextFunction) {
         if(! req.files || ! req.files.file || ! req.body.type) {
             next({ error: new Error(requestMessage["params.missing"]), custom: true });
             return;
@@ -66,10 +58,6 @@ class TutorValidatorController {
         res.locals.id = req.params.id;
         next();
     }
-    
-    static times(req: Request, res: Response, next: NextFunction) {
-        next();
-    }
 }
 
 class TutorController {
@@ -93,16 +81,6 @@ class TutorController {
             .catch((err) => {
                 next({ error: err, custom: false });
             });
-    }
-    static find(req: Request, res: Response, next: NextFunction) {
-        findTutor({
-            where: {
-                //
-            },
-            include: {
-                priceses: true
-            }
-        });
     }
 
     static request(req: Request, res: Response, next: NextFunction) {
@@ -131,22 +109,34 @@ class TutorController {
             });
     }
 
-    static newRequest(req: Request, res: Response, next: NextFunction) {
+    static create(req: Request, res: Response, next: NextFunction) {
         // @ts-ignore
         const { id } = req.user;
         const { file, type } = res.locals;
-
         // @ts-ignore
         FileService.upload(file, req.user)
-            .then((file) => {       
-                Tutor.create({
+            .then((file) => {
+                const tutorOptions = {
                     id_user: id,
                     status: TutorStatus.UNVALIDATED,
-                    certificates: [ 
-                        { id_file: file.id, type }
+                    certificates: [
+                        { 
+                            name: file.name, 
+                            mime: file.mime, 
+                            key: file.key,
+                            TutorFileCertificate: {
+                                type
+                            }
+                        }
                     ]
-                }, {
-                    include: [ { association: 'certificates' } ]
+                };
+                Tutor.create(tutorOptions, {
+                    include: [ 
+                        { 
+                            association: 'certificates',
+                            include: [ { association: 'tutor_certificate' } ]
+                        },
+                    ]
                 })
                 .then((tutor) => {
                     res.json({ status: 'success', message: tutorMessage["request.success"] });
@@ -155,7 +145,9 @@ class TutorController {
                     next({ error: e, custom: false });
                 });
             })
-            .catch((e) => next(e));
+            .catch((e) => {
+                next(e)
+            });
     }
 
     static validate(req: Request, res: Response, next: NextFunction) {
@@ -205,27 +197,6 @@ class TutorController {
         });
 
         res.json({ status: 'success' });
-    }
-    static times(req: Request, res: Response, next: NextFunction) {
-        // @ts-ignore
-        const { id_tutor } = req.user;
-
-        const options: FindOptions = {
-            where: { 
-                id_tutor,
-                status: 1
-            }
-        };
-        AvailabilityTime.findAll(options)
-            .then((times) => {
-                res.json({
-                    status: 'success',
-                    times
-                });
-            })
-            .catch((e) => {
-                next({ error: e, custom: false });
-            });
     }
 }
 

@@ -3,18 +3,19 @@ import { S3 } from 'aws-sdk';
 
 import { User, File } from "../db/models";
 
-const configS3 = {
+const configS3: S3.ClientConfiguration = {
     accessKeyId: process.env.AWS_S3_IAM_ID || '',
-    secretAccessKey: process.env.AWS_S3_IAM_SECRET || ''
+    secretAccessKey: process.env.AWS_S3_IAM_SECRET || '',
+    signatureVersion: 'v2',
 };
 
 class FileService {
     private static s3: S3 = new S3(configS3);
 
     static upload(file: UploadedFile, user: User) {
-        return new Promise((resolve: (file: File) => void, reject) => {
+        return new Promise((resolve: (file: { name: string, mime: string, key: string }) => void, reject) => {
             const { firstname, lastname } = user;
-        
+            
             const date = new Date();
             const date_filename = `${date.getFullYear()}${date.getMonth()}${date.getDay()}_${date.getHours()}${date.getMinutes()}`;
             const filename = `${date_filename}-${firstname}_${lastname}.pdf`;
@@ -22,23 +23,17 @@ class FileService {
             const params: S3.PutObjectRequest = {
                 Bucket: process.env.AWS_S3_BUCKET || '',
                 Key: filename,
-                Body: file.data
+                Body: file.data,
             };
-            this.s3.upload(params, function(err: Error, data: S3.ManagedUpload.SendData) {
+            this.s3.upload(params, function(err: Error, data: S3.ManagedUpload.SendData) { //{ partSize: 10 * 1024 * 1024, queueSize: 4 },
                 if (err) {
-                    return reject({ error: err, custom: false });
+                    reject({ error: err, custom: false });
                 }
                 else {
-                    File.create({
+                    resolve({
                         name: filename,
                         mime: file.mimetype,
                         key: data.Key
-                    })
-                    .then((fileInstance) => {
-                        resolve(fileInstance);
-                    })
-                    .catch((e) => {
-                        reject({ error: e, custom: false });
                     });
                 }
             });

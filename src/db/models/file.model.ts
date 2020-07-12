@@ -36,4 +36,14 @@ File.init({
     timestamps: false
 });
 
+// @ts-ignore
+File.associate = function(models) {
+    const { TutorFileCertificate } = models;
+
+    File.hasOne(TutorFileCertificate, {
+        as: 'tutor_certificate',
+        foreignKey: 'id_file'
+    });
+}
+
 export default File;

@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { isLoggedIn, isAdministrator } from '../middlewares/session.middleware';
-import AdministratorController, { AdministratorValidatorController } from '../controllers/administrator_controller';
+import AdministratorController, { AdministratorValidatorController } from '../controllers/administrator.controller';
 
 const router = Router();
 

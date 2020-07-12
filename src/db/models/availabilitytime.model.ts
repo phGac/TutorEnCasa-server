@@ -31,7 +31,7 @@ AvailabilityTime.init({
     minutes: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        defaultValue: 60
+        defaultValue: 30
     },
     status: {
         type: DataTypes.INTEGER,

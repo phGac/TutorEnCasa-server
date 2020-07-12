@@ -1,10 +1,13 @@
 import { Router } from 'express';
 import { isLoggedIn, isNotTutor, isTutor, isAdministrator } from '../middlewares/session.middleware';
-import TutorController, { TutorValidatorController } from '../controllers/tutor_controller';
+import TutorController, { TutorValidatorController } from '../controllers/tutor.controller';
+import { AvailabilityTimeValidatorController, AvailabilityTimeController } from '../controllers/availability_time.controller';
 
 const router = Router();
 
-router.get('/times', isLoggedIn, isTutor, TutorValidatorController.times, TutorController.times);
+router.get('/times', isLoggedIn, isTutor, AvailabilityTimeValidatorController.show, AvailabilityTimeController.show);
+
+router.post('/times/new', isLoggedIn, isTutor, AvailabilityTimeValidatorController.create, AvailabilityTimeController.create);
 
 /**
  * 
@@ -69,7 +72,7 @@ router.get('/request/:id', isLoggedIn, isAdministrator, TutorValidatorController
  * 
  * 
  */
-router.post('/request', isLoggedIn, isNotTutor, TutorValidatorController.newRequest, TutorController.newRequest);
+router.post('/request', isLoggedIn, isNotTutor, TutorValidatorController.create, TutorController.create);
 
 /**
  * 

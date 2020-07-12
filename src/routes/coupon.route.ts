@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { isLoggedIn, isTutor } from '../middlewares/session.middleware';
-import CouponController, { CouponValidatorController } from '../controllers/coupon_controller';
+import CouponController, { CouponValidatorController } from '../controllers/coupon.controller';
 
 const router = Router();
 

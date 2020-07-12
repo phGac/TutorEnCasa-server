@@ -1,4 +1,4 @@
-import { Client, CreatePaymentResponse, PaymentResponse } from 'khipu-client';
+import { Client, CreatePaymentResponse, PaymentResponse, PaymentsResponse } from 'khipu-client';
 import Payment, { PaymentStatus } from '../db/models/payment.model';
 import logger from '../util/logger';
 
@@ -30,9 +30,6 @@ class PaymentService {
     private static updateStatusPayment(payment: Payment, status: string) {
         if(payment.status != PaymentStatus.PAID) {
             switch(status) {
-                case 'done':
-                    this.paid(payment.id);
-                    return PaymentStatus.PAID;
                 case 'verifying': 
                     if(payment.status != PaymentStatus.VERIFYING)
                         payment.update({ status: PaymentStatus.VERIFYING })
@@ -95,12 +92,12 @@ class PaymentService {
         });
     }
 
-    static paid(id: string) {
+    static paid(id: string, notificationToken: string) {
         return new Promise((resolve: (info: { payment: Payment, message: string }) => void, reject) => {
             Payment.findOne({ where: { id } })
                 .then((payment) => {
                     if(! payment) return reject({ error: new Error('Pago no encontrado'), custom: true });
-                    client.confirmPayment(payment.token)
+                    client.confirmPayment(notificationToken)
                         .then((confirm) => {
                             payment.update({ status: PaymentStatus.PAID });
                             resolve({ payment, message: confirm.message });
@@ -163,6 +160,27 @@ class PaymentService {
                     else {
                         reject({ error: new Error('El pago no existe'), custom: true });
                     }
+                })
+                .catch((e) => {
+                    reject({ error: e, custom: false });
+                });
+        });
+    }
+
+    static getInfoByNotificationToken(token: string) {
+        return new Promise((resolve: (info: { payment: Payment|null, khipu: PaymentsResponse }) => void, reject) => {
+            client.getPaymentByNotificationToken(token)
+                .then((info) => {
+                    Payment.findOne({ where: { token: info.payment_id } })
+                        .then((payment) => {
+                            resolve({
+                                payment,
+                                khipu: info
+                            });
+                        })
+                        .catch((e) => {
+                            reject({ error: e, custom: false });
+                        });
                 })
                 .catch((e) => {
                     reject({ error: e, custom: false });

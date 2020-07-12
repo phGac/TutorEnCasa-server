@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { isLoggedIn, isTutor } from '../middlewares/session.middleware';
-import MeetingController from '../controllers/meeting_controller';
+import MeetingController from '../controllers/meeting.controller';
 
 const router = Router();
 

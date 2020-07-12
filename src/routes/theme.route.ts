@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { isLoggedIn, isAdministrator } from '../middlewares/session.middleware';
-import ThemeController from '../controllers/theme_controller';
+import ThemeController from '../controllers/theme.controller';
 
 const router = Router();
 

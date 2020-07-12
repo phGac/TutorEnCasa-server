@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import { FindOptions } from "sequelize/types";
+import validator from "validator";
 
 import { PaymentService } from "../services/payment.service";
 import { requestMessage } from "../config/messages";
-import validator from "validator";
 import { Tutor, Class, ClassTime } from "../db/models";
 import { TutorStatus } from "../db/models/tutor.model";
 import TutorService from "../services/tutor.service";
@@ -77,7 +77,7 @@ class ClassController {
                 // @ts-ignore
                 const price = tutor.themes[0].TutorTheme.price * (minutes / 60);
                 const total = price * (minutes / 60);
-                TutorService.isAvailable(id_tutor, date, minutes)
+                TutorService.isAvailable(id_tutor, date, minutes, true)
                     .then((times) => {
                         if(! times) {
                             next({ error: new Error('El tutor no está disponible el día seleccionado'), custom: true });

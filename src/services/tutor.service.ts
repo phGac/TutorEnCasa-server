@@ -15,7 +15,7 @@ class TutorService {
         return Date.parse(`01/01/2020 ${hour}:${minute}:00`);
     }
 
-    static isAvailable(id_tutor: number, date: Date, minutes: number) {
+    static isAvailable(id_tutor: number, date: Date, minutes: number, validateTimes = false) {
         return new Promise((resolve: (times: AvailabilityTime[]|null) => void, reject) => {
 
             const options: FindOptions = {
@@ -30,11 +30,11 @@ class TutorService {
             };
             AvailabilityTime.findAll(options)
                 .then((times) => {
-                    if(times.length == 0) {
-                        resolve(null);
-                        return;
-                    }
-
+                    if(times.length == 0)
+                        return resolve(null);
+                    else if(! validateTimes)
+                        return resolve(times);
+                    
                     const timesDone = [];
                     let lastFinish: Date|null = null;
                     let total = 0;

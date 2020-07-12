@@ -9,6 +9,7 @@ import couponRoutes from './coupon.route';
 import classRoutes from './class.route';
 import clientRoutes from './client.route';
 import adminRoutes from './administrator.route';
+import paymentRoutes from './payment.route';
 
 export default function(app: any) {
     app.index((req: Request, res: Response) => {
@@ -23,6 +24,7 @@ export default function(app: any) {
     app.addRoutes('/api/coupon', couponRoutes);
     app.addRoutes('/api/class', classRoutes);
     app.addRoutes('/api/admin', adminRoutes);
+    app.addRoutes('/api/payment', paymentRoutes);
 }
 
 /**

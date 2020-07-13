@@ -124,7 +124,8 @@ class UserController {
                         if(info.count == 1) {
                             res.locals.user = info.users[0];
                             res.locals.auth = true;
-                            res.json({ status: 'success', user: info.users[0] });
+                            res.redirect(`/public/registro?paso=2&run=${info.users[0].dni}`);
+                            //res.json({ status: 'success', user: info.users[0] });
                         }
                         else {
                             next({ error: new Error(registerMessage["step.two.user.notFound"]), custom: true });

@@ -102,6 +102,7 @@ class AdministratorController {
                     next({ error: e, custom: false });
                 });
     }
+
     static tutorCertificate(req: Request, res: Response, next: NextFunction) {
         const { id } = res.locals;
         const options: FindOptions = {
@@ -129,6 +130,7 @@ class AdministratorController {
                 next({ error: e, custom: false });
             });
     }
+
     static tutorValidate(req: Request, res: Response, next: NextFunction) {
         const { id, status } = res.locals;
         

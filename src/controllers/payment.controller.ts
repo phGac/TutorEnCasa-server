@@ -7,7 +7,7 @@ class PaymentValidatorController {
             return next({ error: 'Petición no válida', custom: true });
         }
 
-        res.locals.token = req.query.token;
+        res.locals.token = req.query.notification_token;
         next();
     }
 }

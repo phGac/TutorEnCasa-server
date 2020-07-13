@@ -173,9 +173,16 @@ class ClassController {
                 const classAll = classes.map((classI) => {
                     // @ts-ignore
                     const start = classI.times[0].start;
+                    let total = 0;
                     // @ts-ignore
-                    const total = classI.times.reduce((accumulator, time) => accumulator.minutes + time.minutes);
+                    for (let index = 0; index < classI.times.length; index++) {
+                        // @ts-ignore
+                        const time = classI.times[index];
+                        total += time.minutes;
+                    }
+                    //const total = classI.times.reduce((accumulator, time) => accumulator.minutes + time.minutes);
                     return {
+                        id: classI.id,
                         // @ts-ignore
                         tutor: classI.tutor.user,
                         // @ts-ignore

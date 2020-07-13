@@ -10,6 +10,8 @@ router.post('/new', isLoggedIn, ClassValidatorController.create, ClassController
 
 router.post('/join', isLoggedIn, ClassValidatorController.join, ClassController.join);
 
+router.put('/:id/end', isLoggedIn, ClassValidatorController.end, ClassController.end);
+
 router.post('/:id/rating', isLoggedIn, ClassValidatorController.rating, ClassController.rating);
 
 export default router;

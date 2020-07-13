@@ -6,7 +6,7 @@ import { PaymentService } from "../services/payment.service";
 import { requestMessage } from "../config/messages";
 import { Tutor, Class, ClassTime, ClassRating } from "../db/models";
 import { TutorStatus } from "../db/models/tutor.model";
-import { HistoryStatusClassStatus } from "../db/models/historystatusclass.model";
+import HistoryStatusClass, { HistoryStatusClassStatus } from "../db/models/historystatusclass.model";
 import TutorService from "../services/tutor.service";
 import logger from "../util/logger";
 import { AvailabilityTimeStatus } from "../db/models/availabilitytime.model";
@@ -51,6 +51,14 @@ class ClassValidatorController {
 
         res.locals.id = req.params.id;
         res.locals.value = req.body.value;
+        next();
+    }
+    static end(req: Request, res: Response, next: NextFunction) {
+        if(! req.params.id) {
+            return next({ error: new Error(requestMessage["params.missing"]), custom: true });
+        }
+
+        res.locals.id = req.params.id;
         next();
     }
 }
@@ -150,6 +158,19 @@ class ClassController {
             value
         })
         .then((classRating) => {
+            res.json({ status: 'success' });
+        })
+        .catch((e) => {
+            next({ error: e, custom: false });
+        });
+    }
+    static end(req: Request, res: Response, next: NextFunction) {
+        const { id } = res.locals;
+        HistoryStatusClass.create({
+            id_class: id,
+            status: HistoryStatusClassStatus.FINISHED
+        })
+        .then(() => {
             res.json({ status: 'success' });
         })
         .catch((e) => {

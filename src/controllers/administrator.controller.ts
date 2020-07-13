@@ -6,6 +6,8 @@ import { requestMessage } from "../config/messages";
 import FileService from "../services/file.service";
 import validator from "validator";
 import Log from "../db/models/log.model";
+import EmailService, { Email } from "../services/email.service";
+import logger from "../util/logger";
 
 class AdministratorValidatorController {
     static create(req: Request, res: Response, next: NextFunction) {
@@ -134,14 +136,45 @@ class AdministratorController {
     static tutorValidate(req: Request, res: Response, next: NextFunction) {
         const { id, status } = res.locals;
         
-        Tutor.findOne({ where: { id, status: [ TutorStatus.UNVALIDATED, TutorStatus.REJECTED ] } })
+        const options: FindOptions = {
+            where: { 
+                id, 
+                status: [ TutorStatus.UNVALIDATED, TutorStatus.REJECTED ] 
+            },
+            include: [
+                {
+                    association: 'user',
+                    required: true
+                }
+            ]
+        };
+        Tutor.findOne(options)
             .then((tutor) => {
                 if(tutor) {
                     if(status == 1)
                         tutor.update({ status: TutorStatus.ACTIVE });
                     else
                         tutor.update({ status: TutorStatus.REJECTED });
-                    res.json({ status: 'success' });
+                    const params = {
+                        status: status == 1 ? 'Aprovado' : 'Rechazado',
+                        // @ts-ignore
+                        firstname: tutor.user.firstname,
+                        // @ts-ignore
+                        lastname: tutor.user.lastname,
+                    };
+                    res.render('templates/emails/validation-tutor', params, (err: Error, html: string) => {
+                        if(err) {
+                            next({ error: err, custom: false });
+                            return;
+                        }
+                        else {
+                            EmailService.sendEmail(new Email('Resultado de solicitud - Tutor en Casa', html))
+                                .catch((e) => {
+                                    next({ error: e, custom: false });
+                                });
+                            res.json({ status: 'success' });
+                        }
+                    });
                 }
                 else {
                     next({ error: new Error('Tutor no existe o ya está validado'), custom: true });

@@ -24,31 +24,35 @@ class UserService {
         return new Promise((resolve: (user: User) => void, reject) => {
             const { email, dni } = data;
             User.findOne({ where: { dni } })
-                .then(async (userbyDni) => {
+                .then((userbyDni) => {
                     if(userbyDni) return reject({ error: new Error(registerMessage["user.exists"]), custom: true});
                     
-                    const userByEmail = await User.findOne({ where: { email } });
-                    if(userByEmail) return reject({ error: new Error(registerMessage["user.email.used"]), custom: true});
-                    
-                    const password = data.password;
-                    delete data.password;
-
-                    User.create({
-                            ...data,
-                            passwords: [ { password } ],
-                            status: UserStatus.UNVALIDATED
-                        },
-                        {
-                            include: [ { association: 'passwords' } ]
+                    User.findOne({ where: { email } })
+                        .then((userByEmail) => {
+                            if(userByEmail) return reject({ error: new Error(registerMessage["user.email.used"]), custom: true});
+                            const password = data.password;
+                            delete data.password;
+                            
+                            User.create({
+                                    ...data,
+                                    passwords: [ { password } ],
+                                    status: UserStatus.UNVALIDATED
+                                },
+                                {
+                                    include: [ { association: 'passwords' } ]
+                                })
+                                .then((user) => {
+                                    resolve(user);
+                                })
+                                .catch((err) => {
+                                    reject({
+                                        error: err,
+                                        custom: false
+                                    });
+                                });
                         })
-                        .then((user) => {
-                            resolve(user);
-                        })
-                        .catch((err) => {
-                            reject({
-                                error: new Error(err),
-                                custom: false
-                            });
+                        .catch((e) => {
+                            reject({ error: e, custom: false });
                         });
                 })
                 .catch((err) => {
@@ -59,6 +63,7 @@ class UserService {
                 });
         });
     }
+
     static update(data: UserServiceUpdateData, where: WhereOptions) {
         return new Promise((resolve: (info: { count: number, users: User[] }) => void, reject: (e: { error: Error, custom: boolean }) => void) => {
             User.update(data, { where })

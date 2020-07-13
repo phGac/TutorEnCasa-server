@@ -76,7 +76,7 @@ class UserController {
                 UserService.create({ email, password, dni })
                     .then((user) => {
                         res.render(
-                            'templates/emails/simple', 
+                            'templates/emails/validation-user', 
                             { url: `https://tutorencasa.tk/api/user/${dni}/validate` }, 
                             (err: Error, html: string) => {
                                 if(err) {
@@ -125,7 +125,6 @@ class UserController {
                             res.locals.user = info.users[0];
                             res.locals.auth = true;
                             res.redirect(`/public/registro?paso=2&run=${info.users[0].dni}`);
-                            //res.json({ status: 'success', user: info.users[0] });
                         }
                         else {
                             next({ error: new Error(registerMessage["step.two.user.notFound"]), custom: true });

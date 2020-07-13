@@ -4,7 +4,7 @@ import validator from "validator";
 
 import { PaymentService } from "../services/payment.service";
 import { requestMessage } from "../config/messages";
-import { Tutor, Class, ClassTime } from "../db/models";
+import { Tutor, Class, ClassTime, ClassRating } from "../db/models";
 import { TutorStatus } from "../db/models/tutor.model";
 import { HistoryStatusClassStatus } from "../db/models/historystatusclass.model";
 import TutorService from "../services/tutor.service";
@@ -38,6 +38,19 @@ class ClassValidatorController {
         next();
     }
     static show(req: Request, res: Response, next: NextFunction) {
+        next();
+    }
+    static rating(req: Request, res: Response, next: NextFunction) {
+        if(! req.params.id || ! req.body.value) {
+            return next({ error: new Error(requestMessage["params.missing"]), custom: true });
+        }
+
+        if(! validator.isInt(req.params.id) || ! validator.isInt(req.body.value)) {
+            return next({ error: new Error('El tipo de dato en inválido'), custom: true });
+        }
+
+        res.locals.id = req.params.id;
+        res.locals.value = req.body.value;
         next();
     }
 }
@@ -127,6 +140,22 @@ class ClassController {
     static join(req: Request, res: Response, next: NextFunction) {
         next();
     }
+    static rating(req: Request, res: Response, next: NextFunction) {
+        const { id, value } = res.locals;
+        // @ts-ignore
+        const id_user = req.user.id;
+        ClassRating.create({
+            id_class: id,
+            id_user,
+            value
+        })
+        .then((classRating) => {
+            res.json({ status: 'success' });
+        })
+        .catch((e) => {
+            next({ error: e, custom: false });
+        });
+    }
     static update(req: Request, res: Response, next: NextFunction) {}
     static destroy(req: Request, res: Response, next: NextFunction) {}
     static show(req: Request, res: Response, next: NextFunction) {
@@ -168,7 +197,7 @@ class ClassController {
                 }
             ]
         };
-        
+
         Class.findAll(options)
             .then((classes) => {
                 const classAll = classes.map((classI) => {

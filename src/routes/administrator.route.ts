@@ -8,7 +8,7 @@ router.get(['/request', '/request/:id'], isLoggedIn, isAdministrator, Administra
 
 router.get('/request/:id/certificate', isLoggedIn, isAdministrator, AdministratorValidatorController.tutorCertificate, AdministratorController.tutorCertificate);
 
-router.get('/tutor/:id/validate', isLoggedIn, isAdministrator, AdministratorValidatorController.tutorValidate, AdministratorController.tutorValidate);
+router.put('/tutor/:id/validate', isLoggedIn, isAdministrator, AdministratorValidatorController.tutorValidate, AdministratorController.tutorValidate);
 
 router.get('/logs', isLoggedIn, isAdministrator, AdministratorValidatorController.logs, AdministratorController.logs);
 

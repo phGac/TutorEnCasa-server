@@ -32,10 +32,11 @@ class AdministratorValidatorController {
         next();
     }
     static tutorValidate(req: Request, res: Response, next: NextFunction) {
-        if(! req.params.id || ! validator.isInt(req.params.id)) {
+        if(! req.params.id || ! validator.isInt(req.params.id) || ! req.body.status) {
             return next({ error: new Error(requestMessage["params.missing"]), custom: true });
         }
         res.locals.id = req.params.id;
+        res.locals.status = req.params.status;
         next();
     }
     static logs(req: Request, res: Response, next: NextFunction) {
@@ -129,12 +130,15 @@ class AdministratorController {
             });
     }
     static tutorValidate(req: Request, res: Response, next: NextFunction) {
-        const { id } = res.locals;
+        const { id, status } = res.locals;
         
         Tutor.findOne({ where: { id, status: [ TutorStatus.UNVALIDATED, TutorStatus.REJECTED ] } })
             .then((tutor) => {
                 if(tutor) {
-                    tutor.update({ status: TutorStatus.ACTIVE });
+                    if(status == 1)
+                        tutor.update({ status: TutorStatus.ACTIVE });
+                    else
+                        tutor.update({ status: TutorStatus.REJECTED });
                     res.json({ status: 'success' });
                 }
                 else {

@@ -168,6 +168,7 @@ class ClassController {
                 }
             ]
         };
+        
         Class.findAll(options)
             .then((classes) => {
                 const classAll = classes.map((classI) => {
@@ -180,7 +181,6 @@ class ClassController {
                         const time = classI.times[index];
                         total += time.minutes;
                     }
-                    //const total = classI.times.reduce((accumulator, time) => accumulator.minutes + time.minutes);
                     return {
                         id: classI.id,
                         // @ts-ignore

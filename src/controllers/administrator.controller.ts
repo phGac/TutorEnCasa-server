@@ -37,8 +37,9 @@ class AdministratorValidatorController {
         if(! req.params.id || ! validator.isInt(req.params.id) || ! req.body.status) {
             return next({ error: new Error(requestMessage["params.missing"]), custom: true });
         }
+
         res.locals.id = req.params.id;
-        res.locals.status = req.params.status;
+        res.locals.status = req.body.status;
         next();
     }
     static logs(req: Request, res: Response, next: NextFunction) {
@@ -161,6 +162,7 @@ class AdministratorController {
                         firstname: tutor.user.firstname,
                         // @ts-ignore
                         lastname: tutor.user.lastname,
+                        date: tutor.createdAt.toDateString()
                     };
                     res.render('templates/emails/validation-tutor', params, (err: Error, html: string) => {
                         if(err) {

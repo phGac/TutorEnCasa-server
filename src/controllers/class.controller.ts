@@ -8,7 +8,7 @@ import { Tutor, Class, ClassTime, ClassRating } from "../db/models";
 import { TutorStatus } from "../db/models/tutor.model";
 import HistoryStatusClass, { HistoryStatusClassStatus } from "../db/models/historystatusclass.model";
 import TutorService from "../services/tutor.service";
-import logger from "../util/logger";
+import logger from "../util/logger.util";
 import { AvailabilityTimeStatus } from "../db/models/availabilitytime.model";
 
 class ClassValidatorController {

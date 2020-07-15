@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 
-import { findTutor } from "../util/find";
+import { findTutor } from "../util/find.util";
 import { requestMessage, tutorMessage } from "../config/messages";
 import { Theme, TutorTheme, Tutor, User, AvailabilityTime, TutorFileCertificate } from '../db/models';
 import { TutorStatus } from "../db/models/tutor.model";

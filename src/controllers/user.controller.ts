@@ -7,21 +7,51 @@ import UserService from '../services/user.service';
 import { registerMessage, requestMessage } from '../config/messages';
 import User, { UserStatus } from '../db/models/user.model';
 import EmailService, { Email } from '../services/email.service';
-import { userToShowClient } from '../util/to_show_client';
+import { userToShowClient } from '../util/to_show_client.util';
+import { validateRut, hasNumberYears } from '../util/validator.util';
 
 class UserValidatorController {
     static show(req: Request, res: Response, next: NextFunction) {
         next();
     }
     static create(req: Request, res: Response, next: NextFunction) {
+        if(! req.params.step || ! req.body.dni) {
+            next({ error: new Error(requestMessage["params.missing"]), custom: true });
+            return;
+        }
+
+        switch (req.params.step) {
+            case '1':
+                if(! req.body.email || ! req.body.password) {
+                    next({ error: new Error(requestMessage["params.missing"]), custom: true });
+                    return;
+                }
+            case '2':
+                if(! req.body.firstname || ! req.body.lastname || ! req.body.birthdate) {
+                    next({ error: new Error(requestMessage["params.missing"]), custom: true });
+                    return;
+                }
+            default:
+                next({ error: new Error(registerMessage["step.out"]), custom: true });
+                break;
+        }
+
+        if(validateRut(req.body.dni)) {
+            next({ error: new Error('El rut ingresado es inválido'), custom: true });
+            return;
+        }
+
         next();
     }
+
     static update(req: Request, res: Response, next: NextFunction) {
         next();
     }
+
     static destroy(req: Request, res: Response, next: NextFunction) {
         next();
     }
+
     static validate(req: Request, res: Response, next: NextFunction) {
         res.locals.dni = req.params.dni;
         next();
@@ -59,10 +89,6 @@ class UserController {
         let dniDv = null;
         switch (req.params.step) {
             case '1':
-                if(! req.body.email || ! req.body.password || ! req.body.dni) {
-                    next({ error: new Error(requestMessage["params.missing"]), custom: true });
-                    return;
-                }
                 const { email, password, dni } = req.body;
                 dniDv = validatorDni(dni);
                 if (! validator.isEmail(email)) {
@@ -99,10 +125,6 @@ class UserController {
                     });
                 break;
             case '2':
-                if(! req.body.firstname || ! req.body.lastname || ! req.body.birthdate || ! req.body.dni) {
-                    next({ error: new Error(requestMessage["params.missing"]), custom: false });
-                    return;
-                }
                 dniDv = validatorDni(req.body.dni);
                 if (! validatorDni(req.body.dni, dniDv)) {
                     next({ error: new Error(registerMessage["user.dni.invalid"]), custom: true });
@@ -111,6 +133,10 @@ class UserController {
                 const birthdate = validator.toDate(req.body.birthdate)
                 if(! birthdate) {
                     next({ error: new Error(registerMessage["user.birthday.invalid"]), custom: true });
+                    return;
+                }
+                else if(hasNumberYears(birthdate, 10)) {
+                    next({ error: new Error('Lo lamentamos, pero no tienes la edad mínima permitida para crear una cuenta :c'), custom: true });
                     return;
                 }
                 const data = {

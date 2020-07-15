@@ -1,6 +1,6 @@
 import { Client, CreatePaymentResponse, PaymentResponse, PaymentsResponse } from 'khipu-client';
 import Payment, { PaymentStatus } from '../db/models/payment.model';
-import logger from '../util/logger';
+import logger from '../util/logger.util';
 
 const client =  new Client({
     receiverId: process.env.KHIPU_ID || '',

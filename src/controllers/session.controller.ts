@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import { requestMessage, loginMessage } from '../config/messages';
 import { auth } from '../services/auth.service';
 import { HistoryAccess } from '../db/models';
-import logger from '../util/logger';
+import logger from '../util/logger.util';
 
 class SessionValidatorController {
     static create(req: Request, res: Response, next: NextFunction) {

@@ -7,7 +7,7 @@ import FileService from "../services/file.service";
 import validator from "validator";
 import Log from "../db/models/log.model";
 import EmailService, { Email } from "../services/email.service";
-import logger from "../util/logger";
+import logger from "../util/logger.util";
 
 class AdministratorValidatorController {
     static create(req: Request, res: Response, next: NextFunction) {
@@ -157,7 +157,7 @@ class AdministratorController {
                     else
                         tutor.update({ status: TutorStatus.REJECTED });
                     const params = {
-                        status: status == 1 ? 'Aprovado' : 'Rechazado',
+                        status: status == 1 ? 'Aprobado' : 'Rechazado',
                         // @ts-ignore
                         firstname: tutor.user.firstname,
                         // @ts-ignore

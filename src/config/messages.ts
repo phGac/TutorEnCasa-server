@@ -13,7 +13,7 @@ export const loginMessage = {
     'user.email.formatError': 'El formato del correo electrónico es incorrecto',
     'user.password.undefined': 'El correo electrónico y contraseña son requeridos',
     'user.token.notfound': 'El token es inválido',
-    'user.hasNotPassword': 'El usuario no una contraseña'
+    'user.hasNotPassword': 'El usuario no tiene una contraseña'
 };
 
 export const registerMessage = {

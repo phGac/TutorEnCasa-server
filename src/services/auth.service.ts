@@ -1,7 +1,7 @@
 import { FindOptions } from "sequelize/types";
 import User from "../db/models/user.model";
 import { loginMessage } from "../config/messages";
-import { userToShowClient, UserClient } from "../util/to_show_client";
+import { userToShowClient, UserClient } from "../util/to_show_client.util";
 
 export function auth(email: string, password: string) {
     return new Promise((resolve: (user: UserClient) => void, reject) => {

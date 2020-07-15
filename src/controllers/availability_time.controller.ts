@@ -5,7 +5,7 @@ import { requestMessage } from "../config/messages";
 import validator from "validator";
 import TutorService from "../services/tutor.service";
 import { AvailabilityTimeStatus } from "../db/models/availabilitytime.model";
-import logger from "../util/logger";
+import logger from "../util/logger.util";
 
 class AvailabilityTimeValidatorController {
     static show(req: Request, res: Response, next: NextFunction) {

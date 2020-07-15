@@ -1,7 +1,7 @@
 import './config/env';
 import './db';
 import app from './app';
-import logger from './util/logger';
+import logger from './util/logger.util';
 import routes from './routes';
 
 routes(app);

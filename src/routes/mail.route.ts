@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import EmailService, { Email } from '../services/email.service';
-import logger from '../util/logger';
+import logger from '../util/logger.util';
 
 const router = Router();
 

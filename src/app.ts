@@ -8,7 +8,7 @@ import cors from 'cors';
 import fileUpload from 'express-fileupload';
 import { mw as requestIp } from 'request-ip';
 import { errorHandler, notFoundHandler } from './middlewares/app.middleware';
-import logger, { TypeLogger } from './util/logger';
+import logger, { TypeLogger } from './util/logger.util';
 
 class App {
     private app: Application;

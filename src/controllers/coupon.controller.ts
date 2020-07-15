@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { requestMessage, couponMessage } from "../config/messages";
 
 import { User, Coupon, CouponGift } from '../db/models';
-import logger from "../util/logger";
+import logger from "../util/logger.util";
 import PaymentService from "../services/payment.service";
 import { FindOptions } from "sequelize/types";
 import validator from "validator";

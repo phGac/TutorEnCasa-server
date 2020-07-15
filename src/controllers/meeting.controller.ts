@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import MeetingService from "../services/meeting.service";
 import { requestMessage } from "../config/messages";
-import logger from "../util/logger";
+import logger from "../util/logger.util";
 
 class MeetingValidatorController {
     static show(req: Request, res: Response, next: NextFunction) {

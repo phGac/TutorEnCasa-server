@@ -1,6 +1,6 @@
 import { Chime, Endpoint, AWSError } from 'aws-sdk';
 import { v4 as uuid } from 'uuid';
-import logger from '../util/logger';
+import logger from '../util/logger.util';
 import { PromiseResult } from 'aws-sdk/lib/request';
 
 const chime = new Chime({ 

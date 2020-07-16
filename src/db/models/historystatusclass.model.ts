@@ -55,7 +55,8 @@ enum HistoryStatusClassStatus {
     UNPAY,
     PAY,
     CANCELL,
-    FINISHED
+    FINISHED,
+    STARTED,
 }
 
 export {

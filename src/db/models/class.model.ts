@@ -7,6 +7,7 @@ class Class extends Model {
 	public id_tutor!: number;
 	public id_tutor_theme!: number;
 
+	public readonly room!: string;
 	public readonly price_hour!: number;
 
 	public readonly createdAt!: Date;
@@ -26,6 +27,10 @@ Class.init({
 	id_tutor_theme: {
 		type: DataTypes.INTEGER,
 		allowNull: false
+	},
+	room: {
+		type: DataTypes.STRING,
+		allowNull: true
 	},
 	price_hour: {
 		type: DataTypes.INTEGER,

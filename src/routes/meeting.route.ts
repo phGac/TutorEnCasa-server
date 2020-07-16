@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { isLoggedIn, isTutor } from '../middlewares/session.middleware';
-import MeetingController from '../controllers/meeting.controller';
+import MeetingController, { MeetingValidatorController } from '../controllers/meeting.controller';
 
 const router = Router();
 
@@ -16,10 +16,10 @@ const router = Router();
  *
  * @apiUse MeetingController
  */
-router.post('/new', isLoggedIn, isTutor, MeetingController.create);
+router.post('/new', isLoggedIn, isTutor, MeetingValidatorController.create, MeetingController.create);
 
-router.post('/join', isLoggedIn, MeetingController.join);
+router.post('/join', isLoggedIn, MeetingValidatorController.join, MeetingController.join);
 
-router.post('/delete/:id', isLoggedIn, isTutor, MeetingController.destroy);
+router.delete('/:id', isLoggedIn, isTutor, MeetingValidatorController.destroy, MeetingController.destroy);
 
 export default router;

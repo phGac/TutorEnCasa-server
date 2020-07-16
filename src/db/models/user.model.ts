@@ -75,14 +75,16 @@ User.init({
 
 // @ts-ignore
 User.associate = function(models) {
-	const { Tutor, Schedule, HistoryAccess, HistoryPassword, ClassRating, Administrator, Coupon, CouponGift } = models;
+	const { Tutor, Schedule, Class, HistoryAccess, HistoryPassword, ClassRating, Administrator, Coupon, CouponGift } = models;
 	User.hasMany(HistoryPassword, {
 		as: 'passwords',
 		foreignKey: 'id_user'
 	});
-	User.hasMany(Schedule, {
-		as: 'schedules',
-		foreignKey: 'id_student'
+	User.belongsToMany(Class, {
+		as: 'classes',
+		through: Schedule,
+		foreignKey: 'id_student',
+		otherKey: 'id_class'
 	});
 	User.hasMany(HistoryAccess, {
 		as: 'accesses',

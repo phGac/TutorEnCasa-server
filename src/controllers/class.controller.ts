@@ -4,7 +4,7 @@ import validator from "validator";
 
 import { PaymentService } from "../services/payment.service";
 import { requestMessage } from "../config/messages";
-import { Tutor, Class, ClassTime, ClassRating } from "../db/models";
+import { Tutor, Class, ClassTime, ClassRating, User } from "../db/models";
 import { TutorStatus } from "../db/models/tutor.model";
 import HistoryStatusClass, { HistoryStatusClassStatus } from "../db/models/historystatusclass.model";
 import TutorService from "../services/tutor.service";
@@ -181,47 +181,61 @@ class ClassController {
     static destroy(req: Request, res: Response, next: NextFunction) {}
     static show(req: Request, res: Response, next: NextFunction) {
         // @ts-ignore
-        const id = req.user?.id;
+        const id = req.user.id;
         const options: FindOptions = {
             where: { id },
-            attributes: [ 'id', 'price_hour', 'createdAt' ],
+            attributes: [],
             include: [
                 {
-                    association: 'tutor',
-                    attributes: ['id'],
-                    include: [
-                        {
-                            association: 'user',
-                            attributes: ['firstname', 'lastname', 'email'],
-                            required: true
-                        }
-                    ],
-                    required: true
-                },
-                { 
-                    association: 'statuses',
-                    where: { 
-                        status: [ HistoryStatusClassStatus.UNPAY, HistoryStatusClassStatus.PAY ] 
-                    },
-                    order: [[ 'createdAt', 'DESC' ]],
-                    attributes: ['status'],
-                    limit: 1,
-                    required: true
-                },
-                {
-                    association: 'times',
-                    attributes: ['start', 'minutes'],
+                    association: 'classes',
                     required: true,
                     through: {
                         attributes: []
-                    }
+                    },
+                    include: [
+                        {
+                            association: 'tutor',
+                            attributes: ['id'],
+                            include: [
+                                {
+                                    association: 'user',
+                                    attributes: ['firstname', 'lastname', 'email'],
+                                    required: true
+                                }
+                            ],
+                            required: true
+                        },
+                        { 
+                            association: 'statuses',
+                            where: { 
+                                status: [ HistoryStatusClassStatus.UNPAY, HistoryStatusClassStatus.PAY, HistoryStatusClassStatus.STARTED ] 
+                            },
+                            order: [[ 'createdAt', 'DESC' ]],
+                            attributes: ['status'],
+                            limit: 1,
+                            required: true
+                        },
+                        {
+                            association: 'times',
+                            attributes: ['start', 'minutes'],
+                            required: true,
+                            through: {
+                                attributes: []
+                            }
+                        }
+                    ]
                 }
             ]
         };
+        User.findOne(options)
+            .then((user) => {
+                if(! user) {
+                    res.json({ status: 'success', classes: [] });
+                    return;
+                }
 
-        Class.findAll(options)
-            .then((classes) => {
-                const classAll = classes.map((classI) => {
+                // @ts-ignore
+                const classAll = user.classes.map((classI: Class) => {
                     // @ts-ignore
                     const start = classI.times[0].start;
                     let total = 0;

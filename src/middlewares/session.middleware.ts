@@ -3,6 +3,8 @@ import jwt from 'jsonwebtoken';
 
 import { requestMessage, loginMessage } from "../config/messages";
 import { UserRole } from "../db/models/user.model";
+import { Tutor } from "../db/models";
+import { TutorStatus } from "../db/models/tutor.model";
 
 export function isLoggedIn(req: Request, res: Response, next: NextFunction) {
     const token = req.headers['access-token'] || req.cookies['auth-token'];
@@ -42,7 +44,17 @@ export function isTutor(req: Request, res: Response, next: NextFunction) {
 
 export function isNotTutor(req: Request, res: Response, next: NextFunction) {
     // @ts-ignore
-    if(req.user?.roles.includes(UserRole.TUTOR))
-        return next({ error: requestMessage["user.role.notAllowed"], custom: true });
-    next();
+    if(req.user?.roles.includes(UserRole.TUTOR)) {
+        // @ts-ignore
+        Tutor.findOne({ where: { id: req.user.id_tutor } })
+            .then((tutor) => {
+                if(tutor?.status == TutorStatus.UNVALIDATED) 
+                    next({ error: requestMessage["user.role.notAllowed"], custom: true });
+                else
+                    next();
+            });
+    }
+    else {
+        next();
+    }
 }

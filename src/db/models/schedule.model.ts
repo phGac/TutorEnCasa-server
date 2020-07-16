@@ -37,7 +37,16 @@ Schedule.init({
 
 // @ts-ignore
 Schedule.associate = function(models) {
-	//amigo ponga algo aqui  
+	const { Class, User } = models;
+
+	Schedule.belongsTo(Class, {
+		as: 'class',
+		foreignKey: 'id_class'
+	});
+	Schedule.belongsTo(User, {
+		as: 'student',
+		foreignKey: 'id_student'
+	});
 };
 
 export default Schedule;

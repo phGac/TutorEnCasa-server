@@ -45,9 +45,6 @@ class UserValidatorController {
     }
 
     static update(req: Request, res: Response, next: NextFunction) {
-        if() {
-
-        }
         next();
     }
 
@@ -168,7 +165,9 @@ class UserController {
         
     }
 
-    static update(req: Request, res: Response) {}
+    static update(req: Request, res: Response, next: NextFunction) {
+        //
+    }
 
     static destroy(req: Request, res: Response) {}
 

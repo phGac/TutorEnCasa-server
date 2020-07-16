@@ -1,7 +1,7 @@
 import { Chime, Endpoint, AWSError } from 'aws-sdk';
+import { PromiseResult } from 'aws-sdk/lib/request';
 import { v4 as uuid } from 'uuid';
 import logger from '../util/logger.util';
-import { PromiseResult } from 'aws-sdk/lib/request';
 
 const chime = new Chime({ 
     region: 'us-east-1',
@@ -28,11 +28,12 @@ class MeetingService {
                 });
         });
     }
+
     static join(id: string) {
-        return new Promise((resolve: (data: { Meeting: PromiseResult<Chime.CreateMeetingResponse, AWSError>, Attendee: PromiseResult<Chime.CreateAttendeeResponse, AWSError> }) => void, reject: (e: { error: Error|string, custom: boolean }) => void) => {
-            if(! meetingTable[id]) return reject({ error: new Error('No encontrado'), custom: true });
+        return new Promise((resolve: (joinInfo: { Meeting: PromiseResult<Chime.CreateMeetingResponse, AWSError>, Attendee: PromiseResult<Chime.CreateAttendeeResponse, AWSError> }) => void, reject: (e: { error: Error|string, custom: boolean }) => void) => {
+            if(! meetingTable[id]) return reject({ error: new Error('Llamada no encontrada'), custom: true });
             const meeting = meetingTable[id];
-            if(! meeting.Meeting || ! meeting.Meeting.MeetingId) return reject({ error: new Error('No encontrado'), custom: true });
+            if(! meeting.Meeting || ! meeting.Meeting.MeetingId) return reject({ error: new Error('Llamada no encontrada'), custom: true });
             chime.createAttendee({
                 MeetingId: meeting.Meeting.MeetingId,
                 ExternalUserId: uuid()
@@ -49,13 +50,17 @@ class MeetingService {
                 });
         });
     }
+
     static destroy(id: string) {
-        chime.deleteMeeting({
-            MeetingId: id
-        }).promise()
-            .catch((e) => {
-                logger().error(e);
-            });
+        if(meetingTable[id]) {
+            delete meetingTable[id];
+            chime.deleteMeeting({
+                MeetingId: id
+            }).promise()
+                .catch((e) => {
+                    logger().error(e);
+                });
+        }
     }
 };
 

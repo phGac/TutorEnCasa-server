@@ -28,6 +28,11 @@ export = {
                 }
             },
 
+            room: {
+                type: Sequelize.STRING,
+                allowNull: true
+            },
+
             price_hour: {
                 type: Sequelize.INTEGER,
                 allowNull: false

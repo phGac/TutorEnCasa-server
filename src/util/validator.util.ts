@@ -47,7 +47,7 @@ function validateRut(rut: string) {
     return true;
 }
 
-function hasNumberYears(date: string|Date, minAge: number) 
+function hasMinNumberYears(date: string|Date, minAge: number) 
 {
     const today = new Date();
     const birthDate = (date instanceof Date) ? date : new Date(date);
@@ -63,5 +63,5 @@ function hasNumberYears(date: string|Date, minAge: number)
 
 export {
     validateRut,
-    hasNumberYears
+    hasMinNumberYears
 }

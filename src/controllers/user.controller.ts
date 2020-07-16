@@ -8,7 +8,7 @@ import { registerMessage, requestMessage } from '../config/messages';
 import User, { UserStatus } from '../db/models/user.model';
 import EmailService, { Email } from '../services/email.service';
 import { userToShowClient } from '../util/to_show_client.util';
-import { validateRut, hasNumberYears } from '../util/validator.util';
+import { validateRut, hasMinNumberYears } from '../util/validator.util';
 
 class UserValidatorController {
     static show(req: Request, res: Response, next: NextFunction) {
@@ -45,6 +45,9 @@ class UserValidatorController {
     }
 
     static update(req: Request, res: Response, next: NextFunction) {
+        if() {
+
+        }
         next();
     }
 
@@ -135,7 +138,7 @@ class UserController {
                     next({ error: new Error(registerMessage["user.birthday.invalid"]), custom: true });
                     return;
                 }
-                else if(hasNumberYears(birthdate, 10)) {
+                else if(! hasMinNumberYears(birthdate, 10)) {
                     next({ error: new Error('Lo lamentamos, pero no tienes la edad mínima permitida para crear una cuenta :c'), custom: true });
                     return;
                 }
@@ -147,10 +150,8 @@ class UserController {
                 };
                 UserService.update(data, { dni: req.body.dni })
                     .then((info) => {
-                        if(info.count == 1) {
-                            res.locals.user = info.users[0];
-                            res.locals.auth = true;
-                            res.redirect(`/public/registro?paso=2&run=${info.users[0].dni}`);
+                        if(info.count > 0) {
+                            res.json({ status: 'success' });
                         }
                         else {
                             next({ error: new Error(registerMessage["step.two.user.notFound"]), custom: true });
@@ -186,7 +187,7 @@ class UserController {
                     next({ error: new Error('Usuario ya validado'), custom: true });
                     return;
                 }
-                res.json({ status: 'success' });
+                res.redirect(`/public/registro?paso=2&run=${dni}`);
             });
     }
 }

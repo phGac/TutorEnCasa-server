@@ -25,35 +25,42 @@ class UserService {
             const { email, dni } = data;
             User.findOne({ where: { dni } })
                 .then((userbyDni) => {
-                    if(userbyDni) return reject({ error: new Error(registerMessage["user.exists"]), custom: true});
-                    
-                    User.findOne({ where: { email } })
-                        .then((userByEmail) => {
-                            if(userByEmail) return reject({ error: new Error(registerMessage["user.email.used"]), custom: true});
-                            const password = data.password;
-                            delete data.password;
-                            
-                            User.create({
-                                    ...data,
-                                    passwords: [ { password } ],
-                                    status: UserStatus.UNVALIDATED
-                                },
-                                {
-                                    include: [ { association: 'passwords' } ]
-                                })
-                                .then((user) => {
-                                    resolve(user);
-                                })
-                                .catch((err) => {
-                                    reject({
-                                        error: err,
-                                        custom: false
-                                    });
-                                });
-                        })
-                        .catch((e) => {
-                            reject({ error: e, custom: false });
-                        });
+                    if(userbyDni) {
+                        reject({ error: new Error(registerMessage["user.exists"]), custom: true});
+                    }
+                    else {
+                        User.findOne({ where: { email } })
+                            .then((userByEmail) => {
+                                if(userByEmail) {
+                                    reject({ error: new Error(registerMessage["user.email.used"]), custom: true});
+                                }
+                                else {
+                                    const password = data.password;
+                                    delete data.password;
+                                    
+                                    User.create({
+                                            ...data,
+                                            passwords: [ { password } ],
+                                            status: UserStatus.UNVALIDATED
+                                        },
+                                        {
+                                            include: [ { association: 'passwords' } ]
+                                        })
+                                        .then((user) => {
+                                            resolve(user);
+                                        })
+                                        .catch((err) => {
+                                            reject({
+                                                error: err,
+                                                custom: false
+                                            });
+                                        });
+                                }
+                            })
+                            .catch((e) => {
+                                reject({ error: e, custom: false });
+                            });
+                    }
                 })
                 .catch((err) => {
                     reject({

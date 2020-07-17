@@ -1,6 +1,7 @@
 import User, { UserStatus } from '../db/models/user.model';
 import { registerMessage } from '../config/messages';
 import { WhereOptions } from 'sequelize/types';
+import { encryptPassword } from './hash.service';
 
 export interface UserServiceCreateData {
     firstname?: string;
@@ -38,22 +39,28 @@ class UserService {
                                     const password = data.password;
                                     delete data.password;
                                     
-                                    User.create({
-                                            ...data,
-                                            passwords: [ { password } ],
-                                            status: UserStatus.UNVALIDATED
-                                        },
-                                        {
-                                            include: [ { association: 'passwords' } ]
+                                    encryptPassword(password, false)
+                                        .then(() => {
+                                            User.create({
+                                                    ...data,
+                                                    passwords: [ { password } ],
+                                                    status: UserStatus.UNVALIDATED
+                                                },
+                                                {
+                                                    include: [ { association: 'passwords' } ]
+                                                })
+                                                .then((user) => {
+                                                    resolve(user);
+                                                })
+                                                .catch((err) => {
+                                                    reject({
+                                                        error: err,
+                                                        custom: false
+                                                    });
+                                                });
                                         })
-                                        .then((user) => {
-                                            resolve(user);
-                                        })
-                                        .catch((err) => {
-                                            reject({
-                                                error: err,
-                                                custom: false
-                                            });
+                                        .catch((e) => {
+                                            reject(e);
                                         });
                                 }
                             })

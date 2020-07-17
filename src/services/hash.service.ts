@@ -12,5 +12,8 @@ export function encryptPassword(password: string, encrypt = true) {
                 resolve(hash);
             });
         }
+        else {
+            resolve();
+        }
     });
 };

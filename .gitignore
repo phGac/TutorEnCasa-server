@@ -67,7 +67,6 @@ typings/
 jest.config.*
 nodemon.*
 log/**
-dist/**
 package-lock.json
 uploads/**
 tmp/**

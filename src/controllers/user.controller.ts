@@ -9,6 +9,9 @@ import User, { UserStatus } from '../db/models/user.model';
 import EmailService, { Email } from '../services/email.service';
 import { userToShowClient } from '../util/to_show_client.util';
 import { validateRut, hasMinNumberYears } from '../util/validator.util';
+import { FindOptions } from 'sequelize/types';
+import { HistoryPassword } from '../db/models';
+import loggerUtil from '../util/logger.util';
 
 class UserValidatorController {
     static show(req: Request, res: Response, next: NextFunction) {
@@ -44,16 +47,26 @@ class UserValidatorController {
         next();
     }
 
-    static update(req: Request, res: Response, next: NextFunction) {
-        next();
-    }
-
     static destroy(req: Request, res: Response, next: NextFunction) {
         next();
     }
 
     static validate(req: Request, res: Response, next: NextFunction) {
         res.locals.dni = req.params.dni;
+        next();
+    }
+
+    static update(req: Request, res: Response, next: NextFunction) {
+        next();
+    }
+
+    static profile(req: Request, res: Response, next: NextFunction) {
+        if((! req.body.password || ! req.body.actual_password) && ! req.body.email) {
+            return next({ error: new Error(requestMessage["params.missing"]), custom: true });
+        }
+        res.locals.email = req.body.email ? req.body.email : undefined;
+        res.locals.password = req.body.password ? req.body.password : undefined;
+        res.locals.actual_password = req.body.actual_password ? req.body.actual_password : undefined;
         next();
     }
 }
@@ -139,23 +152,32 @@ class UserController {
                     next({ error: new Error('Lo lamentamos, pero no tienes la edad mínima permitida para crear una cuenta :c'), custom: true });
                     return;
                 }
-                const data = {
-                    firstname: req.body.firstname,
-                    lastname: req.body.lastname,
-                    birthdate: birthdate,
-                    status: UserStatus.ACTIVE
-                };
-                UserService.update(data, { dni: req.body.dni })
-                    .then((info) => {
-                        if(info.count > 0) {
-                            res.json({ status: 'success' });
-                        }
-                        else {
-                            next({ error: new Error(registerMessage["step.two.user.notFound"]), custom: true });
-                        }
+                User.findOne({ where: { dni: req.body.dni } })
+                    .then((user) => {
+                        if(! user) return next({ error: new Error('Usuario no encontrado'), custom: true });
+                        else if(user.firstname) return next({ error: new Error('El usuario ya ha finalizado su registro'), custom: true });
+                        
+                        const data = {
+                            firstname: req.body.firstname,
+                            lastname: req.body.lastname,
+                            birthdate: birthdate,
+                            status: UserStatus.ACTIVE
+                        };
+                        UserService.update(data, { dni: req.body.dni })
+                            .then((info) => {
+                                if(info.count > 0) {
+                                    res.json({ status: 'success' });
+                                }
+                                else {
+                                    next({ error: new Error(registerMessage["step.two.user.notFound"]), custom: true });
+                                }
+                            })
+                            .catch((err) => {
+                                next(err);
+                            });
                     })
-                    .catch((err) => {
-                        next(err);
+                    .catch((e) => {
+                        next({ error: e, custom: false });
                     });
                 break;
             default:
@@ -166,7 +188,58 @@ class UserController {
     }
 
     static update(req: Request, res: Response, next: NextFunction) {
-        //
+
+    }
+
+    static profile(req: Request, res: Response, next: NextFunction) {
+        const { email, password, actual_password } = res.locals;
+        // @ts-ignore
+        const { id } = req.user;
+        if(! email) {
+            const options: FindOptions = {
+                where: { id },
+                include: [{ 
+                    association: 'passwords',
+                    order: [[ 'createdAt', 'DESC' ]],
+                    limit: 1
+                }]
+            };
+            User.findOne(options)
+                .then((user) => {
+                    if(! user) return next({ error: new Error('Usuario no encontrado'), custom: true });
+                    user.isValidPassword(actual_password)
+                        .then((valid) => {
+                            if(! valid) return next({ error: new Error('La contraseña es inválida'), custom: true });
+                            HistoryPassword.create({
+                                id_user: id,
+                                password
+                            })
+                            .catch((e) => loggerUtil().error(e));
+                            res.json({ status: 'success' });
+                        })
+                        .catch((e) => {
+                            next(e);
+                        });
+                })
+                .catch((e) => {
+                    next({ error: e, custom: false });
+                });
+        }
+        else {
+            // @ts-ignore
+            if(email == req.user.email) {
+                return next({ error: new Error('El correo debe ser diferente al actual') });
+            } 
+            User.findOne({ where: { email } })
+                .then((user) => {
+                    if(user) return next({ error: new Error('El correo ya está en uso'), custom: true });
+                    User.update({ email }, { where: { id } })
+                        .catch((e) => {
+                            loggerUtil().error(e);
+                        });
+                    res.json({ status: 'success' });
+                });
+        }
     }
 
     static destroy(req: Request, res: Response) {}
@@ -187,6 +260,9 @@ class UserController {
                     return;
                 }
                 res.redirect(`/public/registro?paso=2&run=${dni}`);
+            })
+            .catch((e) => {
+                next({ error: e, custom: false });
             });
     }
 }

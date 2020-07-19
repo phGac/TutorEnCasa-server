@@ -54,6 +54,30 @@ class TutorService {
             });
         });
     }
+    static weekAvailableTimes(id_tutor, date = new Date()) {
+        return new Promise((resolve, reject) => {
+            const nextWeek = new Date();
+            nextWeek.setDate(nextWeek.getDate() + 7);
+            nextWeek.setHours(0, 0, 0, 0);
+            const options = {
+                attributes: ['id', 'start', 'minutes'],
+                where: {
+                    id_tutor,
+                    status: availabilitytime_model_1.AvailabilityTimeStatus.ACTIVE,
+                    start: {
+                        [sequelize_1.Op.between]: [date.toISOString(), nextWeek.toISOString()]
+                    },
+                }
+            };
+            models_1.AvailabilityTime.findAll(options)
+                .then((times) => {
+                resolve(times);
+            })
+                .catch((e) => {
+                reject({ error: e, custom: false });
+            });
+        });
+    }
     static addMinutes(date, minutes) {
         return new Date(date.getTime() + minutes * 60000);
     }

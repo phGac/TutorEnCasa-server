@@ -9,6 +9,7 @@ const models_1 = require("../db/models");
 const tutor_model_1 = require("../db/models/tutor.model");
 const file_service_1 = __importDefault(require("../services/file.service"));
 const validator_1 = __importDefault(require("validator"));
+const validator_util_1 = require("../util/validator.util");
 class TutorValidatorController {
     static show(req, res, next) {
         if (!validator_1.default.isInt(req.params.id))
@@ -46,6 +47,11 @@ class TutorValidatorController {
         });
     }
     static request(req, res, next) {
+        // @ts-ignore
+        const { birthday } = req.user;
+        if (!validator_util_1.hasMinNumberYears(birthday, 18)) {
+            return next({ error: new Error('No posees la edad mínima para solicitar ser tutor'), custom: true });
+        }
         next();
     }
     static validate(req, res, next) {

@@ -26,6 +26,11 @@ Tutor.init({
         type: sequelize_1.DataTypes.STRING(500),
         allowNull: true
     },
+    rating: {
+        type: sequelize_1.DataTypes.DECIMAL(10, 3),
+        allowNull: false,
+        defaultValue: 0
+    },
     createdAt: {
         type: sequelize_1.DataTypes.DATE,
         allowNull: false,

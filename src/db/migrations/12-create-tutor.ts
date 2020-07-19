@@ -31,6 +31,12 @@ export = {
                 type: Sequelize.STRING(500)
             },
 
+            rating: {
+                type: Sequelize.DECIMAL(10, 3),
+                allowNull: false,
+                defaultValue: 0
+            },
+
             createdAt: {
                 allowNull: false,
                 type: Sequelize.DATE,

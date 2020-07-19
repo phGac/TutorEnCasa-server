@@ -7,6 +7,7 @@ import { TutorStatus } from "../db/models/tutor.model";
 import FileService from "../services/file.service";
 import { FindOptions } from "sequelize/types";
 import validator from "validator";
+import { hasMinNumberYears } from "../util/validator.util";
 
 class TutorValidatorController {
     static show(req: Request, res: Response, next: NextFunction) {
@@ -51,6 +52,11 @@ class TutorValidatorController {
     }
 
     static request(req: Request, res: Response, next: NextFunction) {
+        // @ts-ignore
+        const { birthday } = req.user;
+        if(! hasMinNumberYears(birthday, 18)) {
+            return next({ error: new Error('No posees la edad mínima para solicitar ser tutor'), custom: true });
+        }
         next();
     }
 

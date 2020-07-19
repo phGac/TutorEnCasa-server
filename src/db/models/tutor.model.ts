@@ -11,6 +11,7 @@ class Tutor extends Model {
 
 	public status!: number;
 	public description!: string;
+	public rating!: number;
 	public themes!: Theme[];
 	public times!: AvailabilityTime[];
 	public certificates!: File[];
@@ -36,6 +37,11 @@ Tutor.init({
 	description: {
 		type: DataTypes.STRING(500),
 		allowNull: true
+	},
+	rating: {
+		type: DataTypes.DECIMAL(10, 3),
+		allowNull: false,
+		defaultValue: 0
 	},
 	createdAt: {
 		type: DataTypes.DATE,

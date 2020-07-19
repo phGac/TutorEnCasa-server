@@ -32,6 +32,7 @@ const historystatusclass_model_1 = __importStar(require("../db/models/historysta
 const tutor_service_1 = __importDefault(require("../services/tutor.service"));
 const logger_util_1 = __importDefault(require("../util/logger.util"));
 const availabilitytime_model_1 = require("../db/models/availabilitytime.model");
+const logger_util_2 = __importDefault(require("../util/logger.util"));
 class ClassValidatorController {
     static create(req, res, next) {
         if (!req.body.id_tutor || !req.body.id_theme || !req.body.date || !req.body.minutes)
@@ -166,16 +167,42 @@ class ClassController {
         const { id, value } = res.locals;
         // @ts-ignore
         const id_user = req.user.id;
-        models_1.ClassRating.create({
-            id_class: id,
-            id_user,
-            value
-        })
-            .then((classRating) => {
-            res.json({ status: 'success' });
+        models_1.Class.findOne({ where: { id } })
+            .then((classI) => {
+            if (!classI)
+                return next({ error: new Error('Clase no encontrada'), custom: true });
+            const options = {
+                include: [
+                    {
+                        association: 'class',
+                        where: { id_tutor: classI.id_tutor }
+                    }
+                ]
+            };
+            models_1.ClassRating.findAll(options)
+                .then((ratings) => {
+                const sum = (ratings.reduce((sum, rating) => sum + rating.value, 0) + value);
+                const avg = (sum / ratings.length) || 0;
+                models_1.Tutor.update({ rating: avg }, { where: { id_tutor: classI.id_tutor } })
+                    .catch((e) => logger_util_2.default().error(e));
+            })
+                .catch((e) => {
+                logger_util_1.default().error(e);
+            });
+            models_1.ClassRating.create({
+                id_class: id,
+                id_user,
+                value
+            })
+                .then((classRating) => {
+                res.json({ status: 'success' });
+            })
+                .catch((e) => {
+                next({ error: e, custom: false });
+            });
         })
             .catch((e) => {
-            next({ error: e, custom: false });
+            logger_util_2.default().error(e);
         });
     }
     static end(req, res, next) {

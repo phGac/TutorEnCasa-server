@@ -12,6 +12,7 @@ import { validateRut, hasMinNumberYears } from '../util/validator.util';
 import { FindOptions } from 'sequelize/types';
 import { HistoryPassword } from '../db/models';
 import loggerUtil from '../util/logger.util';
+import { encryptPassword } from '../services/hash.service';
 
 class UserValidatorController {
     static show(req: Request, res: Response, next: NextFunction) {
@@ -210,12 +211,18 @@ class UserController {
                     user.isValidPassword(actual_password)
                         .then((valid) => {
                             if(! valid) return next({ error: new Error('La contraseña es inválida'), custom: true });
-                            HistoryPassword.create({
-                                id_user: id,
-                                password
-                            })
-                            .catch((e) => loggerUtil().error(e));
-                            res.json({ status: 'success' });
+                            encryptPassword(password, false)
+                                .then(() => {
+                                    HistoryPassword.create({
+                                        id_user: id,
+                                        password
+                                    })
+                                    .catch((e) => loggerUtil().error(e));
+                                    res.json({ status: 'success' });
+                                })
+                                .catch((e) => {
+                                    next(e);
+                                });
                         })
                         .catch((e) => {
                             next(e);
@@ -238,6 +245,9 @@ class UserController {
                             loggerUtil().error(e);
                         });
                     res.json({ status: 'success' });
+                })
+                .catch((e) => {
+                    next({ error: e, custom: false });
                 });
         }
     }

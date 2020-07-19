@@ -11,6 +11,7 @@ class AvailabilityTimeValidatorController {
     static show(req: Request, res: Response, next: NextFunction) {
         next();
     }
+
     static create(req: Request, res: Response, next: NextFunction) {
         if(! req.body.date || ! req.body.minutes) {
             return next({ error: new Error(requestMessage["params.missing"]), custom: true });
@@ -28,9 +29,11 @@ class AvailabilityTimeValidatorController {
         res.locals.minutes = req.body.minutes;
         next();
     }
+
     static update(req: Request, res: Response, next: NextFunction) {
         next();
     }
+
     static destroy(req: Request, res: Response, next: NextFunction) {
         next();
     }
@@ -40,14 +43,7 @@ class AvailabilityTimeController {
     static show(req: Request, res: Response, next: NextFunction) {
         // @ts-ignore
         const { id_tutor } = req.user;
-
-        const options: FindOptions = {
-            where: { 
-                id_tutor,
-                status: 1
-            }
-        };
-        AvailabilityTime.findAll(options)
+        TutorService.weekAvailableTimes(id_tutor)
             .then((times) => {
                 res.json({
                     status: 'success',
@@ -55,9 +51,10 @@ class AvailabilityTimeController {
                 });
             })
             .catch((e) => {
-                next({ error: e, custom: false });
+                next(e);
             });
     }
+
     static create(req: Request, res: Response, next: NextFunction) {
         const { date, minutes } = res.locals;
         const halfHours = (minutes / 30);
@@ -87,6 +84,7 @@ class AvailabilityTimeController {
                 next(e);
             });
     }
+
     static update(req: Request, res: Response, next: NextFunction) {}
     static destroy(req: Request, res: Response, next: NextFunction) {}
 }

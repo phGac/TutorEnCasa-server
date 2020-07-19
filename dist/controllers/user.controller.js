@@ -34,6 +34,7 @@ const to_show_client_util_1 = require("../util/to_show_client.util");
 const validator_util_1 = require("../util/validator.util");
 const models_1 = require("../db/models");
 const logger_util_1 = __importDefault(require("../util/logger.util"));
+const hash_service_1 = require("../services/hash.service");
 class UserValidatorController {
     static show(req, res, next) {
         next();
@@ -219,12 +220,18 @@ class UserController {
                     .then((valid) => {
                     if (!valid)
                         return next({ error: new Error('La contraseña es inválida'), custom: true });
-                    models_1.HistoryPassword.create({
-                        id_user: id,
-                        password
+                    hash_service_1.encryptPassword(password, false)
+                        .then(() => {
+                        models_1.HistoryPassword.create({
+                            id_user: id,
+                            password
+                        })
+                            .catch((e) => logger_util_1.default().error(e));
+                        res.json({ status: 'success' });
                     })
-                        .catch((e) => logger_util_1.default().error(e));
-                    res.json({ status: 'success' });
+                        .catch((e) => {
+                        next(e);
+                    });
                 })
                     .catch((e) => {
                     next(e);
@@ -248,6 +255,9 @@ class UserController {
                     logger_util_1.default().error(e);
                 });
                 res.json({ status: 'success' });
+            })
+                .catch((e) => {
+                next({ error: e, custom: false });
             });
         }
     }

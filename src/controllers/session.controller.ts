@@ -54,6 +54,7 @@ class SessionController {
                 next(e);
             });
     }
+
     static destroy(req: Request, res: Response) {
         if(req.cookies['auth-token'])
             res.clearCookie('auth-token');

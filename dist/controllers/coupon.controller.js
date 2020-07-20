@@ -85,9 +85,11 @@ class CouponController {
         if (!id && options.include) {
             options.include.push({
                 association: 'coupons',
-                attributes: [['id', 'code'], 'value', 'createdAt']
-            }, {
-                association: 'gifts'
+                attributes: [['id', 'code'], 'value', 'createdAt'],
+                include: [{
+                        association: 'gift',
+                        required: false
+                    }],
             });
         }
         else if (options.include) {
@@ -104,8 +106,17 @@ class CouponController {
                 next({ error: new Error('No encontrado'), custom: true });
             }
             else {
-                const info = user.get({ plain: true });
-                res.json(Object.assign({ status: 'success' }, info));
+                const coupons = user.coupons.reduce((filtered, coupon) => {
+                    if (!coupon.gift) {
+                        delete coupon.gift;
+                        filtered.push(coupon);
+                    }
+                    return filtered;
+                }, []);
+                res.json({
+                    status: 'success',
+                    coupons
+                });
             }
         })
             .catch((e) => {

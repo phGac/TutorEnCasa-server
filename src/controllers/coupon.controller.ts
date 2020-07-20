@@ -83,11 +83,12 @@ class CouponController {
             options.include.push(
                 {
                     association: 'coupons',
-                    attributes: [[ 'id', 'code' ], 'value', 'createdAt']
+                    attributes: [[ 'id', 'code' ], 'value', 'createdAt'],
+                    include: [{
+                        association: 'gift',
+                        required: false
+                    }],
                 },
-                { 
-                    association: 'gifts'
-                }
             );
         }
         else if(options.include) {
@@ -104,10 +105,16 @@ class CouponController {
                     next({ error: new Error('No encontrado'), custom: true });
                 }
                 else {
-                    const info = user.get({ plain: true });
+                    const coupons = user.coupons.reduce((filtered: Coupon[], coupon) => {
+                        if(! coupon.gift) {
+                            delete coupon.gift;
+                            filtered.push(coupon);
+                        }
+                        return filtered;
+                    }, []);
                     res.json({
                         status: 'success',
-                        ...info
+                        coupons
                     });
                 }
             })

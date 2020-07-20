@@ -9,6 +9,9 @@ const messages_1 = require("../config/messages");
 const auth_service_1 = require("../services/auth.service");
 const models_1 = require("../db/models");
 const logger_util_1 = __importDefault(require("../util/logger.util"));
+const to_show_client_util_1 = require("../util/to_show_client.util");
+const tutor_model_1 = require("../db/models/tutor.model");
+const user_model_1 = require("../db/models/user.model");
 class SessionValidatorController {
     static create(req, res, next) {
         if (!req.body.email || !req.body.password)
@@ -40,8 +43,14 @@ class SessionController {
                 .catch((e) => {
                 logger_util_1.default().error(e, 'APP');
             });
-            const token = jsonwebtoken_1.default.sign(user, process.env.JWT_KEY || '', { expiresIn: '2h' });
-            res.json({ status: 'success', user, token });
+            let userClient = to_show_client_util_1.userToShowClient(user);
+            let userTokenClient = to_show_client_util_1.userToShowClient(user);
+            // @ts-ignore
+            if (user.role_tutor && user.role_tutor.status != tutor_model_1.TutorStatus.ACTIVE) {
+                userClient.roles = userClient.roles.filter((role) => (role != user_model_1.UserRole.TUTOR));
+            }
+            const token = jsonwebtoken_1.default.sign(userTokenClient, process.env.JWT_KEY || '', { expiresIn: '6h' });
+            res.json({ status: 'success', user: userClient, token });
         })
             .catch((e) => {
             next(e);

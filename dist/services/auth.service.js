@@ -6,7 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.auth = void 0;
 const user_model_1 = __importDefault(require("../db/models/user.model"));
 const messages_1 = require("../config/messages");
-const to_show_client_util_1 = require("../util/to_show_client.util");
 function auth(email, password) {
     return new Promise((resolve, reject) => {
         const options = {
@@ -33,7 +32,7 @@ function auth(email, password) {
                 user.isValidPassword(password)
                     .then((valid) => {
                     if (valid)
-                        resolve(to_show_client_util_1.userToShowClient(user));
+                        resolve(user);
                     else
                         reject({ error: new Error(messages_1.loginMessage["user.password.wrong"]), custom: true });
                 })

@@ -58,10 +58,7 @@ class TutorController {
                     association: 'user',
                     required: true
                 },
-                { 
-                    association: 'themes',
-                    required: true
-                },
+                { association: 'themes' },
                 { association: 'certificates' }
             ]
         };

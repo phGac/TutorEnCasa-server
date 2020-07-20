@@ -45,6 +45,7 @@ class AvailabilityTimeController {
         const { id_tutor } = req.user;
         TutorService.weekAvailableTimes(id_tutor)
             .then((times) => {
+                times = TutorService.mergeTimes(times);
                 res.json({
                     status: 'success',
                     times

@@ -67,7 +67,8 @@ class TutorService {
                     start: {
                         [sequelize_1.Op.between]: [date.toISOString(), nextWeek.toISOString()]
                     },
-                }
+                },
+                order: ['start']
             };
             models_1.AvailabilityTime.findAll(options)
                 .then((times) => {
@@ -77,6 +78,32 @@ class TutorService {
                 reject({ error: e, custom: false });
             });
         });
+    }
+    static mergeTimes(times) {
+        if (times.length == 0)
+            return [];
+        const timesDone = [];
+        let time = times[0];
+        let lastFinish = null;
+        let minutes = 0;
+        for (let index = 0; index < times.length; index++) {
+            if (lastFinish != null) {
+                if (lastFinish.getTime() !== times[index].start.getTime()) {
+                    time.minutes = minutes;
+                    timesDone.push(time);
+                    minutes = 0;
+                    time = times[index];
+                }
+            }
+            if (index != times.length - 1) {
+                minutes += times[index].minutes;
+                lastFinish = this.addMinutes(times[index].start, times[index].minutes);
+            }
+            else {
+                timesDone.push(times[index]);
+            }
+        }
+        return timesDone;
     }
     static addMinutes(date, minutes) {
         return new Date(date.getTime() + minutes * 60000);

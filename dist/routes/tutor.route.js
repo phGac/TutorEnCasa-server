@@ -45,7 +45,7 @@ router.post('/times/new', session_middleware_1.isLoggedIn, session_middleware_1.
  *
  *
  */
-router.get('/:id', session_middleware_1.isLoggedIn, tutor_controller_1.TutorValidatorController.show, tutor_controller_1.default.show);
+router.get(['/', '/:id'], tutor_controller_1.TutorValidatorController.show, tutor_controller_1.default.show);
 /**
  *
  * @api {post} /tutor/:id Ver Tutor

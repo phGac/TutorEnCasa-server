@@ -76,7 +76,8 @@ class TutorService {
                     start: {
                         [Op.between]: [ date.toISOString(), nextWeek.toISOString() ]
                     },
-                }
+                },
+                order: ['start']
             };
             AvailabilityTime.findAll(options)
                 .then((times) => {
@@ -86,6 +87,32 @@ class TutorService {
                     reject({ error: e, custom: false });
                 });
         });
+    }
+
+    public static mergeTimes(times: AvailabilityTime[]) {
+        if(times.length == 0) return [];
+        const timesDone = [];
+        let time: AvailabilityTime|null = times[0];
+        let lastFinish: Date|null = null;
+        let minutes = 0;
+        for (let index = 0; index < times.length; index++) {
+            if(lastFinish != null) {
+                if(lastFinish.getTime() !== times[index].start.getTime()) {
+                    time.minutes = minutes;
+                    timesDone.push(time);
+                    minutes = 0;
+                    time = times[index];
+                }
+            }
+            if(index != times.length -1) {
+                minutes += times[index].minutes;
+                lastFinish = this.addMinutes(times[index].start, times[index].minutes);
+            }
+            else {
+                timesDone.push(times[index]);
+            }
+        }
+        return timesDone;
     }
 
     static addMinutes(date: Date, minutes: number) {

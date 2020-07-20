@@ -28,7 +28,7 @@ router.post('/times/new', isLoggedIn, isTutor, AvailabilityTimeValidatorControll
  * 
  * 
  */
-router.get('/:id', isLoggedIn, TutorValidatorController.show, TutorController.show);
+router.get(['/', '/:id'], TutorValidatorController.show, TutorController.show);
 
 /**
  * 

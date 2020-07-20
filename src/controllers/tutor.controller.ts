@@ -131,7 +131,7 @@ class TutorController {
                     .then((user) => {
                         if(user) {
                             // @ts-ignore
-                            Tutor.update({ status: TutorStatus.UNVALIDATED }, { where: { id: user.tutor.id } })
+                            Tutor.update({ status: TutorStatus.UNVALIDATED }, { where: { id: user.role_tutor.id } })
                                 .catch((e) => loggerUtil().error(e));
                             File.create({
                                 name: file.name, 

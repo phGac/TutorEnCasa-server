@@ -33,7 +33,7 @@ class App {
         if(process.env.NODE_ENV == 'development')
             this.app.use(logger(TypeLogger.CONSOLE).configure({ level: 'ERROR' }));
         else
-            this.app.use(logger(TypeLogger.DATA_BASE).configure({ level: 'ERROR' }));
+            this.app.use(logger(TypeLogger.CONSOLE).configure({ level: 'ERROR' }));
         this.app.use(bodyParser.json({ limit: '50mb' }));
         this.app.use(bodyParser.urlencoded({ extended: false, limit: '50mb', parameterLimit: 1000000 }));
         this.app.use(cookieParser());

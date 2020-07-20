@@ -50,7 +50,7 @@ class App {
         if (process.env.NODE_ENV == 'development')
             this.app.use(logger_util_1.default(logger_util_1.TypeLogger.CONSOLE).configure({ level: 'ERROR' }));
         else
-            this.app.use(logger_util_1.default(logger_util_1.TypeLogger.DATA_BASE).configure({ level: 'ERROR' }));
+            this.app.use(logger_util_1.default(logger_util_1.TypeLogger.CONSOLE).configure({ level: 'ERROR' }));
         this.app.use(body_parser_1.default.json({ limit: '50mb' }));
         this.app.use(body_parser_1.default.urlencoded({ extended: false, limit: '50mb', parameterLimit: 1000000 }));
         this.app.use(cookie_parser_1.default());

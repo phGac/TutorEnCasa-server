@@ -10,6 +10,7 @@ const tutor_model_1 = require("../db/models/tutor.model");
 const file_service_1 = __importDefault(require("../services/file.service"));
 const validator_1 = __importDefault(require("validator"));
 const validator_util_1 = require("../util/validator.util");
+const logger_util_1 = __importDefault(require("../util/logger.util"));
 class TutorValidatorController {
     static show(req, res, next) {
         if (!validator_1.default.isInt(req.params.id))
@@ -28,8 +29,8 @@ class TutorValidatorController {
             return;
         }
         // @ts-ignore
-        const { birthday } = req.user;
-        if (!validator_util_1.hasMinNumberYears(birthday, 18)) {
+        const { birthdate } = req.user;
+        if (!validator_util_1.hasMinNumberYears(birthdate, 18)) {
             return next({ error: new Error('No posees la edad mínima para solicitar ser tutor'), custom: true });
         }
         res.locals.type = req.body.type;
@@ -114,16 +115,49 @@ class TutorController {
                     }
                 ]
             };
-            models_1.Tutor.create(tutorOptions, {
-                include: [
-                    {
-                        association: 'certificates',
-                        include: [{ association: 'tutor_certificate' }]
-                    },
-                ]
-            })
-                .then((tutor) => {
-                res.json({ status: 'success', message: messages_1.tutorMessage["request.success"] });
+            const options = {
+                where: { id },
+                include: [{
+                        association: 'role_tutor',
+                        required: true
+                    }]
+            };
+            models_1.User.findOne(options)
+                .then((user) => {
+                if (user) {
+                    // @ts-ignore
+                    models_1.Tutor.update({ status: tutor_model_1.TutorStatus.UNVALIDATED }, { where: { id: user.tutor.id } })
+                        .catch((e) => logger_util_1.default().error(e));
+                    models_1.File.create({
+                        name: file.name,
+                        mime: file.mime,
+                        key: file.key
+                    }).then((f) => {
+                        models_1.TutorFileCertificate.create({
+                            id_file: f.id,
+                            type,
+                        })
+                            .catch((e) => logger_util_1.default().error(e));
+                    })
+                        .catch((e) => logger_util_1.default().error(e));
+                    res.json({ status: 'success', message: messages_1.tutorMessage["request.success"] });
+                }
+                else {
+                    models_1.Tutor.create(tutorOptions, {
+                        include: [
+                            {
+                                association: 'certificates',
+                                include: [{ association: 'tutor_certificate' }]
+                            },
+                        ]
+                    })
+                        .then((tutor) => {
+                        res.json({ status: 'success', message: messages_1.tutorMessage["request.success"] });
+                    })
+                        .catch((e) => {
+                        next({ error: e, custom: false });
+                    });
+                }
             })
                 .catch((e) => {
                 next({ error: e, custom: false });

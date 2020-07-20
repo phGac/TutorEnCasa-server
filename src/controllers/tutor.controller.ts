@@ -12,9 +12,7 @@ import loggerUtil from "../util/logger.util";
 
 class TutorValidatorController {
     static show(req: Request, res: Response, next: NextFunction) {
-        if(! validator.isInt(req.params.id))
-            return next({ error: new Error('Tipo de valor inválido'), custom: true });
-        res.locals.id = parseInt(req.params.id);
+        res.locals.id = (req.params.id) ? parseInt(req.params.id) : undefined;
         next();
     }
 
@@ -54,19 +52,34 @@ class TutorController {
     static show(req: Request, res: Response, next: NextFunction) {
         const { id } = res.locals;
         const options: FindOptions = {
-            where: { id },
+            where: {},
             include: [
+                { 
+                    association: 'user',
+                    required: true
+                },
                 { association: 'themes' },
                 { association: 'certificates' }
             ]
         };
-        Tutor.findOne(options)
-            .then((tutor) => {
-                if(! tutor) return next({ error: new Error('Tutor no encontrado'), custom: true });
-                res.json({
-                    status: 'success',
-                    tutor
-                });
+        if(id) {
+            options.where = { id };
+        }
+        Tutor.findAll(options)
+            .then((tutors) => {
+                if(tutors.length == 0 && id) return next({ error: new Error('Tutor no encontrado'), custom: true });
+                if(id) {
+                    res.json({
+                        status: 'success',
+                        tutor: tutors[0]
+                    });
+                }
+                else {
+                    res.json({
+                        status: 'success',
+                        tutors
+                    });
+                }
             })
             .catch((err) => {
                 next({ error: err, custom: false });

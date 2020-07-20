@@ -8,14 +8,11 @@ const messages_1 = require("../config/messages");
 const models_1 = require("../db/models");
 const tutor_model_1 = require("../db/models/tutor.model");
 const file_service_1 = __importDefault(require("../services/file.service"));
-const validator_1 = __importDefault(require("validator"));
 const validator_util_1 = require("../util/validator.util");
 const logger_util_1 = __importDefault(require("../util/logger.util"));
 class TutorValidatorController {
     static show(req, res, next) {
-        if (!validator_1.default.isInt(req.params.id))
-            return next({ error: new Error('Tipo de valor inválido'), custom: true });
-        res.locals.id = parseInt(req.params.id);
+        res.locals.id = (req.params.id) ? parseInt(req.params.id) : undefined;
         next();
     }
     static create(req, res, next) {
@@ -50,20 +47,35 @@ class TutorController {
     static show(req, res, next) {
         const { id } = res.locals;
         const options = {
-            where: { id },
+            where: {},
             include: [
+                {
+                    association: 'user',
+                    required: true
+                },
                 { association: 'themes' },
                 { association: 'certificates' }
             ]
         };
-        models_1.Tutor.findOne(options)
-            .then((tutor) => {
-            if (!tutor)
+        if (id) {
+            options.where = { id };
+        }
+        models_1.Tutor.findAll(options)
+            .then((tutors) => {
+            if (tutors.length == 0 && id)
                 return next({ error: new Error('Tutor no encontrado'), custom: true });
-            res.json({
-                status: 'success',
-                tutor
-            });
+            if (id) {
+                res.json({
+                    status: 'success',
+                    tutor: tutors[0]
+                });
+            }
+            else {
+                res.json({
+                    status: 'success',
+                    tutors
+                });
+            }
         })
             .catch((err) => {
             next({ error: err, custom: false });

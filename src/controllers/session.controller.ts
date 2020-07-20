@@ -5,6 +5,9 @@ import { requestMessage, loginMessage } from '../config/messages';
 import { auth } from '../services/auth.service';
 import { HistoryAccess } from '../db/models';
 import logger from '../util/logger.util';
+import { userToShowClient } from '../util/to_show_client.util';
+import { TutorStatus } from '../db/models/tutor.model';
+import { UserRole } from '../db/models/user.model';
 
 class SessionValidatorController {
     static create(req: Request, res: Response, next: NextFunction) {
@@ -38,8 +41,14 @@ class SessionController {
                 .catch((e) => {
                     logger().error(e, 'APP');
                 });
-                const token = jwt.sign(user, process.env.JWT_KEY || '', { expiresIn: '2h' });
-                res.json({ status: 'success', user, token });
+                let userClient = userToShowClient(user);
+                let userTokenClient = userToShowClient(user);
+                // @ts-ignore
+                if(user.role_tutor && user.role_tutor.status != TutorStatus.ACTIVE) {
+                    userClient.roles = userClient.roles.filter((role) => (role != UserRole.TUTOR));
+                }
+                const token = jwt.sign(userTokenClient, process.env.JWT_KEY || '', { expiresIn: '6h' });
+                res.json({ status: 'success', user: userClient, token });
             })
             .catch((e) => {
                 next(e);

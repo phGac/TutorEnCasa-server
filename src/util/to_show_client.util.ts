@@ -12,6 +12,7 @@ export interface UserClient extends Express.User {
     status: number;
     createdAt: Date;
     updatedAt: Date;
+    roles: number[];
 }
 
 export function userToShowClient(user: User): UserClient {

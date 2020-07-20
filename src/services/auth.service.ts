@@ -1,10 +1,9 @@
 import { FindOptions } from "sequelize/types";
 import User from "../db/models/user.model";
 import { loginMessage } from "../config/messages";
-import { userToShowClient, UserClient } from "../util/to_show_client.util";
 
 export function auth(email: string, password: string) {
-    return new Promise((resolve: (user: UserClient) => void, reject) => {
+    return new Promise((resolve: (user: User) => void, reject) => {
         const options: FindOptions = {
             where: { email },
             include: [
@@ -28,7 +27,7 @@ export function auth(email: string, password: string) {
                 else {
                     user.isValidPassword(password)
                         .then((valid) => {
-                            if(valid) resolve(userToShowClient(user));
+                            if(valid) resolve(user);
                             else reject({ error: new Error(loginMessage["user.password.wrong"]), custom: true });
                         })
                         .catch((e) => {

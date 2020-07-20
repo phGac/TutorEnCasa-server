@@ -51,7 +51,7 @@ exports.isTutor = isTutor;
 function isNotTutor(req, res, next) {
     var _a;
     // @ts-ignore
-    if ((_a = req.user) === null || _a === void 0 ? void 0 : _a.roles.includes(user_model_1.UserRole.TUTOR)) {
+    if ((_a = req.user) === null || _a === void 0 ? void 0 : _a.id_tutor) { //roles.includes(UserRole.TUTOR)
         // @ts-ignore
         models_1.Tutor.findOne({ where: { id: req.user.id_tutor } })
             .then((tutor) => {

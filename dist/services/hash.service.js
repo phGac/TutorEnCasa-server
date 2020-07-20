@@ -12,7 +12,7 @@ function encryptPassword(password, encrypt = true) {
             return reject({ error: new Error('La constraseña es muy corta, mínimo 6 carácteres!'), custom: true });
         const score = zxcvbn_1.default(password).score;
         if (score < 2)
-            return reject({ error: new Error('La constraseña es debil'), custom: true });
+            return reject({ error: new Error('La constraseña es débil'), custom: true });
         if (encrypt) {
             bcrypt_1.default.hash(password, 10, (err, hash) => {
                 if (err)

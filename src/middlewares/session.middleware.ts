@@ -2,9 +2,10 @@ import { Request, Response, NextFunction } from "express";
 import jwt from 'jsonwebtoken';
 
 import { requestMessage, loginMessage } from "../config/messages";
-import { UserRole } from "../db/models/user.model";
+import User, { UserRole } from "../db/models/user.model";
 import { Tutor } from "../db/models";
 import { TutorStatus } from "../db/models/tutor.model";
+import { FindOptions } from "sequelize/types";
 
 export function isLoggedIn(req: Request, res: Response, next: NextFunction) {
     const token = req.headers['access-token'] || req.cookies['auth-token'];
@@ -44,17 +45,23 @@ export function isTutor(req: Request, res: Response, next: NextFunction) {
 
 export function isNotTutor(req: Request, res: Response, next: NextFunction) {
     // @ts-ignore
-    if(req.user?.roles.includes(UserRole.TUTOR)) {
-        // @ts-ignore
-        Tutor.findOne({ where: { id: req.user.id_tutor } })
-            .then((tutor) => {
-                if(tutor?.status == TutorStatus.UNVALIDATED) 
-                    next({ error: requestMessage["user.role.notAllowed"], custom: true });
-                else
-                    next();
-            });
-    }
-    else {
-        next();
-    }
+    const { id } = req.user;
+    const options: FindOptions = {
+        where: { id },
+        include: [{ 
+            association: 'role_tutor',
+            required: true
+        }]
+    };
+    User.findOne(options)
+        .then((user) => {
+            // @ts-ignore
+            if(user && (user.role_tutor.status == TutorStatus.ACTIVE || user.role_tutor.status == TutorStatus.UNVALIDATED)) 
+                next({ error: 'Ya has solicitado ser tutor', custom: true }); // requestMessage["user.role.notAllowed"]
+            else
+                next();
+        })
+        .catch((e) => {
+            next({ error: e, custom: false });
+        });
 }

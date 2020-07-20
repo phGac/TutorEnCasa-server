@@ -18,6 +18,7 @@ class TutorValidatorController {
         next();
     }
     static create(req, res, next) {
+        var _a;
         if (!req.files || !req.files.file || !req.body.type) {
             next({ error: new Error(messages_1.requestMessage["params.missing"]), custom: true });
             return;
@@ -27,31 +28,15 @@ class TutorValidatorController {
             return;
         }
         // @ts-ignore
-        const { id } = req.user;
-        const options = {
-            where: { id },
-            include: [{ association: 'role_tutor' }]
-        };
-        models_1.User.findOne(options)
-            .then((user) => {
-            var _a;
-            // @ts-ignore
-            if (!user || user.role_tutor)
-                return next({ error: new Error('Ya has solicitado ser tutor'), custom: true });
-            res.locals.type = req.body.type;
-            res.locals.file = (_a = req.files) === null || _a === void 0 ? void 0 : _a.file;
-            next();
-        })
-            .catch((e) => {
-            next({ error: e, custom: false });
-        });
-    }
-    static request(req, res, next) {
-        // @ts-ignore
         const { birthday } = req.user;
         if (!validator_util_1.hasMinNumberYears(birthday, 18)) {
             return next({ error: new Error('No posees la edad mínima para solicitar ser tutor'), custom: true });
         }
+        res.locals.type = req.body.type;
+        res.locals.file = (_a = req.files) === null || _a === void 0 ? void 0 : _a.file;
+        next();
+    }
+    static request(req, res, next) {
         next();
     }
     static validate(req, res, next) {

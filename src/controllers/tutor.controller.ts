@@ -2,12 +2,13 @@ import { Request, Response, NextFunction } from "express";
 
 import { findTutor } from "../util/find.util";
 import { requestMessage, tutorMessage } from "../config/messages";
-import { Theme, TutorTheme, Tutor, User, AvailabilityTime, TutorFileCertificate } from '../db/models';
+import { Theme, TutorTheme, Tutor, User, AvailabilityTime, TutorFileCertificate, File } from '../db/models';
 import { TutorStatus } from "../db/models/tutor.model";
 import FileService from "../services/file.service";
 import { FindOptions } from "sequelize/types";
 import validator from "validator";
 import { hasMinNumberYears } from "../util/validator.util";
+import loggerUtil from "../util/logger.util";
 
 class TutorValidatorController {
     static show(req: Request, res: Response, next: NextFunction) {
@@ -29,34 +30,17 @@ class TutorValidatorController {
         }
 
         // @ts-ignore
-        const { id } = req.user;
+        const { birthdate } = req.user;
+        if(! hasMinNumberYears(birthdate, 18)) {
+            return next({ error: new Error('No posees la edad mínima para solicitar ser tutor'), custom: true });
+        }
 
-        const options = { 
-            where: { id }, 
-            include: [ { association: 'role_tutor' } ]
-        };
-        User.findOne(options)
-            .then((user) => {
-                // @ts-ignore
-                if(! user || user.role_tutor)
-                    return next({ error: new Error('Ya has solicitado ser tutor'), custom: true });
-
-                res.locals.type = req.body.type;
-                res.locals.file = req.files?.file;
-                next();
-            })
-            .catch((e) => {
-                next({ error: e, custom: false });
-            });
-        
+        res.locals.type = req.body.type;
+        res.locals.file = req.files?.file;
+        next();
     }
 
     static request(req: Request, res: Response, next: NextFunction) {
-        // @ts-ignore
-        const { birthday } = req.user;
-        if(! hasMinNumberYears(birthday, 18)) {
-            return next({ error: new Error('No posees la edad mínima para solicitar ser tutor'), custom: true });
-        }
         next();
     }
 
@@ -136,20 +120,54 @@ class TutorController {
                         }
                     ]
                 };
-                Tutor.create(tutorOptions, {
-                    include: [ 
-                        { 
-                            association: 'certificates',
-                            include: [ { association: 'tutor_certificate' } ]
-                        },
-                    ]
-                })
-                .then((tutor) => {
-                    res.json({ status: 'success', message: tutorMessage["request.success"] });
-                })
-                .catch((e) => {
-                    next({ error: e, custom: false });
-                });
+                const options: FindOptions = {
+                    where: { id },
+                    include: [{ 
+                        association: 'role_tutor',
+                        required: true
+                    }]
+                };
+                User.findOne(options)
+                    .then((user) => {
+                        if(user) {
+                            // @ts-ignore
+                            Tutor.update({ status: TutorStatus.UNVALIDATED }, { where: { id: user.tutor.id } })
+                                .catch((e) => loggerUtil().error(e));
+                            File.create({
+                                name: file.name, 
+                                mime: file.mime, 
+                                key: file.key
+                            }).then((f) => {
+                                TutorFileCertificate.create({
+                                    id_file: f.id,
+                                    type,
+                                })
+                                .catch((e) => loggerUtil().error(e));
+                            })
+                            .catch((e) => loggerUtil().error(e));
+                            res.json({ status: 'success', message: tutorMessage["request.success"] });
+                        }
+                        else {
+                            Tutor.create(tutorOptions, {
+                                include: [ 
+                                    { 
+                                        association: 'certificates',
+                                        include: [ { association: 'tutor_certificate' } ]
+                                    },
+                                ]
+                            })
+                            .then((tutor) => {
+                                res.json({ status: 'success', message: tutorMessage["request.success"] });
+                            })
+                            .catch((e) => {
+                                next({ error: e, custom: false });
+                            });
+                        }
+                    })
+                    .catch((e) => {
+                        next({ error: e, custom: false })
+                    });
+                
             })
             .catch((e) => {
                 next(e)
